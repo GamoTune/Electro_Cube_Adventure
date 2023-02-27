@@ -9,8 +9,12 @@ import os
 ################################################################### Les Fonctions ###################################################################
 
 def first_launch (): #La fonction "first_launch" permet de déclaré la plus part des variable global
-    global listblock, editBloc, freezeEdit, fenetreeditTest, dicoNiveau, id_level, lienfichier, edit, nombrePixel, nombreCaseX, nombreCaseY, imageBoutonSolo, imageBoutonEditeur, ligneX, ligneY, imageBoutonEditeurNiveauHaut, imageBoutonEditeurNiveauBas, imageBoutonEditeurNiveauGauche, imageBoutonEditeurNiveauDroite, imageBoutonEditeurSave, imageBoutonEditeurRetour, imageWIP, imageBoutonEditeurPoubelle, imageBoutonEditeurExit, imageEditeurInfos, fenetreinfosTest, id_level_editeur, imageBoutonEditeurBlocSolide, couleurBloc, typeDuBloc, imageBoutonEditeurBlocSpawn, delonespebloc, dicoMonde, id_monde, solo, lienmonde, imageBoutonEditeurInfos
+    global listblock, cwd, editBloc, freezeEdit, fenetreeditTest, dicoNiveau, id_level, lienfichier, edit, nombrePixel, nombreCaseX, nombreCaseY, imageBoutonSolo, imageBoutonEditeur, ligneX, ligneY, imageBoutonEditeurNiveauHaut, imageBoutonEditeurNiveauBas, imageBoutonEditeurNiveauGauche, imageBoutonEditeurNiveauDroite, imageBoutonEditeurSave, imageBoutonEditeurRetour, imageWIP, imageBoutonEditeurPoubelle, imageBoutonEditeurExit, imageEditeurInfos, fenetreinfosTest, id_level_editeur, imageBoutonEditeurBlocSolide, couleurBloc, typeDuBloc, imageBoutonEditeurBlocSpawn, delonespebloc, dicoMonde, id_monde, solo, lienmonde, imageBoutonEditeurInfos
 
+    cwd = os.getcwd()
+    print(format(cwd))
+    
+    
     #Les coordonnées virtuel sont des coordonnées d'un matrice créer en fonction du nombre de case à l'écran (défini avec "nombreCase")
     listblock = [] #Liste des ID des blocs créés [default : []]
     dicoNiveau = {
@@ -47,7 +51,7 @@ def first_launch (): #La fonction "first_launch" permet de déclaré la plus par
     solo = False
     freezeEdit = False
     editBloc = False
-    imageBoutonEditeurNiveauHaut = PhotoImage(file = r"assets/images/fleche_haut.png")
+    imageBoutonEditeurNiveauHaut = PhotoImage(file = "C:/Users/GamoTune/Desktop/Programmes/mini-projet/v18/assets/images/fleche_haut.png")
     imageBoutonEditeurNiveauBas = PhotoImage(file = r"assets/images/fleche_bas.png")
     imageBoutonEditeurNiveauGauche = PhotoImage(file = r"assets/images/fleche_gauche.png")
     imageBoutonEditeurNiveauDroite = PhotoImage(file = r"assets/images/fleche_droite.png")
@@ -57,9 +61,9 @@ def first_launch (): #La fonction "first_launch" permet de déclaré la plus par
     imageBoutonEditeurPoubelle = PhotoImage(file = r"assets/images/bouton_poubelle.png")
     imageBoutonEditeurExit = PhotoImage(file = r"assets/images/exit.png")
     imageEditeurInfos = PhotoImage(file = r"assets/images/Menu_infos.png")
-    imageBoutonEditeurBlocSolide = PhotoImage(file = r"assets/images/bouton_bloc_solide.png")
+    imageBoutonEditeurBlocSolide = PhotoImage(file = os.path.join(cwd,"assets","images","bouton_bloc_solide.png"))
     imageBoutonEditeurBlocSpawn = PhotoImage(file= r"assets/images/bouton_bloc_spawn.png")
-    imageBoutonEditeurInfos = PhotoImage(file= r"assets/images/bouton_infos.png")
+    imageBoutonEditeurInfos = PhotoImage(file= os.path.join("assets""images""bouton_infos.png"))
 
     menu()
 
@@ -714,6 +718,8 @@ Menu Solo plus tard
 
 Faire la fenetre d'édite de bloc dans l'éditeur
 
-Faire un système que les fenetre de l'éditeur ne puissent pas être détruite
+check this out : https://medium.com/@ageitgey/python-3-quick-tip-the-easy-way-to-deal-with-file-paths-on-windows-mac-and-linux-11a072b58d5f
+
+
 
 """
