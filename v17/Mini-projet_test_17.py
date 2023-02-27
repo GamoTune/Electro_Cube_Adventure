@@ -138,7 +138,7 @@ def lancement_solo ():
     canevas.move(joueur,posjxstart*nombrePixel, posjystart*nombrePixel)
     positionJoueur = [posjxstart, posjystart] #0 = x & 1 = y
     close_menu()
-
+#test commentaire
 def menu ():
     global boutonSolo
     global boutonEditeur
