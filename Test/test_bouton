@@ -1,0 +1,18 @@
+from tkinter import *
+
+fenetre = Tk()
+
+fenetre.title('Dessin d\'un rectangle')
+fenetre.geometry("%dx%d%+d%+d" % (500,500,20,20))
+
+canevas = Canvas(fenetre, width=500, height=500,bg='grey')
+canevas.create_line(0, 0, 500, 500)
+
+photo = PhotoImage(file = r"assets\\images\\bouton_solo.png")
+B = Button(canevas, text ="Hello", image=photo)
+B.place(x=65, y=100)
+
+canevas.pack()
+fenetre.mainloop()
+
+

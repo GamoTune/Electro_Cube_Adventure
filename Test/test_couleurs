@@ -1,0 +1,5 @@
+import random
+
+listecouleur = ['black', 'white', 'yellow', 'blue', 'red', 'orange', 'green', 'purple']
+
+print(random.choice(listecouleur))
