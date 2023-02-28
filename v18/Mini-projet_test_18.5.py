@@ -320,7 +320,7 @@ def typeBlocs (tBloc):
     pass
 
 def plassage_de_block (event):
-    global dicoNiveau
+    global dicoNiveau, entryIDcle, boutonIDCleValidation
 
     xSourisCase,ySourisCase=event.x,event.y
 
@@ -364,16 +364,32 @@ def plassage_de_block (event):
             print(dicoNiveau)
 
     elif editBloc == True:
+        try:
+            entryIDcle.destroy()
+        except:
+            pass
+        try:
+            boutonIDCleValidation.destroy()
+        except:
+            pass
         padsouris = 0
         while padsouris != len(dicoNiveau["listBloc"]):
             if xSourisCase == dicoNiveau["coordsBloc"][padsouris*2] and ySourisCase == dicoNiveau["coordsBloc"][padsouris*2+1]:
                 if dicoNiveau["typeBloc"][padsouris] == 0:
                     textTypeBlocSelect.config(text="Bloc Solide")
-                    idBlocModif = dicoNiveau["listBloc"][padsouris]
-                elif dicoNiveau["typeBloc"][padsouris] == 0:
-                    textTypeBlocSelect.config(text="Bloc ")
-                    idBlocModif = dicoNiveau["listBloc"][padsouris]
+
+                elif dicoNiveau["typeBloc"][padsouris] == 1:
+                    textTypeBlocSelect.config(text="Bloc Spawn")
+
+                elif dicoNiveau["typeBloc"][padsouris] == 2:
+                    textTypeBlocSelect.config(text="Item Clé ")
+                    entryIDcle = Entry(fenetre_edit_bloc, bg="lightgrey", width=10, font="Arial, 24")
+                    entryIDcle.place(x=200, y=150)
+                    boutonIDCleValidation = Button(fenetre_edit_bloc, image=imageWIP, command=lambda:getKeyID(entryIDcle.get()))
+                    boutonIDCleValidation.place(x=25,y=150)
+
                 break
+
             else:
                 textTypeBlocSelect.config(text="Air")
 
@@ -438,12 +454,12 @@ def delspebloc ():
     else:
         delonespebloc = False
 
-def set_edit_objet (event=0):
+def set_edit_objet ():
     global edit, fenetreeditTest, fenetre_edit_bloc, editBloc, textTypeBlocSelect
     if fenetreeditTest == False:
         fenetre_edit_bloc = tk.Toplevel()
         fenetre_edit_bloc.resizable(False,False)
-        fenetre_edit_bloc.geometry('500x500')
+        fenetre_edit_bloc.geometry('500x300')
         fenetre_edit_bloc.attributes('-topmost',1)
         fenetre_edit_bloc.protocol("WM_DELETE_WINDOW", disable_event)
 
@@ -464,6 +480,12 @@ def set_edit_objet (event=0):
         fenetreeditTest = False
         edit = True
         editBloc = False
+
+def getKeyID (IDValue):
+    global dicoMonde
+
+    dicoMonde["id_level"].append(id_level)
+    dicoMonde["keyPorte"].append(IDValue)
 
 
 ################################################################### Fonction fonctionnement du programme ###################################################################
@@ -724,8 +746,6 @@ fenetre.mainloop()
 """
 Menu Solo plus tard
 
-Faire la fenetre d'édite de bloc dans l'éditeur
-
-faire le truc avec path.get
+Modif la façon dont les id clées sont géré
 
 """
