@@ -22,11 +22,11 @@ def first_launch (): #La fonction "first_launch" permet de déclaré la plus par
         "listBloc" : [],
         "typeBloc" : [],
         "color" : []
-
          }
          
     dicoMonde = {
-        "keyPorte" : [],
+        "id_keyPorte" : [],
+        "id_bloc" : [],
         "id_level" : []
     }
           #Dictionnaire des informations d'un niveau (comme les coordonnées des blocs) qui sont enregistrer
@@ -320,7 +320,7 @@ def typeBlocs (tBloc):
     pass
 
 def plassage_de_block (event):
-    global dicoNiveau, entryIDcle, boutonIDCleValidation
+    global dicoNiveau, entryIDcle, boutonIDCleValidation, selectBloc
 
     xSourisCase,ySourisCase=event.x,event.y
 
@@ -377,12 +377,13 @@ def plassage_de_block (event):
             if xSourisCase == dicoNiveau["coordsBloc"][padsouris*2] and ySourisCase == dicoNiveau["coordsBloc"][padsouris*2+1]:
                 if dicoNiveau["typeBloc"][padsouris] == 0:
                     textTypeBlocSelect.config(text="Bloc Solide")
-
+					 selectBloc = dicoNiveau["listBloc"][padsouris]
                 elif dicoNiveau["typeBloc"][padsouris] == 1:
                     textTypeBlocSelect.config(text="Bloc Spawn")
-
+					 selectBloc = dicoNiveau["listBloc"][padsouris]
                 elif dicoNiveau["typeBloc"][padsouris] == 2:
                     textTypeBlocSelect.config(text="Item Clé ")
+      				 selectBloc = dicoNiveau["listBloc"][padsouris]
                     entryIDcle = Entry(fenetre_edit_bloc, bg="lightgrey", width=10, font="Arial, 24")
                     entryIDcle.place(x=200, y=150)
                     boutonIDCleValidation = Button(fenetre_edit_bloc, image=imageWIP, command=lambda:getKeyID(entryIDcle.get()))
@@ -483,9 +484,14 @@ def set_edit_objet ():
 
 def getKeyID (IDValue):
     global dicoMonde
-
-    dicoMonde["id_level"].append(id_level)
-    dicoMonde["keyPorte"].append(IDValue)
+	
+    if selectBloc in dicoMonde["id_bloc"]:
+        dicoMonde["id_keyPorte"][dicoMonde["id_bloc"].index(selectBloc)] = IDValue
+        
+     else:   
+    	dicoMonde["id_level"].append(id_level)
+		dicoMonde["id_keyPorte"].append(IDValue)
+    	dicoMonde["id_bloc"].append(selectBloc)
 
 
 ################################################################### Fonction fonctionnement du programme ###################################################################
