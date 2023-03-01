@@ -55,7 +55,7 @@ def first_launch (): #La fonction "first_launch" permet de déclaré la plus par
     imageBoutonEditeurPoubelle = PhotoImage(file = r"assets/images/bouton_poubelle.png")
     imageBoutonEditeurExit = PhotoImage(file = r"assets/images/exit.png")
     imageEditeurInfos = PhotoImage(file = r"assets/images/Menu_infos.png")
-    imageBoutonEditeurBlocSolide = PhotoImage(file = r"assets/images/bouton_bloc_solide.png")
+    imageBoutonEditeurBlocSolide = PhotoImage(file = r"C:/Dev/Programmes/mini-projet/v18/assets/images/bouton_bloc_solide.png")
     imageBoutonEditeurBlocSpawn = PhotoImage(file= r"assets/images/bouton_bloc_spawn.png")
     imageBoutonEditeurInfos = PhotoImage(file= r"assets/images/bouton_infos.png")
 

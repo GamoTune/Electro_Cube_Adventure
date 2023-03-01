@@ -109,6 +109,9 @@ def lancement_edition ():
     bouton_niveau_right = Button(fenetre_bouton, image=imageBoutonEditeurNiveauDroite, bg='white', command=lambda:level_search("Right"))
     bouton_niveau_right.place(x=206,y=206)
 
+    boutonEditeurPlay = Button(fenetre_bouton, bd='1', image=imageBoutonEditeur, bg='white', command=play_editeur)
+    boutonEditeurPlay.place(x=103,y=206)
+
 def lancement_solo ():
     global joueur
     global positionJoueur
@@ -308,6 +311,8 @@ def save_level (event=0):
         with open(lienfichier, "wb") as fichierNiveau:
             pickle.dump(coordsBlocs, fichierNiveau)
 
+def play_editeur (event):
+    pass
 
 ################################################################### Fonction fonctionnement du programme ###################################################################
 
