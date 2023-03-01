@@ -27,7 +27,8 @@ def first_launch (): #La fonction "first_launch" permet de déclaré la plus par
     dicoMonde = {
         "id_keyPorte" : [],
         "id_bloc" : [],
-        "id_level" : []
+        "id_level" : [],
+        "key_collect" : []
     }
           #Dictionnaire des informations d'un niveau (comme les coordonnées des blocs) qui sont enregistrer
     id_level = [0,0] #Numéro du niveau dans le quel on est (quand on change de niveau on ajoute ou retire 1 ) [default : [0,0]]
@@ -66,7 +67,6 @@ def first_launch (): #La fonction "first_launch" permet de déclaré la plus par
     imageBoutonEditeurBlocSolide = PhotoImage(file = str(cwd)+"assets/images/bouton_bloc_solide.png")
     imageBoutonEditeurBlocSpawn = PhotoImage(file= str(cwd)+"assets/images/bouton_bloc_spawn.png")
     imageBoutonEditeurInfos = PhotoImage(file= str(cwd)+"assets/images/bouton_infos.png")
-
     menu()
 
 def lancement_edition (): #La fonction "lancement_edition" permet de mettre en place tout le système de la création de niveau
@@ -321,7 +321,7 @@ def typeBlocs (tBloc):
     pass
 
 def plassage_de_block (event):
-    global dicoNiveau, entryIDcle, boutonIDCleValidation, selectBloc, couleurSet
+    global dicoNiveau, entryIDcle, boutonIDCleValidation, selectBloc, couleurSet, testIDKey
 
     xSourisCase,ySourisCase=event.x,event.y
 
@@ -377,6 +377,10 @@ def plassage_de_block (event):
             couleurSet.destroy()
         except:
             pass
+        try:
+            testIDKey.destroy()
+        except:
+            pass
         padsouris = 0
         while padsouris != len(dicoNiveau["listBloc"]):
             if xSourisCase == dicoNiveau["coordsBloc"][padsouris*2] and ySourisCase == dicoNiveau["coordsBloc"][padsouris*2+1]:
@@ -394,6 +398,7 @@ def plassage_de_block (event):
 
                     entryIDcle = Entry(fenetre_edit_bloc, bg="lightgrey", width=10, font="Arial, 24")
                     entryIDcle.place(x=250, y=150)
+                    #entryIDcle.insert(0,str(dicoMonde["id_keyPorte"][dicoMonde["id_bloc"].index(selectBloc)]))
 
                     boutonIDCleValidation = Button(fenetre_edit_bloc, image=imageWIP, command=lambda:getKeyID(entryIDcle.get()))
                     boutonIDCleValidation.place(x=25,y=150)
@@ -504,11 +509,13 @@ def getKeyID (IDValue):
 
     if selectBloc in dicoMonde["id_bloc"]:
         dicoMonde["id_keyPorte"][dicoMonde["id_bloc"].index(selectBloc)] = IDValue
+        
 
     else:
         dicoMonde["id_level"].append(id_level)
         dicoMonde["id_keyPorte"].append(IDValue)
         dicoMonde["id_bloc"].append(selectBloc)
+        dicoMonde["key_collect"].append(0)
     print(dicoMonde)
 
 def change_color (c):
@@ -786,6 +793,6 @@ fenetre.mainloop()
 """
 Menu Solo plus tard
 
-Modif la façon dont les id clées sont géré
+les clées marche pas quand on recharge le niveau parce que l'id change
 
 """
