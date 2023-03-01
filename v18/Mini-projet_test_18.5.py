@@ -9,7 +9,7 @@ import os
 ################################################################### Les Fonctions ###################################################################
 
 def first_launch (): #La fonction "first_launch" permet de déclaré la plus part des variable global
-    global listblock, editBloc, cwd, freezeEdit, fenetreeditTest, dicoNiveau, id_level, lienfichier, edit, nombrePixel, nombreCaseX, nombreCaseY, imageBoutonSolo, imageBoutonEditeur, ligneX, ligneY, imageBoutonEditeurNiveauHaut, imageBoutonEditeurNiveauBas, imageBoutonEditeurNiveauGauche, imageBoutonEditeurNiveauDroite, imageBoutonEditeurSave, imageBoutonEditeurRetour, imageWIP, imageBoutonEditeurPoubelle, imageBoutonEditeurExit, imageEditeurInfos, fenetreinfosTest, id_level_editeur, imageBoutonEditeurBlocSolide, couleurBloc, typeDuBloc, imageBoutonEditeurBlocSpawn, delonespebloc, dicoMonde, id_monde, solo, lienmonde, imageBoutonEditeurInfos
+    global listblock, editBloc, cwd, newColorBloc, freezeEdit, fenetreeditTest, dicoNiveau, id_level, lienfichier, edit, nombrePixel, nombreCaseX, nombreCaseY, imageBoutonSolo, imageBoutonEditeur, ligneX, ligneY, imageBoutonEditeurNiveauHaut, imageBoutonEditeurNiveauBas, imageBoutonEditeurNiveauGauche, imageBoutonEditeurNiveauDroite, imageBoutonEditeurSave, imageBoutonEditeurRetour, imageWIP, imageBoutonEditeurPoubelle, imageBoutonEditeurExit, imageEditeurInfos, fenetreinfosTest, id_level_editeur, imageBoutonEditeurBlocSolide, couleurBloc, typeDuBloc, imageBoutonEditeurBlocSpawn, delonespebloc, dicoMonde, id_monde, solo, lienmonde, imageBoutonEditeurInfos
 
     cwd = os.getcwd()
     cwd = cwd.replace("\\", "/" )
@@ -47,6 +47,7 @@ def first_launch (): #La fonction "first_launch" permet de déclaré la plus par
     fenetreeditTest = False
     id_level_editeur = [0,0]
     couleurBloc = 'black'
+    newColorBloc = 'red'
     typeDuBloc = 0
     delonespebloc = False
     solo = False
@@ -320,7 +321,7 @@ def typeBlocs (tBloc):
     pass
 
 def plassage_de_block (event):
-    global dicoNiveau, entryIDcle, boutonIDCleValidation, selectBloc
+    global dicoNiveau, entryIDcle, boutonIDCleValidation, selectBloc, couleurSet
 
     xSourisCase,ySourisCase=event.x,event.y
 
@@ -372,22 +373,36 @@ def plassage_de_block (event):
             boutonIDCleValidation.destroy()
         except:
             pass
+        try:
+            couleurSet.destroy()
+        except:
+            pass
         padsouris = 0
         while padsouris != len(dicoNiveau["listBloc"]):
             if xSourisCase == dicoNiveau["coordsBloc"][padsouris*2] and ySourisCase == dicoNiveau["coordsBloc"][padsouris*2+1]:
                 if dicoNiveau["typeBloc"][padsouris] == 0:
                     textTypeBlocSelect.config(text="Bloc Solide")
-					 selectBloc = dicoNiveau["listBloc"][padsouris]
+                    selectBloc = dicoNiveau["listBloc"][padsouris]
+
                 elif dicoNiveau["typeBloc"][padsouris] == 1:
                     textTypeBlocSelect.config(text="Bloc Spawn")
-					 selectBloc = dicoNiveau["listBloc"][padsouris]
+                    selectBloc = dicoNiveau["listBloc"][padsouris]
+
                 elif dicoNiveau["typeBloc"][padsouris] == 2:
                     textTypeBlocSelect.config(text="Item Clé ")
-      				 selectBloc = dicoNiveau["listBloc"][padsouris]
+                    selectBloc = dicoNiveau["listBloc"][padsouris]
+
                     entryIDcle = Entry(fenetre_edit_bloc, bg="lightgrey", width=10, font="Arial, 24")
-                    entryIDcle.place(x=200, y=150)
+                    entryIDcle.place(x=250, y=150)
+
                     boutonIDCleValidation = Button(fenetre_edit_bloc, image=imageWIP, command=lambda:getKeyID(entryIDcle.get()))
                     boutonIDCleValidation.place(x=25,y=150)
+
+                    testIDKey = Label(fenetre_edit_bloc, text="ID :", font="Arial, 24")
+                    testIDKey.place(x=175,y=150) 
+
+                    couleurSet = Scale(fenetre_edit_bloc, orient='horizontal', from_=1, to=5, resolution=1, tickinterval=2, length=180, label='Couleur', font=("Arial, 10"), command=change_color)
+                    couleurSet.place(x=250,y=200)
 
                 break
 
@@ -419,8 +434,7 @@ def deleteLastBlock (event=0):
         del dicoNiveau["typeBloc"][-1]
         del dicoNiveau["color"][-1]
 
-def save_level (event=0):
-    if edit == True:
+def save_level ():
         with open(lienfichier, "wb") as fichierNiveau:
             pickle.dump(dicoNiveau, fichierNiveau)
 
@@ -484,15 +498,35 @@ def set_edit_objet ():
 
 def getKeyID (IDValue):
     global dicoMonde
-	
+
+    if IDValue == "":
+        IDValue = '0'
+
     if selectBloc in dicoMonde["id_bloc"]:
         dicoMonde["id_keyPorte"][dicoMonde["id_bloc"].index(selectBloc)] = IDValue
-        
-     else:   
-    	dicoMonde["id_level"].append(id_level)
-		dicoMonde["id_keyPorte"].append(IDValue)
-    	dicoMonde["id_bloc"].append(selectBloc)
 
+    else:
+        dicoMonde["id_level"].append(id_level)
+        dicoMonde["id_keyPorte"].append(IDValue)
+        dicoMonde["id_bloc"].append(selectBloc)
+    print(dicoMonde)
+
+def change_color (c):
+    global dicoMonde, newColorBloc
+
+    if couleurSet.get() == 1:
+        newColorBloc = 'red'
+    elif couleurSet.get() == 2:
+        newColorBloc = 'yellow'
+    elif couleurSet.get() == 3:
+        newColorBloc = 'green'
+    elif couleurSet.get() == 4:
+        newColorBloc = 'lightgreen'
+    elif couleurSet.get() == 5:
+        newColorBloc = 'purple'
+
+    canevas.itemconfig(selectBloc, fill=newColorBloc)
+    dicoNiveau["color"][dicoNiveau["listBloc"].index(selectBloc)] = newColorBloc
 
 ################################################################### Fonction fonctionnement du programme ###################################################################
 
@@ -511,6 +545,11 @@ def retour_menu (goToMenu):
 
     if goToMenu == "postEditMenu":
         fenetre_bouton.destroy()
+        try:
+            fenetre_edit_bloc.destroy()
+            fenetreeditTest = 0
+        except:
+            pass
         save_level()
         save_world()
         edit = False
@@ -527,11 +566,6 @@ def retour_menu (goToMenu):
         try:
             fenetre_infos.destroy()
             fenetreinfosTest = 0
-        except:
-            pass
-        try:
-            fenetre_edit_bloc.destroy()
-            fenetreeditTest = 0
         except:
             pass
         menuPostEdit.place(x=largeur/2, y=hauteur/2,anchor=CENTER)
