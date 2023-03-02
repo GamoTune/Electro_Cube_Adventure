@@ -4,8 +4,10 @@ from tkinter import *
 import tkinter as tk
 import pickle
 import os
+import vlc
 
 
+player = vlc.MediaPlayer("assets/musica/Gymnopédie No°1.wav")
 ################################################################### Les Fonctions ###################################################################
 
 def first_launch (): #La fonction "first_launch" permet de déclaré la plus part des variable global
@@ -68,6 +70,7 @@ def first_launch (): #La fonction "first_launch" permet de déclaré la plus par
     imageBoutonEditeurBlocSpawn = PhotoImage(file= str(cwd)+"assets/images/bouton_bloc_spawn.png")
     imageBoutonEditeurInfos = PhotoImage(file= str(cwd)+"assets/images/bouton_infos.png")
     menu()
+    bg_music()
 
 def lancement_edition (): #La fonction "lancement_edition" permet de mettre en place tout le système de la création de niveau
     global edit
@@ -243,7 +246,8 @@ def close_menu ():
     except:
         pass
 
-
+def bg_music ():
+    player.play()
 ################################################################### Fonction en jeu ###################################################################
 
 def mouvement_joueur (event, direction):
