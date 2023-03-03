@@ -159,11 +159,12 @@ def lancement_solo ():
     global solo
 
     solo = True
-    lienfichier = str(cwd)+"assets/data/solo/level_editeur00.txt"
-    id_level = [0,0]
     loadTestZone()
+    
     posjxstart = dicoNiveau["coordsBloc"][dicoNiveau["typeBloc"].index(1)*2]
-    posjystart = dicoNiveau["coordsBloc"][dicoNiveau["typeBloc"].index(1)*2]
+    posjystart = dicoNiveau["coordsBloc"][dicoNiveau["typeBloc"].index(1)*2+1]
+    print(posjxstart)
+    print(posjystart)
     joueur = canevas.create_rectangle(0, 0, nombrePixel, nombrePixel, fill='blue')
     canevas.move(joueur,posjxstart*nombrePixel, posjystart*nombrePixel)
     positionJoueur = [posjxstart, posjystart] #0 = x & 1 = y
@@ -192,21 +193,21 @@ def menu_post_edition ():
     menuPostEdit.place(x=largeur/2, y=hauteur/2,anchor=CENTER)
 
     boutonExitEdit = Button(menuPostEdit, image=imageBoutonEditeurExit, command=lambda:retour_menu("Menu"))
-    boutonExitEdit.place(x=100, y=100, anchor=CENTER)
+    boutonExitEdit.place(x=(largeur/2+largeur/4)/2, y=(hauteur/2+hauteur/4)/2, anchor=CENTER)
 
-    boutonMonde1 = Button(menuPostEdit, image=imageWIP, command=lambda:monde_finder(1))
-    boutonMonde1.place(x=(largeur/2+largeur/4)/2-((largeur/2+largeur/4)/2)/2, y=(hauteur/2+hauteur/4)/2, anchor=CENTER)
+    boutonEditeurMonde1 = Button(menuPostEdit, image=imageWIP, command=lambda:monde_finder_editeur(1))
+    boutonEditeurMonde1.place(x=(largeur/2+largeur/4)/2-((largeur/2+largeur/4)/2)/4, y=(hauteur/2+hauteur/4)/2, anchor=CENTER)
 
-    boutonMonde2 = Button(menuPostEdit, image=imageWIP, command=lambda:monde_finder(2))
-    boutonMonde2.place(x=(largeur/2+largeur/4)/2, y=(hauteur/2+hauteur/4)/2, anchor=CENTER)
+    boutonEditeurMonde2 = Button(menuPostEdit, image=imageWIP, command=lambda:monde_finder_editeur(2))
+    boutonEditeurMonde2.place(x=(largeur/2+largeur/4)/2, y=(hauteur/2+hauteur/4)/1.37, anchor=CENTER)
 
-    boutonMonde3 = Button(menuPostEdit, image=imageWIP, command=lambda:monde_finder(3))
-    boutonMonde3.place(x=(largeur/2+largeur/4)/2+((largeur/2+largeur/4)/2)/2, y=(hauteur/2+hauteur/4)/2, anchor=CENTER)
+    boutonEditeurMonde3 = Button(menuPostEdit, image=imageWIP, command=lambda:monde_finder_editeur(3))
+    boutonEditeurMonde3.place(x=(largeur/2+largeur/4)/2+((largeur/2+largeur/4)/2)/4, y=(hauteur/2+hauteur/4)/2, anchor=CENTER)
 
     titreMonde = Label(menuPostEdit, text="Select World", font="Arial, 48", fg='white', bg='black')
     titreMonde.place(x=(largeur/2+largeur/4)/2, y=50, anchor=CENTER)
 
-def monde_finder (numMonde):
+def monde_finder_editeur (numMonde):
     global id_monde, lienmonde, lienfichier
 
     id_monde = numMonde
@@ -221,13 +222,28 @@ def menu_post_solo ():
     menuPostSolo.place(x=largeur/2, y=hauteur/2,anchor=CENTER)
 
     boutonExitSolo = Button(menuPostSolo, image=imageBoutonEditeurExit, command=lambda:retour_menu("Menu"))
-    boutonExitSolo.place(x=100, y=100, anchor=CENTER)
+    boutonExitSolo.place(x=(largeur/2+largeur/4)/2, y=(hauteur/2+hauteur/4)/2, anchor=CENTER)
 
-    buttonStart = Button(menuPostSolo, image=imageWIP, command=lancement_solo)
-    buttonStart.place(x=(largeur/2+largeur/4)/2, y=(hauteur/2+hauteur/4)-55, anchor=CENTER)
+    boutonSoloMonde1 = Button(menuPostSolo, image=imageWIP, command=lambda:monde_finder_solo(1))
+    boutonSoloMonde1.place(x=(largeur/2+largeur/4)/2-((largeur/2+largeur/4)/2)/4, y=(hauteur/2+hauteur/4)/2, anchor=CENTER)
+
+    boutonSoloMonde2 = Button(menuPostSolo, image=imageWIP, command=lambda:monde_finder_solo(2))
+    boutonSoloMonde2.place(x=(largeur/2+largeur/4)/2, y=(hauteur/2+hauteur/4)/1.37, anchor=CENTER)
+
+    boutonSoloMonde3 = Button(menuPostSolo, image=imageWIP, command=lambda:monde_finder_solo(3))
+    boutonSoloMonde3.place(x=(largeur/2+largeur/4)/2+((largeur/2+largeur/4)/2)/4, y=(hauteur/2+hauteur/4)/2, anchor=CENTER)
 
     titreSolo = Label(menuPostSolo, text="WIP", font="Arial, 48", fg='white', bg='black')
     titreSolo.place(x=(largeur/2+largeur/4)/2, y=50, anchor=CENTER)
+
+def monde_finder_solo (numMonde):
+    global id_monde, lienmonde, lienfichier
+
+    id_monde = numMonde
+    id_level = [0,0]
+    lienmonde = str(cwd)+"assets/data/solo/monde"+str(id_monde)+"monde_info.txt"
+    lienfichier = str(cwd)+"assets/data/solo/monde"+str(id_monde)+"/niveau"+str(id_level[0])+str(id_level[1])+".txt"
+    lancement_solo()
 
 def close_menu ():
     try:
@@ -362,7 +378,6 @@ def clic_gauche (event):
                 del dicoNiveau["coordsBloc"][dicoNiveau["typeBloc"].index(1)*2]
                 del dicoNiveau["coordsBloc"][dicoNiveau["typeBloc"].index(1)*2]
                 del dicoNiveau["color"][dicoNiveau["typeBloc"].index(1)]
-
                 del dicoNiveau["typeBloc"][dicoNiveau["typeBloc"].index(1)]
             dicoNiveau["listBloc"].append(canevas.create_rectangle(xSourisCase*nombrePixel,ySourisCase*nombrePixel,xSourisCase*nombrePixel+nombrePixel,ySourisCase*nombrePixel+nombrePixel, fill=couleurBloc))
             dicoNiveau["coordsBloc"].append(xSourisCase)
@@ -529,7 +544,8 @@ def getKeyID (IDValue):
         dicoMonde["coords_bloc"].append(dicoNiveau["coordsBloc"][padsouris*2])
         dicoMonde["coords_bloc"].append(dicoNiveau["coordsBloc"][padsouris*2+1])
         dicoMonde["key_collect"].append(0)
-    save_world
+    print(dicoMonde)
+    save_world()
 
 def change_color (c):
     global dicoMonde, newColorBloc
@@ -552,6 +568,12 @@ def change_color (c):
 
 def disable_event():
    pass
+
+def exit_key (event):
+    if edit == True:
+        retour_menu("postEditMenu")
+    elif solo == True:
+        retour_menu("postSoloMenu")
 
 def retour_menu (goToMenu):
     global lienfichier, solo, fenetreinfosTest, fenetreeditTest
@@ -783,6 +805,8 @@ fenetre.bind("<Key-Down>", lambda event : mouvement_joueur (event,"down"))
 fenetre.bind("<Key-Left>", lambda event : mouvement_joueur (event,"left"))
 fenetre.bind("<Key-Right>", lambda event :mouvement_joueur (event,"right"))
 
+fenetre.bind("<Escape>", lambda event : exit_key(event))
+
 fenetre.bind("<B1-Motion>", lambda event : clic_gauche(event))
 fenetre.bind("<Button-1>", lambda event : clic_gauche(event))
 
@@ -804,9 +828,6 @@ fenetre.mainloop()
 
 
 """
-Menu Solo plus tard
-
-les clées marche pas quand on recharge le niveau parce que l'id change
-Les clées marche encore pas et c'est pire qu'avant avec les keyID
+faire système de clé fonctionnels
 
 """
