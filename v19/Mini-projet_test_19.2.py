@@ -536,13 +536,13 @@ def getKeyID (IDValue):
         IDValue = '0'
     pad = 0
     while pad < len(dicoMonde["coords_bloc"])/2:
-        if selectBlocCoordX == dicoMonde["coords_bloc"][pad*2] and selectBlocCoordY == dicoMonde["coords_bloc"][pad*2+1] and id_level == dicoMonde["id_level"][pad]: #Permet de savoir si le bloc exite déjà dans la liste
+        if selectBlocCoordX == dicoMonde["coords_bloc"][pad*2] and selectBlocCoordY == dicoMonde["coords_bloc"][pad*2+1] and str(id_level) == dicoMonde["id_level"][pad]: #Permet de savoir si le bloc exite déjà dans la liste
                 dicoMonde["id_keyPorte"][pad] = IDValue
                 verify = True
                 break
         pad += 1
     if verify == False:
-        dicoMonde["id_level"].append(id_level)
+        dicoMonde["id_level"].append(str(id_level))
         dicoMonde["id_keyPorte"].append(IDValue)
         dicoMonde["coords_bloc"].append(dicoNiveau["coordsBloc"][padsouris*2])
         dicoMonde["coords_bloc"].append(dicoNiveau["coordsBloc"][padsouris*2+1])
