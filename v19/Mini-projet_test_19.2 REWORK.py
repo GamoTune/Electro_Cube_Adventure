@@ -9,16 +9,16 @@ import os
 ################################################################### Les Fonctions ###################################################################
 
 def first_launch (): #La fonction "first_launch" permet de déclaré la plus part des variable global
-    global editBloc, cwd, newColorBloc, freezeEdit, fenetreeditTest, ListeNiveau, id_level, lienfichier, edit, nombrePixel, nombreCaseX, nombreCaseY, imageBoutonSolo, imageBoutonEditeur, ligneX, ligneY, imageBoutonEditeurNiveauHaut, imageBoutonEditeurNiveauBas, imageBoutonEditeurNiveauGauche, imageBoutonEditeurNiveauDroite, imageBoutonEditeurSave, imageBoutonEditeurRetour, imageWIP, imageBoutonEditeurPoubelle, imageBoutonEditeurExit, imageEditeurInfos, fenetreinfosTest, id_level_editeur, imageBoutonEditeurBlocSolide, couleurBloc, typeDuBloc, imageBoutonEditeurBlocSpawn, delonespebloc, ListeMonde, id_monde, solo, lienmonde, imageBoutonEditeurInfos
+    global editBloc, cwd, newColorBloc, freezeEdit, fenetreeditTest, listeNiveau, id_level, lienfichier, edit, nombrePixel, nombreCaseX, nombreCaseY, imageBoutonSolo, imageBoutonEditeur, ligneX, ligneY, imageBoutonEditeurNiveauHaut, imageBoutonEditeurNiveauBas, imageBoutonEditeurNiveauGauche, imageBoutonEditeurNiveauDroite, imageBoutonEditeurSave, imageBoutonEditeurRetour, imageWIP, imageBoutonEditeurPoubelle, imageBoutonEditeurExit, imageEditeurInfos, fenetreinfosTest, id_level_editeur, imageBoutonEditeurBlocSolide, couleurBloc, typeDuBloc, imageBoutonEditeurBlocSpawn, delonespebloc, listeMonde, id_monde, solo, lienmonde, imageBoutonEditeurInfos
 
     cwd = os.getcwd()
     cwd = cwd.replace("\\", "/" )
     cwd = cwd+str("/")
     print(cwd)
     #Les coordonnées virtuel sont des coordonnées d'un matrice créer en fonction du nombre de case à l'écran (défini avec "nombreCase")
-    ListeNiveau = [{"coordsBloc" : [], "listBloc" : [], "typeBloc" : [], "color" : []
+    listeNiveau = [{"coordsBloc" : [], "idBloc" : [], "typeBloc" : [], "color" : []
     }]
-    ListeMonde = [{"id_keyPorte" : [], "coords_bloc" : [], "id_level" : [], "key_collect" : []}]
+    listeMonde = [{"id_keyPorte" : [], "coords_bloc" : [], "id_level" : [], "key_collect" : []}]
           #Dictionnaire des informations d'un niveau (comme les coordonnées des blocs) qui sont enregistrer
     id_level = [0,0] #Numéro du niveau dans le quel on est (quand on change de niveau on ajoute ou retire 1 ) [default : [0,0]]
     id_monde = 1
@@ -200,7 +200,7 @@ def monde_finder_editeur (numMonde):
     global id_monde, lienmonde, lienfichier
 
     id_monde = numMonde
-    lienmonde = str(cwd)+"assets/data/editeur/monde"+str(id_monde)+"monde_info.txt"
+    lienmonde = str(cwd)+"assets/data/editeur/monde"+str(id_monde)+"_info.txt"
     lienfichier = str(cwd)+"assets/data/editeur/monde"+str(id_monde)+"/niveau"+str(id_level[0])+str(id_level[1])+".txt"
     lancement_edition()
 
@@ -289,19 +289,17 @@ def mouvement_joueur (event, direction):
             posMax = nombreCaseX-1
             deplacement = [+nombrePixel, 0]
 
-        #Collision bloc solide
-        while pad != len(dicoNiveau["listBloc"]):
-            if  positionJoueur[0]+posJTestX == dicoNiveau["coordsBloc"][pad*2] and positionJoueur[1]+posJTestY == dicoNiveau["coordsBloc"][pad*2+1]:
-                if dicoNiveau["typeBloc"][pad] == 0:
+        #Collision bloc
+        while pad != len(listeNiveau):
+            if  positionJoueur[0]+posJTestX == listeNiveau[pad]["coordsBloc"][0] and positionJoueur[1]+posJTestY == listeNiveau[pad]["coordsBloc"][1]:
+                #C
+                if listeNiveau[pad]["idBloc"] == 0:
                     verify = True
                 
-                elif dicoNiveau["typeBloc"][pad] == 1:
+                #Collision avec bloc spawn
+                elif listeNiveau[pad]["idBloc"] == 1:
                     verify = False
 
-                elif dicoNiveau["typeBloc"][pad] == 2:
-                    if id_level in dicoMonde["id_level"]:
-                        if dicoNiveau["typeBloc"][pad] != 1:
-                            verify = True
 
             pad += 1
 
@@ -349,34 +347,32 @@ def clic_gauche (event):
     if edit == True: #Mode Edition
         padsouris = 0
         verify = False
-        while padsouris != len(dicoNiveau["listBloc"]):
-            if xSourisCase == dicoNiveau["coordsBloc"][padsouris*2] and ySourisCase == dicoNiveau["coordsBloc"][padsouris*2+1]:
+        while padsouris != len(listeNiveau):
+            if xSourisCase == listeNiveau[padsouris]["coordsBloc"][0] and ySourisCase == listeNiveau[padsouris]["coordsBloc"][1]:
+
                 if delonespebloc == True:
                     canevas.delete(dicoNiveau["listBloc"][padsouris])
-                    del dicoNiveau["listBloc"][padsouris]
-                    del dicoNiveau["coordsBloc"][padsouris*2]
-                    del dicoNiveau["coordsBloc"][padsouris*2]
-                    del dicoNiveau["typeBloc"][padsouris]
-                    del dicoNiveau["color"][padsouris]
+                    del listeNiveau[-1]
                     padsouris -= 1
+
                 else:
                     verify = True
+
             padsouris += 1
 
+        #La gomme
         if verify == False and delonespebloc == False:
-            if 1 in dicoNiveau["typeBloc"] and typeDuBloc == 1:
-                canevas.delete(dicoNiveau["listBloc"][dicoNiveau["typeBloc"].index(1)])
-                del dicoNiveau["listBloc"][dicoNiveau["typeBloc"].index(1)]
-                del dicoNiveau["coordsBloc"][dicoNiveau["typeBloc"].index(1)*2]
-                del dicoNiveau["coordsBloc"][dicoNiveau["typeBloc"].index(1)*2]
-                del dicoNiveau["color"][dicoNiveau["typeBloc"].index(1)]
-                del dicoNiveau["typeBloc"][dicoNiveau["typeBloc"].index(1)]
-            dicoNiveau["listBloc"].append(canevas.create_rectangle(xSourisCase*nombrePixel,ySourisCase*nombrePixel,xSourisCase*nombrePixel+nombrePixel,ySourisCase*nombrePixel+nombrePixel, fill=couleurBloc))
-            dicoNiveau["coordsBloc"].append(xSourisCase)
-            dicoNiveau["coordsBloc"].append(ySourisCase)
-            dicoNiveau["typeBloc"].append(typeDuBloc)
-            dicoNiveau["color"].append(couleurBloc)
-            print(dicoNiveau)
+            padsouris = 0
+            while padsouris != len(listeNiveau):
+                if listeNiveau[padsouris]["typeBloc"] == 1 and typeDuBloc == 1: #Vérification de si le bloc d'apparition existe déjà
+                    canevas.delete(listeNiveau[padsouris]["idBloc"])
+                    del listeNiveau[padsouris]
+                    break
+
+                padsouris += 1
+
+            listeNiveau.append["coordsBloc" : [xSourisCase, ySourisCase], "idBloc" : [canevas.create_rectangle(xSourisCase*nombrePixel, ySourisCase*nombrePixel, xSourisCase*nombrePixel+nombrePixel, ySourisCase*nombrePixel+nombrePixel, fill=couleurBloc)], "typeBloc" : [1], "color" : [couleurBloc]]
+            print(listeNiveau)
 
     elif editBloc == True:
         try:
@@ -396,21 +392,21 @@ def clic_gauche (event):
         except:
             pass
         padsouris = 0
-        while padsouris != len(dicoNiveau["listBloc"]):
-            if xSourisCase == dicoNiveau["coordsBloc"][padsouris*2] and ySourisCase == dicoNiveau["coordsBloc"][padsouris*2+1]:
-                if dicoNiveau["typeBloc"][padsouris] == 0:
+        while padsouris != len(listeNiveau):
+            if xSourisCase == listeNiveau[padsouris]["coordsBloc"][0] and ySourisCase == listeNiveau[padsouris]["coordsBloc"][1]:
+                if listeNiveau[padsouris]["typeBloc"] == 0:
                     textTypeBlocSelect.config(text="Bloc Solide")
-                    selectBlocID = dicoNiveau["listBloc"][padsouris]
+                    selectBlocID = listeNiveau[padsouris]["idBloc"]
 
-                elif dicoNiveau["typeBloc"][padsouris] == 1:
+                elif listeNiveau[padsouris]["typeBloc"] == 1:
                     textTypeBlocSelect.config(text="Bloc Spawn")
-                    selectBlocID = dicoNiveau["listBloc"][padsouris]
+                    selectBlocID = listeNiveau[padsouris]["idBloc"]
 
-                elif dicoNiveau["typeBloc"][padsouris] == 2:
+                elif listeNiveau[padsouris]["typeBloc"] == 2:
                     textTypeBlocSelect.config(text="Item Clé ")
-                    selectBlocID = dicoNiveau["listBloc"][padsouris]
-                    selectBlocCoordX = dicoNiveau["coordsBloc"][padsouris*2]
-                    selectBlocCoordY = dicoNiveau["coordsBloc"][padsouris*2+1]
+                    selectBlocID = listeNiveau[padsouris]["idBloc"]
+                    selectBlocCoordX = listeNiveau[padsouris]["coordsBloc"][0]
+                    selectBlocCoordY = listeNiveau[padsouris]["coordsBloc"][1]
                     print(selectBlocCoordX, selectBlocCoordY)
                     entryIDcle = Entry(fenetre_edit_bloc, bg="lightgrey", width=10, font="Arial, 24")
                     entryIDcle.place(x=250, y=150)
