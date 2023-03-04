@@ -303,15 +303,18 @@ def mouvement_joueur (event, direction):
         #Collision bloc solide
         while pad != len(dicoNiveau["listBloc"]):
             if  positionJoueur[0]+posJTestX == dicoNiveau["coordsBloc"][pad*2] and positionJoueur[1]+posJTestY == dicoNiveau["coordsBloc"][pad*2+1]:
-                if dicoNiveau["typeBloc"][pad] != 1:
+                if dicoNiveau["typeBloc"][pad] == 0:
                     verify = True
+                
+                elif dicoNiveau["typeBloc"][pad] == 1:
+                    verify = False
+
+                elif dicoNiveau["typeBloc"][pad] == 2:
+                    if id_level in dicoMonde["id_level"]:
+                        if dicoNiveau["typeBloc"][pad] != 1:
+                            verify = True
+
             pad += 1
-        if id_level in dicoMonde["id_level"]:
-            while pad != len(dicoMonde["coords_bloc"])/2:
-                if  positionJoueur[0]+posJTestX == dicoNiveau["coordsBloc"][pad*2] and positionJoueur[1]+posJTestY == dicoNiveau["coordsBloc"][pad*2+1]:
-                    if dicoNiveau["typeBloc"][pad] != 1:
-                        verify = True
-                pad += 1
 
         if verify == False:
             #Collision limite map 
@@ -344,7 +347,7 @@ def typeBlocs (tBloc):
     pass
 
 def clic_gauche (event):
-    global dicoNiveau, entryIDcle, boutonIDCleValidation, selectBloc, couleurSet, textIDKey, padsouris
+    global dicoNiveau, entryIDcle, boutonIDCleValidation, selectBlocID, couleurSet, textIDKey, padsouris, selectBlocCoordX, selectBlocCoordY
 
     xSourisCase,ySourisCase=event.x,event.y
 
@@ -354,7 +357,7 @@ def clic_gauche (event):
     ySourisCase = (ySourisCase/nombrePixel)
     ySourisCase = int(ySourisCase)
 
-    if edit == True:
+    if edit == True: #Mode Edition
         padsouris = 0
         verify = False
         while padsouris != len(dicoNiveau["listBloc"]):
@@ -408,19 +411,21 @@ def clic_gauche (event):
             if xSourisCase == dicoNiveau["coordsBloc"][padsouris*2] and ySourisCase == dicoNiveau["coordsBloc"][padsouris*2+1]:
                 if dicoNiveau["typeBloc"][padsouris] == 0:
                     textTypeBlocSelect.config(text="Bloc Solide")
-                    selectBloc = dicoNiveau["listBloc"][padsouris]
+                    selectBlocID = dicoNiveau["listBloc"][padsouris]
 
                 elif dicoNiveau["typeBloc"][padsouris] == 1:
                     textTypeBlocSelect.config(text="Bloc Spawn")
-                    selectBloc = dicoNiveau["listBloc"][padsouris]
+                    selectBlocID = dicoNiveau["listBloc"][padsouris]
 
                 elif dicoNiveau["typeBloc"][padsouris] == 2:
                     textTypeBlocSelect.config(text="Item Clé ")
-                    selectBloc = dicoNiveau["listBloc"][padsouris]
-
+                    selectBlocID = dicoNiveau["listBloc"][padsouris]
+                    selectBlocCoordX = dicoNiveau["coordsBloc"][padsouris*2]
+                    selectBlocCoordY = dicoNiveau["coordsBloc"][padsouris*2+1]
+                    print(selectBlocCoordX, selectBlocCoordY)
                     entryIDcle = Entry(fenetre_edit_bloc, bg="lightgrey", width=10, font="Arial, 24")
                     entryIDcle.place(x=250, y=150)
-                    #entryIDcle.insert(0,str(dicoMonde["id_keyPorte"][dicoMonde["id_bloc"].index(selectBloc)]))
+                    #entryIDcle.insert(0,str(dicoMonde["id_keyPorte"][dicoMonde["id_bloc"].index(selectBlocID)]))
 
                     boutonIDCleValidation = Button(fenetre_edit_bloc, image=imageWIP, command=lambda:getKeyID(entryIDcle.get()))
                     boutonIDCleValidation.place(x=25,y=150)
@@ -531,13 +536,11 @@ def getKeyID (IDValue):
         IDValue = '0'
     pad = 0
     while pad < len(dicoMonde["coords_bloc"])/2:
-        print("bo1")
-        if dicoNiveau["coordsBloc"][dicoNiveau["listBloc"].index(selectBloc)*2] == dicoMonde["coords_bloc"][pad*2] and dicoNiveau["coordsBloc"][dicoNiveau["listBloc"].index(selectBloc)*2+1] == dicoMonde["coords_bloc"][pad*2+1]:
-            dicoMonde["id_keyPorte"][pad] = IDValue
-            verify = True
-            print("Bo2")
+        if selectBlocCoordX == dicoMonde["coords_bloc"][pad*2] and selectBlocCoordY == dicoMonde["coords_bloc"][pad*2+1] and id_level == dicoMonde["id_level"][pad]: #Permet de savoir si le bloc exite déjà dans la liste
+                dicoMonde["id_keyPorte"][pad] = IDValue
+                verify = True
+                break
         pad += 1
-
     if verify == False:
         dicoMonde["id_level"].append(id_level)
         dicoMonde["id_keyPorte"].append(IDValue)
@@ -561,8 +564,8 @@ def change_color (c):
     elif couleurSet.get() == 5:
         newColorBloc = 'purple'
 
-    canevas.itemconfig(selectBloc, fill=newColorBloc)
-    dicoNiveau["color"][dicoNiveau["listBloc"].index(selectBloc)] = newColorBloc
+    canevas.itemconfig(selectBlocID, fill=newColorBloc)
+    dicoNiveau["color"][dicoNiveau["listBloc"].index(selectBlocID)] = newColorBloc
 
 ################################################################### Fonction fonctionnement du programme ###################################################################
 
@@ -574,6 +577,8 @@ def exit_key (event):
         retour_menu("postEditMenu")
     elif solo == True:
         retour_menu("postSoloMenu")
+    else:
+        retour_menu("Menu")
 
 def retour_menu (goToMenu):
     global lienfichier, solo, fenetreinfosTest, fenetreeditTest
