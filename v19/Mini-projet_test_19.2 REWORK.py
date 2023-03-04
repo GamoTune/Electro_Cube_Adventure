@@ -519,6 +519,7 @@ def getKeyID (IDValue): #ATTENTION C'EST PAS FINI SA NE VA PAS FONCTIONNER
     if IDValue == "":
         IDValue = '0'
     pad = 0
+    print(listeMonde)
     while pad < len(listeMonde):
         if selectBlocCoordX == listeMonde[pad]["coordsBloc"][0] and selectBlocCoordY == listeMonde[pad]["coordsBloc"][1] and listeMonde[pad]["idLevel"] == str(id_level): #Permet de savoir si le bloc exite déjà dans la liste
                 listeMonde[pad]["idKeyPorte"] = IDValue
@@ -824,6 +825,8 @@ fenetre.mainloop()
 
 
 """
-faire système de clé fonctionnels
+peut pas changer la couleur
+problème KeyError: 'idLevel' line 524
+problème niveau des save (monde)
 
 """
