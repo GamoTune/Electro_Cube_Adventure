@@ -6,7 +6,7 @@ import pickle
 import os
 
 
-################################################################### Les Fonctions ###################################################################
+################################################################### Les fonctions de mise en place des modes ###################################################################
 
 def first_launch (): #La fonction "first_launch" permet de déclaré la plus part des variable global
     global editBloc, cwd, newColorBloc, freezeEdit, fenetreeditTest, listeNiveau, id_level, lienfichier, edit, nombrePixel, nombreCaseX, nombreCaseY, imageBoutonSolo, imageBoutonEditeur, ligneX, ligneY, imageBoutonEditeurNiveauHaut, imageBoutonEditeurNiveauBas, imageBoutonEditeurNiveauGauche, imageBoutonEditeurNiveauDroite, imageBoutonEditeurSave, imageBoutonEditeurRetour, imageWIP, imageBoutonEditeurPoubelle, imageBoutonEditeurExit, imageEditeurInfos, fenetreinfosTest, id_level_editeur, imageBoutonEditeurBlocSolide, couleurBloc, typeDuBloc, imageBoutonEditeurBlocSpawn, delonespebloc, listeMonde, id_monde, solo, lienmonde, imageBoutonEditeurInfos
@@ -22,7 +22,7 @@ def first_launch (): #La fonction "first_launch" permet de déclaré la plus par
     id_level = [0,0] #Numéro du niveau dans le quel on est (quand on change de niveau on ajoute ou retire 1 ) [default : [0,0]]
     id_monde = 1
     lienfichier = str(cwd)+"assets/data/menu.txt" #Lien a utiliser pour charger ou sauvegarder un niveau [default : "assets/data/menu.txt"]
-    lienmonde = str(cwd)+"assets/data/editeur/monde"+str(id_monde)
+    lienmonde = str(cwd)+"assets/data/editeur/monde"+str(id_monde)+"_info.txt"
     edit = False #Permet de vérifier si le mode d'édition est activer [default : False]
     nombreCase = 48 #En largeur (default = 48)
     nombrePixel = largeur/nombreCase #nombrePixel = nombre de pixels par case sur l'écran (en fonction de la résolution de l'écran, le nombre de pixel change pour toujours avoir le même nombre de case à l'écran)
@@ -154,6 +154,7 @@ def lancement_solo ():
             posjxstart = listeNiveau[pad]["coordsBloc"][0]
             posjystart = listeNiveau[pad]["coordsBloc"][1]
             break
+        pad += 1
     print(posjxstart)
     print(posjystart)
     joueur = canevas.create_rectangle(0, 0, nombrePixel, nombrePixel, fill='blue')
@@ -232,7 +233,7 @@ def monde_finder_solo (numMonde):
 
     id_monde = numMonde
     id_level = [0,0]
-    lienmonde = str(cwd)+"assets/data/solo/monde"+str(id_monde)+"monde_info.txt"
+    lienmonde = str(cwd)+"assets/data/solo/monde"+str(id_monde)+"_info.txt"
     lienfichier = str(cwd)+"assets/data/solo/monde"+str(id_monde)+"/niveau"+str(id_level[0])+str(id_level[1])+".txt"
     lancement_solo()
 
@@ -251,7 +252,7 @@ def close_menu ():
         pass
 
 
-################################################################### Fonction en jeu ###################################################################
+################################################################### Fonction du joueur ###################################################################
 
 def mouvement_joueur (event, direction):
     global positionJoueur
@@ -316,9 +317,9 @@ def mouvement_joueur (event, direction):
     pass
 
 
-################################################################### Fonction en édition ###################################################################
+################################################################### Fonction du mode édition ###################################################################
 
-def typeBlocs (tBloc):
+def typeBlocs (tBloc): #Indication du type de bloc à placer
     global typeDuBloc
     global couleurBloc
     if tBloc == "solide":
@@ -335,7 +336,7 @@ def typeBlocs (tBloc):
         couleurBloc = '#6D071A'
     pass
 
-def clic_gauche (event):
+def clic_gauche (event): #Utilisation du clic gauche (placer un bloc, détruire, selectionner...)
     global listeNiveau, entryIDcle, boutonIDCleValidation, selectBlocID, couleurSet, textIDKey, padsouris, selectBlocCoordX, selectBlocCoordY
 
     xSourisCase,ySourisCase=event.x,event.y
@@ -432,7 +433,7 @@ def clic_gauche (event):
 
             padsouris += 1
 
-def deleteblock (event=0):
+def deleteblock (event=0): #Destruction total du niveau
     global listeNiveau
     
     padblocklist = 0
@@ -442,30 +443,41 @@ def deleteblock (event=0):
     listeNiveau.clear()
     listeMonde.clear()
 
-def deleteLastBlock (event=0):
+def deleteLastBlock (event=0): #Destruction du dernier bloc placer
     global listeNiveau
-
+    print(len(listeMonde))
     if len(listeNiveau) > 0 and edit == True:
         canevas.delete(listeNiveau[-1]["idBloc"])
+
         if listeNiveau[-1]["typeBloc"] == 2:
-            del listeMonde[-1]
+            pad = 0
+            while pad != len(listeMonde):
+                if listeMonde[pad]["coordsBloc"] == listeNiveau[-1]["coordsBloc"]:
+                    print("test")
+                    print(listeMonde)
+                    del listeMonde[pad]
+                    print(listeMonde)
+                    break
+                    
+                pad += 1
         del listeNiveau[-1]
 
-def save_level ():
+def save_level (): #Sauvegarde du niveau
         with open(lienfichier, "wb") as fichierNiveau:
             pickle.dump(listeNiveau, fichierNiveau)
 
-def save_world ():
+def save_world (): #Sauvegarde du monde
     if edit == True:
         with open(lienmonde, "wb") as fichierMonde:
             pickle.dump(listeMonde, fichierMonde)
 
-def load_world ():
+def load_world (): #Chargement du monde
     global listeMonde
-    with open(lienfichier, "rb") as fichier:
-        listeMonde = pickle.load(fichier)
+    if os.path.exists(lienmonde):
+        with open(lienmonde, "rb") as fichier:
+            listeMonde = pickle.load(fichier)
 
-def info_editeur (event=0): #Fenêtre d'infos
+def info_editeur (event=0): #Fenêtre d'infos des action possible
     global fenetreinfosTest, fenetre_infos
     if fenetreinfosTest == False:
         fenetre_infos = tk.Toplevel()
@@ -479,14 +491,14 @@ def info_editeur (event=0): #Fenêtre d'infos
         fenetre_infos.destroy()
         fenetreinfosTest = False
 
-def delspebloc ():
+def delspebloc (): #Toggle de la destruciton d'un bloc spécifique (utilise clic_gauche pour delete)
     global delonespebloc
     if delonespebloc == False:
         delonespebloc = True
     else:
         delonespebloc = False
 
-def set_edit_objet ():
+def set_edit_objet (): #Mise en place du mode d'édition de bloc
     global edit, fenetreeditTest, fenetre_edit_bloc, editBloc, textTypeBlocSelect
     if fenetreeditTest == False:
         fenetre_edit_bloc = tk.Toplevel()
@@ -513,13 +525,12 @@ def set_edit_objet ():
         edit = True
         editBloc = False
 
-def getKeyID (IDValue): #ATTENTION C'EST PAS FINI SA NE VA PAS FONCTIONNER
+def getKeyID (IDValue): #Enregistre les infos d'une clé
     global listeMonde
     verify = False
     if IDValue == "":
         IDValue = '0'
     pad = 0
-    print(listeMonde)
     while pad < len(listeMonde):
         if selectBlocCoordX == listeMonde[pad]["coordsBloc"][0] and selectBlocCoordY == listeMonde[pad]["coordsBloc"][1] and listeMonde[pad]["idLevel"] == str(id_level): #Permet de savoir si le bloc exite déjà dans la liste
                 listeMonde[pad]["idKeyPorte"] = IDValue
@@ -534,7 +545,7 @@ def getKeyID (IDValue): #ATTENTION C'EST PAS FINI SA NE VA PAS FONCTIONNER
     print(listeMonde)
     save_world()
 
-def change_color (c):
+def change_color (c): #Change la couleur du bloc selectionner
     global listeNiveau, newColorBloc
 
     pad = 0
@@ -555,13 +566,14 @@ def change_color (c):
         if listeNiveau[pad]["idBloc"] == selectBlocID:
             listeNiveau[pad]["color"] = newColorBloc
             break
+        pad += 1
 
 ################################################################### Fonction fonctionnement du programme ###################################################################
 
-def disable_event():
+def disable_event(): #Disable
    pass
 
-def exit_key (event):
+def exit_key (event): #Permet des retour au menu avec la touche "echap"
     if edit == True:
         retour_menu("postEditMenu")
     elif solo == True:
@@ -569,7 +581,7 @@ def exit_key (event):
     else:
         retour_menu("Menu")
 
-def retour_menu (goToMenu):
+def retour_menu (goToMenu): #Retour au menu
     global lienfichier, solo, fenetreinfosTest, fenetreeditTest
     global edit
     global ligneX
@@ -605,6 +617,7 @@ def retour_menu (goToMenu):
         except:
             pass
         menuPostEdit.place(x=largeur/2, y=hauteur/2,anchor=CENTER)
+
     elif goToMenu == "postSoloMenu":
         try:
             canevas.delete(joueur)
@@ -628,7 +641,7 @@ def retour_menu (goToMenu):
     lienfichier = "assets/data/menu.txt"
     loadTestZone()
 
-def loadTestZone (event=0):
+def loadTestZone (event=0): #Charge les niveau et détruit les ancien
     global lienfichier
     global listeNiveau
     global couleurBloc
@@ -663,7 +676,7 @@ def loadTestZone (event=0):
     typeDuBloc = 0
     couleurBloc = 'black'
 
-def level_search (direction):
+def level_search (direction): #Cherche le bon niveau a charger
     global id_level
     global lienfichier
     global numeroNiveau
@@ -683,6 +696,7 @@ def level_search (direction):
                 save_level()
                 deleteblock()
                 id_level[1] -= 1
+                lienfichier = "assets/data/editeur/monde"+str(id_monde)+"/niveau"+str(id_level[0])+str(id_level[1])+".txt"
                 numeroNiveau.config(text=id_level)
 
         if direction =='down':
@@ -699,6 +713,7 @@ def level_search (direction):
                 save_level()
                 deleteblock()
                 id_level[1] += 1
+                lienfichier = "assets/data/editeur/monde"+str(id_monde)+"/niveau"+str(id_level[0])+str(id_level[1])+".txt"
                 numeroNiveau.config(text=id_level)
 
         if direction =='left':
@@ -715,6 +730,7 @@ def level_search (direction):
                 save_level()
                 deleteblock()
                 id_level[0] -= 1
+                lienfichier = "assets/data/editeur/monde"+str(id_monde)+"/niveau"+str(id_level[0])+str(id_level[1])+".txt"
                 numeroNiveau.config(text=id_level)
 
         if direction =='right':
@@ -731,6 +747,7 @@ def level_search (direction):
                 save_level()
                 deleteblock()
                 id_level[0] += 1
+                lienfichier = "assets/data/editeur/monde"+str(id_monde)+"/niveau"+str(id_level[0])+str(id_level[1])+".txt"
                 numeroNiveau.config(text=id_level)
 
     else:
@@ -780,13 +797,13 @@ largeur = fenetre.winfo_screenwidth()
 hauteur = fenetre.winfo_screenheight()
 
 fenetre.title("Game & Cube")
-#fenetre.geometry("%dx%d%+d%+d" % (largeur,hauteur,x_fenetre,y_fenetre))
 fenetre.attributes('-fullscreen', True)
 canevas = Canvas(fenetre, width=largeur, height=hauteur,bg='grey')
 
 
 ################################################################### Les Binds ###################################################################
 
+#Binds direction
 fenetre.bind("<Key-z>", lambda event : mouvement_joueur (event,"up"))
 fenetre.bind("<Key-s>", lambda event : mouvement_joueur (event,"down"))
 fenetre.bind("<Key-q>", lambda event : mouvement_joueur (event,"left"))
@@ -802,20 +819,20 @@ fenetre.bind("<Key-Down>", lambda event : mouvement_joueur (event,"down"))
 fenetre.bind("<Key-Left>", lambda event : mouvement_joueur (event,"left"))
 fenetre.bind("<Key-Right>", lambda event :mouvement_joueur (event,"right"))
 
+#Bind retour
 fenetre.bind("<Escape>", lambda event : exit_key(event))
 
+#Bind clic gauche
 fenetre.bind("<B1-Motion>", lambda event : clic_gauche(event))
 fenetre.bind("<Button-1>", lambda event : clic_gauche(event))
 
+#Bind molette
 fenetre.bind("<Button-2>", lambda event : deleteLastBlock(event))
 fenetre.bind("<MouseWheel>", lambda event : deleteLastBlock(event))
 
-fenetre.bind("<Key-t>", lambda event : loadTestZone(event))
-fenetre.bind("<Key-g>", lambda event : save_level(event))
-
 first_launch()
 
-#Autre
+################################################################### Autre ###################################################################
 
 canevas.pack()
 fenetre.mainloop()
@@ -823,10 +840,7 @@ fenetre.mainloop()
 
 
 
-
 """
-peut pas changer la couleur
-problème KeyError: 'idLevel' line 524
-problème niveau des save (monde)
+problème si on del le dernier bloc avec les clés
 
 """
