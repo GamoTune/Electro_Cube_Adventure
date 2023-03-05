@@ -9,7 +9,7 @@ import os
 ################################################################### Les fonctions de mise en place des modes ###################################################################
 
 def first_launch (): #La fonction "first_launch" permet de déclaré la plus part des variable global
-    global editBloc, cwd, newColorBloc, freezeEdit, fenetreeditTest, listeNiveau, id_level, lienfichier, edit, nombrePixel, nombreCaseX, nombreCaseY, imageBoutonSolo, imageBoutonEditeur, ligneX, ligneY, imageBoutonEditeurNiveauHaut, imageBoutonEditeurNiveauBas, imageBoutonEditeurNiveauGauche, imageBoutonEditeurNiveauDroite, imageBoutonEditeurSave, imageBoutonEditeurRetour, imageWIP, imageBoutonEditeurPoubelle, imageBoutonEditeurExit, imageEditeurInfos, fenetreinfosTest, id_level_editeur, imageBoutonEditeurBlocSolide, couleurBloc, typeDuBloc, imageBoutonEditeurBlocSpawn, delonespebloc, listeMonde, id_monde, solo, lienmonde, imageBoutonEditeurInfos
+    global editBloc, cwd, imageBoutonEditeurEditBloc, newColorBloc, freezeEdit, fenetreeditTest, listeNiveau, id_level, lienfichier, edit, nombrePixel, nombreCaseX, nombreCaseY, imageBoutonSolo, imageBoutonEditeur, ligneX, ligneY, imageBoutonEditeurNiveauHaut, imageBoutonEditeurNiveauBas, imageBoutonEditeurNiveauGauche, imageBoutonEditeurNiveauDroite, imageBoutonEditeurSave, imageBoutonEditeurRetour, imageWIP, imageBoutonEditeurPoubelle, imageBoutonEditeurExit, imageEditeurInfos, fenetreinfosTest, id_level_editeur, imageBoutonEditeurBlocSolide, couleurBloc, typeDuBloc, imageBoutonEditeurBlocSpawn, delonespebloc, listeMonde, id_monde, solo, lienmonde, imageBoutonEditeurInfos
 
     cwd = os.getcwd()
     cwd = cwd.replace("\\", "/" )
@@ -49,12 +49,13 @@ def first_launch (): #La fonction "first_launch" permet de déclaré la plus par
     imageBoutonEditeurSave = PhotoImage(file = str(cwd)+"assets/images/save.png")
     imageBoutonEditeurRetour = PhotoImage(file = str(cwd)+"assets/images/retour.png")
     imageWIP = PhotoImage(file = str(cwd)+"assets/images/WIP.png")
-    imageBoutonEditeurPoubelle = PhotoImage(file = str(cwd)+"assets/images/bouton_poubelle.png")
+    imageBoutonEditeurPoubelle = PhotoImage(file = str(cwd)+"assets/images/poubelle.png")
     imageBoutonEditeurExit = PhotoImage(file = str(cwd)+"assets/images/exit.png")
     imageEditeurInfos = PhotoImage(file = str(cwd)+"assets/images/Menu_infos.png")
     imageBoutonEditeurBlocSolide = PhotoImage(file = str(cwd)+"assets/images/bouton_bloc_solide.png")
     imageBoutonEditeurBlocSpawn = PhotoImage(file= str(cwd)+"assets/images/bouton_bloc_spawn.png")
-    imageBoutonEditeurInfos = PhotoImage(file= str(cwd)+"assets/images/bouton_infos.png")
+    imageBoutonEditeurInfos = PhotoImage(file= str(cwd)+"assets/images/help.png")
+    imageBoutonEditeurEditBloc = PhotoImage(file= str(cwd)+"assets/images/edit_bloc.png")
     menu()
 
 def lancement_edition (): #La fonction "lancement_edition" permet de mettre en place tout le système de la création de niveau
@@ -89,7 +90,7 @@ def lancement_edition (): #La fonction "lancement_edition" permet de mettre en p
     load_world()
     #Fenetre des infos / boutons
     fenetre_bouton = tk.Toplevel() #Création de la fenetre des fonction/boutons de l'éditeur
-    fenetre_bouton.geometry('312x538') #taille 1 bouton = taille que tu veux + 3
+    fenetre_bouton.geometry('312x641') #taille 1 bouton = taille que tu veux + 3
     fenetre_bouton.resizable(False,False) #Fenetre non redimentionable
     fenetre_bouton.attributes('-topmost',1)
     fenetre_bouton.protocol("WM_DELETE_WINDOW", disable_event)
@@ -119,10 +120,10 @@ def lancement_edition (): #La fonction "lancement_edition" permet de mettre en p
     boutonEditeurInfo.place(x=103,y=412)
 
     boutonEditeurExit = Button(fenetre_bouton, image=imageBoutonEditeurExit, bg='white', command=lambda:retour_menu("postEditMenu"))
-    boutonEditeurExit.place(x=0,y=412)
+    boutonEditeurExit.place(x=206,y=515)
 
     numeroNiveau = Label(fenetre_bouton, text=id_level, font="Arial, 30")
-    numeroNiveau.pack(padx=103, pady=227)
+    numeroNiveau.pack(padx=103, pady=230)
 
     bouton_bloc_solide = Button(fenetre_bouton, image=imageBoutonEditeurBlocSolide, bg='white', command=lambda:typeBlocs("solide"))
     bouton_bloc_solide.place(x=0,y=103)
@@ -134,9 +135,9 @@ def lancement_edition (): #La fonction "lancement_edition" permet de mettre en p
     bouton_item_key.place(x=0,y=309)
 
     bouton_gomme = Button(fenetre_bouton, image=imageWIP, bg='white', command=delspebloc)
-    bouton_gomme.place(x=206,y=309)
+    bouton_gomme.place(x=0,y=412)
 
-    bouton_edit = Button(fenetre_bouton, image=imageWIP, bg='white', command=set_edit_objet)
+    bouton_edit = Button(fenetre_bouton, image=imageBoutonEditeurEditBloc, bg='white', command=set_edit_objet)
     bouton_edit.place(x=206,y=412)
 
 def lancement_solo ():
@@ -296,12 +297,20 @@ def mouvement_joueur (event, direction):
         while pad != len(listeNiveau):
             if  positionJoueur[0]+posJTestX == listeNiveau[pad]["coordsBloc"][0] and positionJoueur[1]+posJTestY == listeNiveau[pad]["coordsBloc"][1]:
                 #Collision avec bloc solide
-                if listeNiveau[pad]["idBloc"] == 0:
+                if listeNiveau[pad]["typeBloc"] == 0:
                     verify = True
                 
                 #Collision avec bloc spawn
-                elif listeNiveau[pad]["idBloc"] == 1:
+                elif listeNiveau[pad]["typeBloc"] == 1:
                     verify = False
+                
+                elif listeNiveau[pad]["typeBloc"] == 2:
+                    verify = False
+                    pad = 0
+                    while pad < len(listeMonde):
+                        if selectBlocCoordX == listeMonde[pad]["coordsBloc"][0] and selectBlocCoordY == listeMonde[pad]["coordsBloc"][1] and listeMonde[pad]["idLevel"] == str(id_level): #Permet de savoir si le bloc exite déjà dans la liste
+                                listeMonde[pad]["keyCollect"] = 1
+                    
 
 
             pad += 1
