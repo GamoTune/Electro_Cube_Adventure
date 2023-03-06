@@ -18,7 +18,10 @@ def first_launch (): #La fonction "first_launch" permet de déclaré la plus par
     #Les coordonnées virtuel sont des coordonnées d'un matrice créer en fonction du nombre de case à l'écran (défini avec "nombreCase")
     listeNiveau = [] # Default : [{"coordsBloc" : [], "idBloc" : 0, "typeBloc" : 0, "color" : ""}]
     listeMonde = [] # Default : [{"idKeyPorte" : 0, "coordsBloc" : [], "idLevel" : "", "keyCollect" : 0}]
-          #Dictionnaire des informations d'un niveau (comme les coordonnées des blocs) qui sont enregistrer
+    dicoInventaire = {
+                        key : []
+                        }
+              #Dictionnaire des informations d'un niveau (comme les coordonnées des blocs) qui sont enregistrer
     id_level = [0,0] #Numéro du niveau dans le quel on est (quand on change de niveau on ajoute ou retire 1 ) [default : [0,0]]
     id_monde = 1
     lienfichier = str(cwd)+"assets/data/menu.txt" #Lien a utiliser pour charger ou sauvegarder un niveau [default : "assets/data/menu.txt"]
@@ -256,7 +259,7 @@ def close_menu ():
 ################################################################### Fonction du joueur ###################################################################
 
 def mouvement_joueur (event, direction):
-    global positionJoueur
+    global positionJoueur, listeMonde, dicoInventaire
     if solo == True:
         pad = 0
         verify = False
@@ -310,6 +313,7 @@ def mouvement_joueur (event, direction):
                     while pad < len(listeMonde):
                         if selectBlocCoordX == listeMonde[pad]["coordsBloc"][0] and selectBlocCoordY == listeMonde[pad]["coordsBloc"][1] and listeMonde[pad]["idLevel"] == str(id_level): #Permet de savoir si le bloc exite déjà dans la liste
                                 listeMonde[pad]["keyCollect"] = 1
+                                dicoInventaire["key"].append(listeMonde[pad]["idKeyPorte"])
                     
 
 
