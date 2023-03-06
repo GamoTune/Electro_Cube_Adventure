@@ -850,6 +850,9 @@ fenetre.mainloop()
 
 
 """
-problème si on del le dernier bloc avec les clés
+faire le pickup key
+type bloc porte
+def ouverture des portes
+
 
 """
