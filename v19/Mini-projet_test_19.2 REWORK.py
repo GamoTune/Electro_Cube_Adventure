@@ -489,6 +489,8 @@ def load_world (): #Chargement du monde
     if os.path.exists(lienmonde):
         with open(lienmonde, "rb") as fichier:
             listeMonde = pickle.load(fichier)
+    else:
+        print("La liste Monde n'existe pas")
 
 def info_editeur (event=0): #Fenêtre d'infos des action possible
     global fenetreinfosTest, fenetre_infos
