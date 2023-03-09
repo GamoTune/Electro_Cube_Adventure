@@ -4,18 +4,17 @@ from tkinter import *
 import tkinter as tk
 import pickle
 import os
-
 try:
   import vlc
 except ImportError:
   os.system('pip install python-vlc')
-
 import vlc
+
 
 ################################################################### Les fonctions de mise en place des modes ###################################################################
 
 def first_launch (): #La fonction "first_launch" permet de déclaré la plus part des variable global
-    global editBloc, cwd, dicoInventaire, dicoJoueur, coordsJoueurAfterLeaving, imageBoutonEditeurItemCle, idLevelAfterLeaving, imageBoutonEditeurEditBloc, newColorBloc, freezeEdit, fenetreeditTest, listeNiveau, id_level, lienfichier, edit, nombrePixel, nombreCaseX, nombreCaseY, imageBoutonSolo, imageBoutonEditeur, ligneX, ligneY, imageBoutonEditeurNiveauHaut, imageBoutonEditeurNiveauBas, imageBoutonEditeurNiveauGauche, imageBoutonEditeurNiveauDroite, imageBoutonEditeurSave, imageBoutonEditeurRetour, imageWIP, imageBoutonEditeurPoubelle, imageBoutonEditeurExit, imageEditeurInfos, fenetreinfosTest, id_level_editeur, imageBoutonEditeurBlocSolide, couleurBloc, typeDuBloc, imageBoutonEditeurBlocSpawn, delonespebloc, listeMonde, id_monde, solo, lienmonde, imageBoutonEditeurInfos
+    global editBloc, cwd, musicDeFond, dicoJoueur, coordsJoueurAfterLeaving, imageBoutonEditeurItemCle, idLevelAfterLeaving, imageBoutonEditeurEditBloc, newColorBloc, freezeEdit, fenetreeditTest, listeNiveau, id_level, lienfichier, edit, nombrePixel, nombreCaseX, nombreCaseY, imageBoutonSolo, imageBoutonEditeur, ligneX, ligneY, imageBoutonEditeurNiveauHaut, imageBoutonEditeurNiveauBas, imageBoutonEditeurNiveauGauche, imageBoutonEditeurNiveauDroite, imageBoutonEditeurSave, imageBoutonEditeurRetour, imageWIP, imageBoutonEditeurPoubelle, imageBoutonEditeurExit, imageEditeurInfos, fenetreinfosTest, id_level_editeur, imageBoutonEditeurBlocSolide, couleurBloc, typeDuBloc, imageBoutonEditeurBlocSpawn, delonespebloc, listeMonde, id_monde, solo, lienmonde, imageBoutonEditeurInfos
 
     cwd = os.getcwd()
     cwd = cwd.replace("\\", "/" )
@@ -24,9 +23,6 @@ def first_launch (): #La fonction "first_launch" permet de déclaré la plus par
     #Les coordonnées virtuel sont des coordonnées d'un matrice créer en fonction du nombre de case à l'écran (défini avec "nombreCase")
     listeNiveau = [] # Default : [{"coordsBloc" : [], "idBloc" : 0, "typeBloc" : 0, "color" : ""}]
     listeMonde = [] # Default : [{"idKeyPorte" : 0, "coordsBloc" : [], "idLevel" : "", "keyCollect" : 0}]
-    dicoInventaire = {
-        "key" : []
-    }
     dicoJoueur = {
         "niveauJoueur" : "",
         "coordsJoueur" : []
@@ -72,7 +68,9 @@ def first_launch (): #La fonction "first_launch" permet de déclaré la plus par
     imageBoutonEditeurItemCle = PhotoImage(file= str(cwd)+"assets/images/bouton_item_cle.png")
     imageBoutonEditeurInfos = PhotoImage(file= str(cwd)+"assets/images/help.png")
     imageBoutonEditeurEditBloc = PhotoImage(file= str(cwd)+"assets/images/edit_bloc.png")
+    musicDeFond = vlc.MediaPlayer(str(cwd)+"assets/musica/Gymnopédie No°1.wav")
     menu()
+    #bg_music()
 
 def lancement_edition (): #La fonction "lancement_edition" permet de mettre en place tout le système de la création de niveau
     global edit
@@ -275,11 +273,14 @@ def close_menu ():
     except:
         pass
 
+def bg_music ():
+    musicDeFond.play()
+
 
 ################################################################### Fonction du joueur ###################################################################
 
 def mouvement_joueur (event, direction):
-    global positionJoueur, listeMonde, dicoInventaire
+    global positionJoueur, listeMonde
     if solo == True:
         pad = 0
         verify = False
@@ -336,10 +337,15 @@ def mouvement_joueur (event, direction):
                                 pad -= 1
                         pad2 += 1
                 
+                #Collision avec bloc porte
                 elif listeNiveau[pad]["typeBloc"] == 3:
                     verify = True
-                    canevas.delete(listeNiveau[pad]["idBloc"])
-                    del listeNiveau[pad]
+                    pad2 = 0
+                    while pad2 < len(listeMonde):
+                        if positionJoueur[0]+posJTestX == listeMonde[pad2]["coordsBloc"][0] and positionJoueur[1]+posJTestY == listeMonde[pad2]["coordsBloc"][1] and listeMonde[pad2]["idLevel"] == str(id_level) and listeMonde[pad2]["keyCollect"] == 1: #Permet de savoir si le bloc exite déjà dans la liste
+                                touch_porte(pad,pad2)
+                                pad -= 1
+                        pad2 += 1
 
             pad += 1
 
@@ -355,12 +361,27 @@ def mouvement_joueur (event, direction):
     pass
 
 def touch_key (pad,pad2):
-    listeMonde[pad2]["keyCollect"] = 1
-    dicoInventaire["key"].append(listeMonde[pad2]["idKeyPorte"])
+    padPorte = 0
+    while padPorte < len(listeMonde):
+        if listeMonde[padPorte]["idKeyPorte"] == listeMonde[pad2]["idKeyPorte"]:
+            listeMonde[padPorte]["keyCollect"] = 1
+        padPorte += 1
     canevas.delete(listeNiveau[pad]["idBloc"])
     del listeNiveau[pad]
     save_level()
     save_world()
+
+def touch_porte(pad,pad2):
+    padPorte = 0
+    while padPorte < len(listeMonde):
+        if listeMonde[padPorte]["idKeyPorte"] == listeMonde[pad2]["idKeyPorte"]:
+            del listeMonde[padPorte]
+        padPorte += 1
+    canevas.delete(listeNiveau[pad]["idBloc"])
+    del listeNiveau[pad]
+    save_level()
+    save_world()
+
 
 ################################################################### Fonction du mode édition ###################################################################
 
@@ -444,23 +465,32 @@ def clic_gauche (event): #Utilisation du clic gauche (placer un bloc, détruire,
         except:
             pass
         padsouris = 0
+        verifyEdit = False
         while padsouris != len(listeNiveau):
             if xSourisCase == listeNiveau[padsouris]["coordsBloc"][0] and ySourisCase == listeNiveau[padsouris]["coordsBloc"][1]:
 
                 if listeNiveau[padsouris]["typeBloc"] == 0:
-
                     textTypeBlocSelect.config(text="Bloc Solide")
                     selectBlocID = listeNiveau[padsouris]["idBloc"]
+                    verifyEdit = False
 
                 elif listeNiveau[padsouris]["typeBloc"] == 1:
-
                     textTypeBlocSelect.config(text="Bloc Spawn")
                     selectBlocID = listeNiveau[padsouris]["idBloc"]
+                    verifyEdit = False
 
                 elif listeNiveau[padsouris]["typeBloc"] == 2:
-
                     textTypeBlocSelect.config(text="Item Clé ")
                     selectBlocID = listeNiveau[padsouris]["idBloc"]
+                    verifyEdit = True
+
+                elif listeNiveau[padsouris]["typeBloc"] == 3:
+                    textTypeBlocSelect.config(text="Bloc Porte")
+                    selectBlocID = listeNiveau[padsouris]["idBloc"]
+                    verifyEdit = True
+
+
+                if verifyEdit == True:
                     selectBlocCoordX = listeNiveau[padsouris]["coordsBloc"][0]
                     selectBlocCoordY = listeNiveau[padsouris]["coordsBloc"][1]
 
@@ -475,10 +505,6 @@ def clic_gauche (event): #Utilisation du clic gauche (placer un bloc, détruire,
 
                     couleurSet = Scale(fenetre_edit_bloc, orient='horizontal', from_=1, to=5, resolution=1, tickinterval=2, length=180, label='Couleur', font=("Arial, 10"), command=change_color)
                     couleurSet.place(x=250,y=200)
-
-                elif listeNiveau[padsouris["typeBloc"]] == 3:
-                    textTypeBlocSelect.config(text="Bloc Porte")
-                    selectBlocID = listeNiveau[padsouris]["idBloc"]
 
                 break
 
@@ -620,6 +646,7 @@ def change_color (c): #Change la couleur du bloc selectionner
             listeNiveau[pad]["color"] = newColorBloc
             break
         pad += 1
+
 
 ################################################################### Fonction fonctionnement du programme ###################################################################
 
@@ -889,16 +916,3 @@ first_launch()
 
 canevas.pack()
 fenetre.mainloop()
-
-
-
-
-"""
-LOAD MONDE MARCHE PAS
-
-faire le pickup key
-type bloc porte
-def ouverture des portes
-
-
-"""
