@@ -71,6 +71,7 @@ def first_launch (): #La fonction "first_launch" permet de déclaré la plus par
     imageBoutonEditeurItemCle = PhotoImage(file= str(cwd)+"assets/images/bouton_item_cle.png")
     imageBoutonEditeurInfos = PhotoImage(file= str(cwd)+"assets/images/help.png")
     imageBoutonEditeurEditBloc = PhotoImage(file= str(cwd)+"assets/images/edit_bloc.png")
+    player = vlc.MediaPlayer(+str(cwd)"assets/musica/Gymnopédie No°1.wav")
     menu()
 
 def lancement_edition (): #La fonction "lancement_edition" permet de mettre en place tout le système de la création de niveau
