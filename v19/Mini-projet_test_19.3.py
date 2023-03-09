@@ -4,13 +4,12 @@ from tkinter import *
 import tkinter as tk
 import pickle
 import os
-
 try:
   import vlc
 except ImportError:
   os.system('pip install python-vlc')
-
 import vlc
+
 
 ################################################################### Les fonctions de mise en place des modes ###################################################################
 
