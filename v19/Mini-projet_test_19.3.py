@@ -897,11 +897,7 @@ fenetre.mainloop()
 
 
 """
-LOAD MONDE MARCHE PAS
-
-faire le pickup key
 type bloc porte
 def ouverture des portes
-
 
 """
