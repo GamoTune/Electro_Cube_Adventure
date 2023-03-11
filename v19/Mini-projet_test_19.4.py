@@ -8,7 +8,7 @@ try:
   import vlc
 except ImportError:
   os.system('pip install python-vlc')
-import vlc
+  import vlc
 
 
 ################################################################### Les fonctions de mise en place des modes ###################################################################
@@ -358,6 +358,7 @@ def mouvement_joueur (event, direction):
                 canevas.move(joueur, deplacement[0], deplacement[1])
                 positionJoueur[xyJ] = positionJoueur[xyJ]+posJF
         print(positionJoueur)
+        print(listeMonde)
     pass
 
 def touch_key (pad,pad2):
@@ -376,6 +377,7 @@ def touch_porte(pad,pad2):
     while padPorte < len(listeMonde):
         if listeMonde[padPorte]["idKeyPorte"] == listeMonde[pad2]["idKeyPorte"]:
             del listeMonde[padPorte]
+            break
         padPorte += 1
     canevas.delete(listeNiveau[pad]["idBloc"])
     del listeNiveau[pad]
@@ -916,3 +918,7 @@ first_launch()
 
 canevas.pack()
 fenetre.mainloop()
+
+"""
+bug changement de niveau = bug clé
+"""
