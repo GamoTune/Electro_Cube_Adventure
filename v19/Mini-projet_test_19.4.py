@@ -5,16 +5,16 @@ import tkinter as tk
 import pickle
 import os
 try:
-  import vlc
+    import vlc
 except ImportError:
-  os.system('pip install python-vlc')
-  import vlc
+    os.system('pip install python-vlc')
+import vlc
 
 
 ################################################################### Les fonctions de mise en place des modes ###################################################################
 
 def first_launch (): #La fonction "first_launch" permet de déclaré la plus part des variable global
-    global editBloc, cwd, musicDeFond, dicoJoueur, coordsJoueurAfterLeaving, imageBoutonEditeurItemCle, idLevelAfterLeaving, imageBoutonEditeurEditBloc, newColorBloc, freezeEdit, fenetreeditTest, listeNiveau, id_level, lienfichier, edit, nombrePixel, nombreCaseX, nombreCaseY, imageBoutonSolo, imageBoutonEditeur, ligneX, ligneY, imageBoutonEditeurNiveauHaut, imageBoutonEditeurNiveauBas, imageBoutonEditeurNiveauGauche, imageBoutonEditeurNiveauDroite, imageBoutonEditeurSave, imageBoutonEditeurRetour, imageWIP, imageBoutonEditeurPoubelle, imageBoutonEditeurExit, imageEditeurInfos, fenetreinfosTest, id_level_editeur, imageBoutonEditeurBlocSolide, couleurBloc, typeDuBloc, imageBoutonEditeurBlocSpawn, delonespebloc, listeMonde, id_monde, solo, lienmonde, imageBoutonEditeurInfos
+    global editBloc, cwd, musicDeFond, dicoJoueur, imageBoutonEditeurItemCle, imageBoutonEditeurEditBloc, newColorBloc, freezeEdit, fenetreeditTest, listeNiveau, id_level, lienfichier, edit, nombrePixel, nombreCaseX, nombreCaseY, imageBoutonSolo, imageBoutonEditeur, ligneX, ligneY, imageBoutonEditeurNiveauHaut, imageBoutonEditeurNiveauBas, imageBoutonEditeurNiveauGauche, imageBoutonEditeurNiveauDroite, imageBoutonEditeurSave, imageBoutonEditeurRetour, imageWIP, imageBoutonEditeurPoubelle, imageBoutonEditeurExit, imageEditeurInfos, fenetreinfosTest, id_level_editeur, imageBoutonEditeurBlocSolide, couleurBloc, typeDuBloc, imageBoutonEditeurBlocSpawn, delonespebloc, listeMonde, id_monde, solo, lienmonde, imageBoutonEditeurInfos
 
     cwd = os.getcwd()
     cwd = cwd.replace("\\", "/" )
@@ -49,8 +49,6 @@ def first_launch (): #La fonction "first_launch" permet de déclaré la plus par
     typeDuBloc = 0
     delonespebloc = False
     solo = False
-    coordsJoueurAfterLeaving = [0,0]
-    idLevelAfterLeaving = [0,0]
     freezeEdit = False
     editBloc = False
     imageBoutonEditeurNiveauHaut = PhotoImage(file = str(cwd)+"assets/images/fleche_haut.png")
@@ -97,9 +95,8 @@ def lancement_edition (): #La fonction "lancement_edition" permet de mettre en p
 
 ######################################################################## L'édition
     edit = True #Indication au programme que l'éditeur est lancer et que les fonction de l'édition peuvent maintement fonctionnner
-    if id_level != id_level_editeur:
-        id_level = id_level_editeur
-
+    id_level = [0,0]
+    lienfichier = str(cwd)+"assets/data/solo/monde"+str(id_monde)+"/niveau"+str(id_level[0])+str(id_level[1])+".txt"
     loadTestZone() #Appel de la fonction qui charge les niveau
     load_world()
     #Fenetre des infos / boutons
@@ -165,21 +162,17 @@ def lancement_solo ():
     global solo
 
     solo = True
+    id_level = [0,0]
+    lienfichier = str(cwd)+"assets/data/solo/monde"+str(id_monde)+"/niveau"+str(id_level[0])+str(id_level[1])+".txt"
     loadTestZone()
     load_world()
     pad = 0
-    if coordsJoueurAfterLeaving[0] == 0 and coordsJoueurAfterLeaving[1] == 0:
-        while pad != len(listeNiveau):
-            if listeNiveau[pad]["typeBloc"] == 1:
-                posjxstart = listeNiveau[pad]["coordsBloc"][0]
-                posjystart = listeNiveau[pad]["coordsBloc"][1]
-                break
-            pad += 1
-        id_level = [0,0]
-    else:
-        posjxstart = coordsJoueurAfterLeaving[0]
-        posjystart = coordsJoueurAfterLeaving[1]
-        id_level = idLevelAfterLeaving
+    while pad != len(listeNiveau):
+        if listeNiveau[pad]["typeBloc"] == 1:
+            posjxstart = listeNiveau[pad]["coordsBloc"][0]
+            posjystart = listeNiveau[pad]["coordsBloc"][1]
+            break
+        pad += 1
     joueur = canevas.create_rectangle(0, 0, nombrePixel, nombrePixel, fill='blue')
     canevas.move(joueur,posjxstart*nombrePixel, posjystart*nombrePixel)
     positionJoueur = [posjxstart, posjystart] #0 = x & 1 = y
@@ -242,10 +235,10 @@ def menu_post_solo ():
     boutonSoloMonde1 = Button(menuPostSolo, image=imageWIP, command=lambda:monde_finder_solo(1))
     boutonSoloMonde1.place(x=(largeur/2+largeur/4)/2-((largeur/2+largeur/4)/2)/4, y=(hauteur/2+hauteur/4)/2, anchor=CENTER)
 
-    boutonSoloMonde2 = Button(menuPostSolo, image=imageWIP)
+    boutonSoloMonde2 = Button(menuPostSolo, image=imageWIP, command=lambda:monde_finder_solo(2))
     boutonSoloMonde2.place(x=(largeur/2+largeur/4)/2, y=(hauteur/2+hauteur/4)/1.37, anchor=CENTER)
 
-    boutonSoloMonde3 = Button(menuPostSolo, image=imageWIP)
+    boutonSoloMonde3 = Button(menuPostSolo, image=imageWIP, command=lambda:monde_finder_solo(3))
     boutonSoloMonde3.place(x=(largeur/2+largeur/4)/2+((largeur/2+largeur/4)/2)/4, y=(hauteur/2+hauteur/4)/2, anchor=CENTER)
 
     titreSolo = Label(menuPostSolo, text="WIP", font="Arial, 48", fg='white', bg='black')
@@ -535,12 +528,8 @@ def deleteLastBlock (event=0): #Destruction du dernier bloc placé
             pad = 0
             while pad != len(listeMonde):
                 if listeMonde[pad]["coordsBloc"] == listeNiveau[-1]["coordsBloc"]:
-                    print("test")
-                    print(listeMonde)
                     del listeMonde[pad]
-                    print(listeMonde)
                     break
-                    
                 pad += 1
         del listeNiveau[-1]
 
@@ -554,6 +543,7 @@ def save_world (): #Sauvegarde du monde
 
 def load_world (): #Chargement du monde
     global listeMonde, dicoJoueur
+    listeMonde.clear()
     if os.path.exists(lienmonde):
         with open(lienmonde, "rb") as fichierMonde:
             listeMonde = pickle.load(fichierMonde)
@@ -624,6 +614,7 @@ def getKeyID (IDValue): #Enregistre les infos d'une clé
         listeMonde.append({"idKeyPorte" : IDValue, "coordsBloc" : [selectBlocCoordX, selectBlocCoordY], "idLevel" : str(id_level), "keyCollect" : 0})
 
     print(listeMonde)
+    print(id_monde)
     save_world()
 
 def change_color (c): #Change la couleur du bloc selectionner
@@ -656,14 +647,9 @@ def disable_event(): #Disable
    pass
 
 def exit_key (event): #Permet des retour au menu avec la touche "echap"
-    global coordsJoueurAfterLeaving, idLevelAfterLeaving
     if edit == True:
         retour_menu("postEditMenu")
     elif solo == True:
-        coordsJoueurAfterLeaving[0] = positionJoueur[0]
-        coordsJoueurAfterLeaving[1] = positionJoueur[1]
-        idLevelAfterLeaving = id_level
-
         save_level()
         save_world()
         retour_menu("postSoloMenu")
@@ -689,6 +675,7 @@ def retour_menu (goToMenu): #Retour au menu
             pass
         save_level()
         save_world()
+        originePath = str(cwd)+""
         edit = False
         id_level_editeur = id_level
         while padblocklist < len(ligneX):
@@ -768,7 +755,39 @@ def level_search (direction): #Cherche le bon niveau a charger
     global id_level
     global lienfichier
     global numeroNiveau
-    if edit == True:
+    if solo == True:
+        if direction =='up':
+            lienfichier = str(cwd)+"assets/data/solo/monde"+str(id_monde)+"/niveau"+str(id_level[0])+str(id_level[1]-1)+".txt"
+            if os.path.exists(lienfichier):
+                id_level[1] -= 1
+                loadTestZone()
+                positionJoueur[1] = nombreCaseY-1
+                canevas.moveto(joueur, positionJoueur[0]*nombrePixel-1, positionJoueur[1]*nombrePixel-1)
+
+        if direction =='down':
+            lienfichier = str(cwd)+"assets/data/solo/monde"+str(id_monde)+"/niveau"+str(id_level[0])+str(id_level[1]+1)+".txt"
+            if os.path.exists(lienfichier):
+                id_level[1] += 1
+                loadTestZone()
+                positionJoueur[1] = 0
+                canevas.moveto(joueur, positionJoueur[0]*nombrePixel-1, -positionJoueur[1]*nombrePixel-1)
+
+        if direction =='left':
+            lienfichier = str(cwd)+"assets/data/solo/monde"+str(id_monde)+"/niveau"+str(id_level[0]-1)+str(id_level[1])+".txt"
+            if os.path.exists(lienfichier):
+                id_level[0] -= 1
+                loadTestZone()
+                positionJoueur[0] = nombreCaseX-1
+                canevas.moveto(joueur, positionJoueur[0]*nombrePixel-1, positionJoueur[1]*nombrePixel-1)
+
+        if direction =='right':
+            lienfichier = str(cwd)+"assets/data/solo/monde"+str(id_monde)+"/niveau"+str(id_level[0]+1)+str(id_level[1])+".txt"
+            if os.path.exists(lienfichier):
+                id_level[0] += 1
+                loadTestZone()
+                positionJoueur[0] = 0
+                canevas.moveto(joueur, -positionJoueur[0]*nombrePixel-1, positionJoueur[1]*nombrePixel-1)
+    else:
         if direction =='up':
             lienfichier = "assets/data/editeur/monde"+str(id_monde)+"/niveau"+str(id_level[0])+str(id_level[1]-1)+".txt"
             if os.path.exists(lienfichier):
@@ -837,39 +856,6 @@ def level_search (direction): #Cherche le bon niveau a charger
                 lienfichier = "assets/data/editeur/monde"+str(id_monde)+"/niveau"+str(id_level[0])+str(id_level[1])+".txt"
                 numeroNiveau.config(text=id_level)
 
-    else:
-        if direction =='up':
-            lienfichier = str(cwd)+"assets/data/solo/monde"+str(id_monde)+"/niveau"+str(id_level[0])+str(id_level[1]-1)+".txt"
-            if os.path.exists(lienfichier):
-                id_level[1] -= 1
-                loadTestZone()
-                positionJoueur[1] = nombreCaseY-1
-                canevas.moveto(joueur, positionJoueur[0]*nombrePixel-1, positionJoueur[1]*nombrePixel-1)
-
-        if direction =='down':
-            lienfichier = str(cwd)+"assets/data/solo/monde"+str(id_monde)+"/niveau"+str(id_level[0])+str(id_level[1]+1)+".txt"
-            if os.path.exists(lienfichier):
-                id_level[1] += 1
-                loadTestZone()
-                positionJoueur[1] = 0
-                canevas.moveto(joueur, positionJoueur[0]*nombrePixel-1, -positionJoueur[1]*nombrePixel-1)
-
-        if direction =='left':
-            lienfichier = str(cwd)+"assets/data/solo/monde"+str(id_monde)+"/niveau"+str(id_level[0]-1)+str(id_level[1])+".txt"
-            if os.path.exists(lienfichier):
-                id_level[0] -= 1
-                loadTestZone()
-                positionJoueur[0] = nombreCaseX-1
-                canevas.moveto(joueur, positionJoueur[0]*nombrePixel-1, positionJoueur[1]*nombrePixel-1)
-
-        if direction =='right':
-            lienfichier = str(cwd)+"assets/data/solo/monde"+str(id_monde)+"/niveau"+str(id_level[0]+1)+str(id_level[1])+".txt"
-            if os.path.exists(lienfichier):
-                id_level[0] += 1
-                loadTestZone()
-                positionJoueur[0] = 0
-                canevas.moveto(joueur, -positionJoueur[0]*nombrePixel-1, positionJoueur[1]*nombrePixel-1)
-
 
 ################################################################### Mise en place de la fenetre ###################################################################
 
@@ -920,5 +906,5 @@ canevas.pack()
 fenetre.mainloop()
 
 """
-bug changement de niveau = bug clé
+
 """
