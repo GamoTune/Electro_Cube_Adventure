@@ -116,7 +116,7 @@ def lancement_edition (): #La fonction "lancement_edition" permet de mettre en p
     bouton_niveau_right = Button(fenetre_bouton, image=imageBoutonEditeurNiveauDroite, bg='white', command=lambda:level_search("right"))
     bouton_niveau_right.place(x=206,y=206)
 
-    boutonEditeurInfo = Button(fenetre_bouton, image=imageBoutonEditeurInfos, bg='white', command=info_editeur)
+    boutonEditeurInfo = Button(fenetre_bouton, image=imageBoutonEditeurInfos, bg='white', command=delete_all_level)
     boutonEditeurInfo.place(x=103,y=412)
 
     boutonEditeurExit = Button(fenetre_bouton, image=imageBoutonEditeurExit, bg='white', command=lambda:retour_menu("postEditMenu"))
@@ -502,9 +502,22 @@ def deleteLastBlock (event=0): #Destruction du dernier bloc placé
                     break
         del listeNiveau[-1]
 
+def delete_all_level():
+    global id_level
+    attention = tkinter.messagebox.askyesno("Attention", "Voulez vous détruire tout les niveaux du mondes ?")
+    if attention:
+        delete_all_blocks()
+        id_level = [0,0]
+        path = str(cwd)+"assets/data/editeur/monde"+str(id_monde)
+        for f in os.listdir(path):
+            os.remove(os.path.join(path, f))
+        listeMonde.clear()
+
+
 def save_level (): #Sauvegarde du niveau
     with open(lienfichier, "wb") as fichierNiveau:
         pickle.dump(listeNiveau, fichierNiveau)
+        print(lienfichier)
 
 def save_world (): #Sauvegarde du monde
     with open(lienmonde, "wb") as fichierMonde:
