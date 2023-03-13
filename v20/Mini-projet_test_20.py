@@ -1,8 +1,5 @@
 #Import des bibliothèques
-
-from tkinter import *
-import tkinter as tk, tkinter.messagebox
-import pickle, os, shutil
+import tkinter as tk, tkinter.messagebox; from tkinter import *; import pickle, os, shutil
 try:
     import vlc
 except ImportError:
@@ -69,7 +66,7 @@ def first_launch (): #La fonction "first_launch" permet de déclaré la plus par
     #bg_music()
 
 def lancement_edition (): #La fonction "lancement_edition" permet de mettre en place tout le système de la création de niveau
-    global edit, lienfichier, ligneX, fenetre_bouton, id_level, numeroNiveau
+    global edit, lienfichier, ligneX, fenetre_bouton, id_level, numeroNiveau, message_editeur
     close_menu() #Ferme le menu
 
 ######################################################################## Le cadirage
@@ -93,7 +90,7 @@ def lancement_edition (): #La fonction "lancement_edition" permet de mettre en p
     load_world()
     #Fenetre des infos / boutons
     fenetre_bouton = tk.Toplevel() #Création de la fenetre des fonction/boutons de l'éditeur
-    fenetre_bouton.geometry('312x641') #taille 1 bouton = taille que tu veux + 3
+    fenetre_bouton.geometry('312x621') #taille 1 bouton = taille que tu veux + 3
     fenetre_bouton.resizable(False,False) #Fenetre non redimentionable
     fenetre_bouton.attributes('-topmost',1)
     fenetre_bouton.protocol("WM_DELETE_WINDOW", disable_event)
@@ -104,7 +101,7 @@ def lancement_edition (): #La fonction "lancement_edition" permet de mettre en p
     bouton_retour = Button(fenetre_bouton, image=imageBoutonEditeurRetour, bg='white', command=deleteLastBlock)
     bouton_retour.place(x=103,y=0)
 
-    boutonEditeurPoubelle = Button(fenetre_bouton, image=imageBoutonEditeurPoubelle, bg='white', command=deleteblock)
+    boutonEditeurPoubelle = Button(fenetre_bouton, image=imageBoutonEditeurPoubelle, bg='white', command=delete_all_blocks)
     boutonEditeurPoubelle.place(x=206,y=0)
 
     bouton_niveau_up = Button(fenetre_bouton, image=imageBoutonEditeurNiveauHaut, bg='white', command=lambda:level_search("up"))
@@ -128,23 +125,26 @@ def lancement_edition (): #La fonction "lancement_edition" permet de mettre en p
     numeroNiveau = Label(fenetre_bouton, text=id_level, font="Arial, 30")
     numeroNiveau.pack(padx=103, pady=230)
 
-    bouton_bloc_solide = Button(fenetre_bouton, image=imageBoutonEditeurBlocSolide, bg='white', command=lambda:typeBlocs("solide"))
+    bouton_bloc_solide = Button(fenetre_bouton, image=imageBoutonEditeurBlocSolide, bg='white', command=lambda:type_Blocs("solide"))
     bouton_bloc_solide.place(x=0,y=103)
 
-    bouton_bloc_spawn = Button(fenetre_bouton, image=imageBoutonEditeurBlocSpawn, bg='white', command=lambda:typeBlocs("spawn"))
+    bouton_bloc_spawn = Button(fenetre_bouton, image=imageBoutonEditeurBlocSpawn, bg='white', command=lambda:type_Blocs("spawn"))
     bouton_bloc_spawn.place(x=206,y=103)
 
-    bouton_item_key = Button(fenetre_bouton, image=imageBoutonEditeurItemCle, bg='white', command=lambda:typeBlocs("key"))
+    bouton_item_key = Button(fenetre_bouton, image=imageBoutonEditeurItemCle, bg='white', command=lambda:type_Blocs("key"))
     bouton_item_key.place(x=0,y=309)
 
     bouton_gomme = Button(fenetre_bouton, image=imageWIP, bg='white', command=delspebloc)
     bouton_gomme.place(x=0,y=412)
 
-    bouton_bloc_port = Button(fenetre_bouton, image=imageWIP, command=lambda:typeBlocs("porte"))
+    bouton_bloc_port = Button(fenetre_bouton, image=imageWIP, command=lambda:type_Blocs("porte"))
     bouton_bloc_port.place(x=206,y=309)
 
     bouton_edit = Button(fenetre_bouton, image=imageBoutonEditeurEditBloc, bg='white', command=set_edit_objet)
     bouton_edit.place(x=206,y=412)
+    
+    message_editeur = Label(fenetre_bouton, text="", font="Arial, 30" )
+    message_editeur.place(x=103,y=568, anchor=CENTER)
 
 def lancement_solo ():
     global joueur, positionJoueur, lienfichier, id_level, solo
@@ -360,26 +360,30 @@ def touch_porte(pad,blocinListeMonde):
 
 ################################################################### Fonction du mode édition ###################################################################
 
-def typeBlocs (tBloc): #Indication du type de bloc à placer
-    global typeDuBloc, couleurBloc
+def type_Blocs (tBloc): #Indication du type de bloc à placer
+    global typeDuBloc, couleurBloc, message_editeur
     if tBloc == "solide":
         typeDuBloc = 0
         couleurBloc = 'black'
+        message_editeur.config(text="Bloc solide")
 
     elif tBloc == "spawn":
         if id_level == [0,0]:
             typeDuBloc = 1
             couleurBloc = 'cyan'
+            message_editeur.config(text="Bloc spawn")
         else:
-            print("level [0,0] only")
+            message_editeur.config(text="[0,0] only")
 
     elif tBloc == "key":
         typeDuBloc = 2
         couleurBloc = 'orange'
+        message_editeur.config(text="Item clé")
 
     elif tBloc == "porte":
         typeDuBloc = 3
         couleurBloc = 'orange'
+        message_editeur.config(text="Bloc porte")
 
 def clic_gauche (event): #Utilisation du clic gauche (placer un bloc, détruire, selectionner...)
     global listeNiveau, entryIDcle, boutonIDCleValidation, selectBlocID, couleurSet, textIDKey, padsouris, selectBlocCoordX, selectBlocCoordY
@@ -478,12 +482,14 @@ def clic_gauche (event): #Utilisation du clic gauche (placer un bloc, détruire,
             else:
                 textTypeBlocSelect.config(text="Air")
 
-def deleteblock (event=0): #Destruction total du niveau
+def delete_all_blocks (): #Destruction total du niveau
     global listeNiveau
-    for blocinListeNiveau in listeNiveau and edit == True:
+    for blocinListeNiveau in listeNiveau:
+        for blocinListeMonde in listeMonde:
+            if blocinListeMonde["coordsBloc"] == blocinListeNiveau["coordsBloc"] and blocinListeMonde["idLevel"] == str(id_level):
+                listeMonde.remove(blocinListeMonde)   
         canevas.delete(blocinListeNiveau["idBloc"])
     listeNiveau.clear()
-    listeMonde.clear()
 
 def deleteLastBlock (event=0): #Destruction du dernier bloc placé
     global listeNiveau
@@ -727,7 +733,7 @@ def level_search (direction): #Cherche le bon niveau a charger
             else:
                 lienfichier = "assets/data/editeur/monde"+str(id_monde)+"/niveau"+str(id_level[0])+str(id_level[1])+".txt"
                 save_level()
-                deleteblock()
+                delete_all_blocks()
                 id_level[1] -= 1
                 lienfichier = "assets/data/editeur/monde"+str(id_monde)+"/niveau"+str(id_level[0])+str(id_level[1])+".txt"
                 numeroNiveau.config(text=id_level)
@@ -744,7 +750,7 @@ def level_search (direction): #Cherche le bon niveau a charger
             else:
                 lienfichier = "assets/data/editeur/monde"+str(id_monde)+"/niveau"+str(id_level[0])+str(id_level[1])+".txt"
                 save_level()
-                deleteblock()
+                delete_all_blocks()
                 id_level[1] += 1
                 lienfichier = "assets/data/editeur/monde"+str(id_monde)+"/niveau"+str(id_level[0])+str(id_level[1])+".txt"
                 numeroNiveau.config(text=id_level)
@@ -761,7 +767,7 @@ def level_search (direction): #Cherche le bon niveau a charger
             else:
                 lienfichier = "assets/data/editeur/monde"+str(id_monde)+"/niveau"+str(id_level[0])+str(id_level[1])+".txt"
                 save_level()
-                deleteblock()
+                delete_all_blocks()
                 id_level[0] -= 1
                 lienfichier = "assets/data/editeur/monde"+str(id_monde)+"/niveau"+str(id_level[0])+str(id_level[1])+".txt"
                 numeroNiveau.config(text=id_level)
@@ -778,7 +784,7 @@ def level_search (direction): #Cherche le bon niveau a charger
             else:
                 lienfichier = "assets/data/editeur/monde"+str(id_monde)+"/niveau"+str(id_level[0])+str(id_level[1])+".txt"
                 save_level()
-                deleteblock()
+                delete_all_blocks()
                 id_level[0] += 1
                 lienfichier = "assets/data/editeur/monde"+str(id_monde)+"/niveau"+str(id_level[0])+str(id_level[1])+".txt"
                 numeroNiveau.config(text=id_level)
@@ -837,5 +843,5 @@ canevas.pack()
 fenetre.mainloop()
 
 """
-Problème si on del tout la liste des clé est del aussi (faut juste supp les bon blocs)
+
 """
