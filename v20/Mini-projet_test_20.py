@@ -10,7 +10,7 @@ import vlc
 ################################################################### Les fonctions de mise en place des modes ###################################################################
 
 def first_launch (): #La fonction "first_launch" permet de déclaré la plus part des variable global
-    global editBloc, cwd, musicDeFond, originalPath, imageMonde1, imageMonde2, imageMonde3, imageResetSolo, imageBoutonEditeurItemCle, imageBoutonEditeurEditBloc, newColorBloc, freezeEdit, fenetreeditTest, listeNiveau, id_level, lienfichier, edit, nombrePixel, nombreCaseX, nombreCaseY, imageBoutonSolo, imageBoutonEditeur, ligneX, ligneY, imageBoutonEditeurNiveauHaut, imageBoutonEditeurNiveauBas, imageBoutonEditeurNiveauGauche, imageBoutonEditeurNiveauDroite, imageBoutonEditeurSave, imageBoutonEditeurRetour, imageWIP, imageBoutonEditeurPoubelle, imageBoutonEditeurExit, imageEditeurInfos, fenetreinfosTest, imageBoutonEditeurBlocSolide, couleurBloc, typeDuBloc, imageBoutonEditeurBlocSpawn, delonespebloc, listeMonde, id_monde, solo, lienmonde, imageBoutonEditeurInfos
+    global editBloc, cwd, musicDeFond, imageBoutonEditeurBlocPorte, editTest, originalPath, imageMonde1, imageMonde2, imageMonde3, imageResetSolo, imageBoutonEditeurItemCle, imageBoutonEditeurEditBloc, newColorBloc, freezeEdit, fenetreeditTest, listeNiveau, id_level, lienfichier, edit, nombrePixel, nombreCaseX, nombreCaseY, imageBoutonSolo, imageBoutonEditeur, ligneX, ligneY, imageBoutonEditeurNiveauHaut, imageBoutonEditeurNiveauBas, imageBoutonEditeurNiveauGauche, imageBoutonEditeurNiveauDroite, imageBoutonEditeurSave, imageBoutonEditeurRetour, imageWIP, imageBoutonEditeurPoubelle, imageBoutonEditeurExit, imageEditeurInfos, fenetreinfosTest, imageBoutonEditeurBlocSolide, couleurBloc, typeDuBloc, imageBoutonEditeurBlocSpawn, delonespebloc, listeMonde, id_monde, solo, lienmonde, imageBoutonEditeurInfos
 
     cwd = os.getcwd()
     cwd = cwd.replace("\\", "/" )
@@ -39,6 +39,7 @@ def first_launch (): #La fonction "first_launch" permet de déclaré la plus par
     solo = False #Permet de lancer le solo
     freezeEdit = False #Permet de mettre en pose les fonctions de l'éditeur
     editBloc = False #Permet de vérifier si la l'édition de bloc de l'éditeur est déjà créer
+    editTest = False
     imageBoutonSolo = PhotoImage(file = str(cwd)+"assets/images/bouton_solo.png") #Image du bouton du solo sur le menu principal
     imageBoutonEditeur = PhotoImage(file = str(cwd)+"assets/images/bouton_editeur.png") #Image du bouton de l'éditeur sur le menu principal
     imageBoutonEditeurNiveauHaut = PhotoImage(file = str(cwd)+"assets/images/fleche_haut.png")
@@ -54,6 +55,7 @@ def first_launch (): #La fonction "first_launch" permet de déclaré la plus par
     imageBoutonEditeurBlocSolide = PhotoImage(file = str(cwd)+"assets/images/bouton_bloc_solide.png")
     imageBoutonEditeurBlocSpawn = PhotoImage(file= str(cwd)+"assets/images/bouton_bloc_spawn.png")
     imageBoutonEditeurItemCle = PhotoImage(file= str(cwd)+"assets/images/bouton_item_cle.png")
+    imageBoutonEditeurBlocPorte = PhotoImage(file= str(cwd)+"assets/images/bouton_bloc_porte.png")
     imageBoutonEditeurInfos = PhotoImage(file= str(cwd)+"assets/images/help.png")
     imageBoutonEditeurEditBloc = PhotoImage(file= str(cwd)+"assets/images/edit_bloc.png")
     imageResetSolo = PhotoImage(file=str(cwd)+"assets/images/Reset.png")
@@ -85,7 +87,7 @@ def lancement_edition (): #La fonction "lancement_edition" permet de mettre en p
 ######################################################################## L'édition
     edit = True #Indication au programme que l'éditeur est lancer et que les fonction de l'édition peuvent maintement fonctionnner
     id_level = [0,0]
-    lienfichier = str(cwd)+"assets/data/solo/monde"+str(id_monde)+"/niveau"+str(id_level[0])+str(id_level[1])+".txt"
+    lienfichier = str(cwd)+"assets/data/editeur/monde"+str(id_monde)+"/niveau"+str(id_level[0])+str(id_level[1])+".txt"
     load_level() #Appel de la fonction qui charge les niveau
     load_world()
     #Fenetre des infos / boutons
@@ -107,7 +109,7 @@ def lancement_edition (): #La fonction "lancement_edition" permet de mettre en p
     bouton_niveau_up = Button(fenetre_bouton, image=imageBoutonEditeurNiveauHaut, bg='white', command=lambda:level_search("up"))
     bouton_niveau_up.place(x=103,y=103)
 
-    bouton_niveau_down = Button(fenetre_bouton, image=imageBoutonEditeurNiveauBas, bg='black', command=lambda:level_search("down"))
+    bouton_niveau_down = Button(fenetre_bouton, image=imageBoutonEditeurNiveauBas, bg='white', command=lambda:level_search("down"))
     bouton_niveau_down.place(x=103,y=309)
     
     bouton_niveau_left = Button(fenetre_bouton, image=imageBoutonEditeurNiveauGauche, bg='white', command=lambda:level_search("left"))
@@ -137,7 +139,7 @@ def lancement_edition (): #La fonction "lancement_edition" permet de mettre en p
     bouton_gomme = Button(fenetre_bouton, image=imageWIP, bg='white', command=delspebloc)
     bouton_gomme.place(x=0,y=412)
 
-    bouton_bloc_port = Button(fenetre_bouton, image=imageWIP, command=lambda:type_Blocs("porte"))
+    bouton_bloc_port = Button(fenetre_bouton, image=imageBoutonEditeurBlocPorte, command=lambda:type_Blocs("porte"))
     bouton_bloc_port.place(x=206,y=309)
 
     bouton_edit = Button(fenetre_bouton, image=imageBoutonEditeurEditBloc, bg='white', command=set_edit_objet)
@@ -148,10 +150,8 @@ def lancement_edition (): #La fonction "lancement_edition" permet de mettre en p
 
 def lancement_solo ():
     global joueur, positionJoueur, lienfichier, id_level, solo
-
     solo = True
     id_level = [0,0]
-    lienfichier = str(cwd)+"assets/data/solo/monde"+str(id_monde)+"/niveau"+str(id_level[0])+str(id_level[1])+".txt"
     load_level()
     load_world()
     for pasdubloc in listeNiveau:
@@ -159,6 +159,11 @@ def lancement_solo ():
             posjxstart = pasdubloc["coordsBloc"][0]
             posjystart = pasdubloc["coordsBloc"][1]
             break
+    try: posjxstart
+    except:
+        solo = False
+        tkinter.messagebox.showerror("Impossible", "Il n'y a pas de bloc d'apparition dans ce monde")
+        
     joueur = canevas.create_rectangle(0, 0, nombrePixel, nombrePixel, fill='blue')
     canevas.move(joueur,posjxstart*nombrePixel, posjystart*nombrePixel)
     positionJoueur = [posjxstart, posjystart] #0 = x & 1 = y
@@ -171,16 +176,16 @@ def menu ():
     menuFrame = Frame(fenetre, width=largeur/2+largeur/4, height=hauteur/2+hauteur/4 ,bg='black')
     menuFrame.place(x=largeur/2, y=hauteur/2,anchor=CENTER)
 
-    boutonSolo = Button(menuFrame, image=imageBoutonSolo, command=menu_post_solo)
+    boutonSolo = Button(menuFrame, image=imageBoutonSolo, command=menu_pre_solo)
     boutonSolo.place(x=(largeur/2+largeur/4)/2-((largeur/2+largeur/4)/2)/2, y=(hauteur/2+hauteur/4)/2, anchor=CENTER)
 
-    boutonEditeur = Button(menuFrame, image=imageBoutonEditeur, command=menu_post_edition)
+    boutonEditeur = Button(menuFrame, image=imageBoutonEditeur, command=menu_pre_edition)
     boutonEditeur.place(x=(largeur/2+largeur/4)/2+((largeur/2+largeur/4)/2)/2, y=(hauteur/2+hauteur/4)/2, anchor=CENTER)
 
     boutonExit = Button(menuFrame, image=imageBoutonEditeurExit, command=fenetre.destroy)
     boutonExit.place(x=(largeur/2+largeur/4)/2, y=(hauteur/2+hauteur/4)/2, anchor=CENTER)
 
-def menu_post_edition ():
+def menu_pre_edition ():
     global menuPostEdit
 
     menuPostEdit = Frame(fenetre, width=largeur/2+largeur/4, height=hauteur/2+hauteur/4 ,bg='black')
@@ -200,6 +205,9 @@ def menu_post_edition ():
 
     titreMonde = Label(menuPostEdit, text="Select World", font="Arial, 48", fg='white', bg='black')
     titreMonde.place(x=(largeur/2+largeur/4)/2, y=50, anchor=CENTER)
+    
+    boutonEditPlayTest = Button(menuPostEdit, image=imageWIP, command=play_test)
+    boutonEditPlayTest.place(x=(largeur/2+largeur/4)/2, y=(hauteur/2+hauteur/4)-(hauteur/2+hauteur/4)/1.37, anchor=CENTER)
 
 def monde_finder_editeur (numMonde):
     global id_monde, lienmonde, lienfichier
@@ -209,7 +217,7 @@ def monde_finder_editeur (numMonde):
     lienfichier = str(cwd)+"assets/data/editeur/monde"+str(id_monde)+"/niveau"+str(id_level[0])+str(id_level[1])+".txt"
     lancement_edition()
 
-def menu_post_solo ():
+def menu_pre_solo ():
     global menuPostSolo
 
     menuPostSolo = Frame(fenetre, width=largeur/2+largeur/4, height=hauteur/2+hauteur/4 ,bg='black')
@@ -235,10 +243,21 @@ def menu_post_solo ():
 
 def monde_finder_solo (numMonde):
     global id_monde, lienmonde, lienfichier
-
     id_monde = numMonde
     lienmonde = str(cwd)+"assets/data/solo/monde"+str(id_monde)+"_info.txt"
     lienfichier = str(cwd)+"assets/data/solo/monde"+str(id_monde)+"/niveau"+str(id_level[0])+str(id_level[1])+".txt"
+    lancement_solo()
+
+def play_test ():
+    global lienmonde, lienfichier, editTest
+    originalPath = str(cwd)+"assets/data/editeur"
+    copyPath = str(cwd)+"assets/data/test_editeur/"
+    if os.path.exists(copyPath):
+        shutil.rmtree(copyPath)
+    shutil.copytree(originalPath, copyPath)
+    lienmonde = str(cwd)+"assets/data/test_editeur/monde"+str(id_monde)+"_info.txt"
+    lienfichier = str(cwd)+"assets/data/test_editeur/monde"+str(id_monde)+"/niveau"+str(id_level[0])+str(id_level[1])+".txt"
+    editTest = True
     lancement_solo()
 
 def close_menu ():
@@ -476,7 +495,7 @@ def clic_gauche (event): #Utilisation du clic gauche (placer un bloc, détruire,
                     textIDKey = Label(fenetre_edit_bloc, text="ID :", font="Arial, 24")
                     textIDKey.place(x=175,y=150) 
 
-                    couleurSet = Scale(fenetre_edit_bloc, orient='horizontal', from_=1, to=5, resolution=1, tickinterval=2, length=180, label='Couleur', font=("Arial, 10"), command=change_color)
+                    couleurSet = Scale(fenetre_edit_bloc, orient='horizontal', from_=1, to=8, resolution=1, tickinterval=2, length=180, label='Couleur', font=("Arial, 10"), command=change_color)
                     couleurSet.place(x=250,y=200)
                 break
             else:
@@ -595,15 +614,21 @@ def getKeyID (IDValue): #Enregistre les infos d'une clé
 def change_color (c): #Change la couleur du bloc selectionner
     global listeNiveau, newColorBloc
     if couleurSet.get() == 1:
-        newColorBloc = 'orange'
+        newColorBloc = 'red'
     elif couleurSet.get() == 2:
-        newColorBloc = 'yellow'
+        newColorBloc = 'orange'
     elif couleurSet.get() == 3:
-        newColorBloc = 'green'
+        newColorBloc = 'yellow'
     elif couleurSet.get() == 4:
-        newColorBloc = 'lightgreen'
+        newColorBloc = 'green'
     elif couleurSet.get() == 5:
+        newColorBloc = 'blue'
+    elif couleurSet.get() == 6:
+        newColorBloc = 'pink'
+    elif couleurSet.get() == 7:
         newColorBloc = 'purple'
+    elif couleurSet.get() == 8:
+        newColorBloc = 'brown'
 
     canevas.itemconfig(selectBlocID, fill=newColorBloc)
     for blocinListeNiveau in listeNiveau:
@@ -618,12 +643,15 @@ def disable_event(): #Disable
    pass
 
 def exit_key (event): #Permet des retour au menu avec la touche "echap"
+    global editTest
     if edit == True:
         retour_menu("postEditMenu")
     elif solo == True:
-        save_level()
-        save_world()
-        retour_menu("postSoloMenu")
+        if editTest == True:
+            retour_menu("postEditTestMenu")
+            editTest = False
+        else:
+            retour_menu("postSoloMenu")
     else:
         retour_menu("Menu")
 
@@ -672,6 +700,13 @@ def retour_menu (goToMenu): #Retour au menu
         except:
             pass
         menuFrame.place(x=largeur/2, y=hauteur/2,anchor=CENTER)
+    elif goToMenu == "postEditTestMenu":
+        canevas.delete(joueur)
+        positionJoueur.clear()
+        solo = False
+        menuPostEdit.place(x=largeur/2, y=hauteur/2,anchor=CENTER)
+        save_level()
+        save_world()
     lienfichier = "assets/data/menu.txt"
     load_level()
 
