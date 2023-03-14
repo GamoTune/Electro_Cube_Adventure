@@ -422,7 +422,7 @@ def clic_gauche (event): #Utilisation du clic gauche (placer un bloc, détruire,
                 padsouris += 1
             listeNiveau.append({"coordsBloc" : [xSourisCase, ySourisCase], "idBloc" : canevas.create_rectangle(xSourisCase*nombrePixel, ySourisCase*nombrePixel, xSourisCase*nombrePixel+nombrePixel, ySourisCase*nombrePixel+nombrePixel, fill=couleurBloc), "typeBloc" : typeDuBloc, "color" : str(couleurBloc)})
 
-    elif editBloc == True:
+    elif editBloc == True: #Y a un truc a faire ici niveau optimisation en mettant tout dans le même try
         try:
             entryIDcle.destroy()
         except:
