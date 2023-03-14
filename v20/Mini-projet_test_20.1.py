@@ -10,7 +10,7 @@ import vlc
 ################################################################### Les fonctions de mise en place des modes ###################################################################
 
 def first_launch (): #La fonction "first_launch" permet de déclaré la plus part des variable global
-    global editBloc, cwd, musicDeFond, imageBoutonPlayTest, imageBoutonEditeurPoubelleMonde, imageBoutonEditeurBlocPorte, editTest, originalPath, imageMonde1, imageMonde2, imageMonde3, imageResetSolo, imageBoutonEditeurItemCle, imageBoutonEditeurEditBloc, newColorBloc, freezeEdit, fenetreeditTest, listeNiveau, id_level, lienfichier, edit, nombrePixel, nombreCaseX, nombreCaseY, imageBoutonSolo, imageBoutonEditeur, ligneX, ligneY, imageBoutonEditeurNiveauHaut, imageBoutonEditeurNiveauBas, imageBoutonEditeurNiveauGauche, imageBoutonEditeurNiveauDroite, imageBoutonEditeurSave, imageBoutonEditeurRetour, imageWIP, imageBoutonEditeurPoubelle, imageBoutonEditeurExit, imageEditeurInfos, fenetreinfosTest, imageBoutonEditeurBlocSolide, couleurBloc, typeDuBloc, imageBoutonEditeurBlocSpawn, delonespebloc, listeMonde, id_monde, solo, lienmonde, imageBoutonEditeurInfos
+    global editBloc, cwd, musicDeFond, imageBoutonPlayTest, fonctionDeplacement, imageBoutonEditeurGomme, imageBoutonEditeurPoubelleMonde, imageBoutonEditeurBlocPorte, editTest, originalPath, imageMonde1, imageMonde2, imageMonde3, imageResetSolo, imageBoutonEditeurItemCle, imageBoutonEditeurEditBloc, newColorBloc, freezeEdit, fenetreeditTest, listeNiveau, id_level, lienfichier, edit, nombrePixel, nombreCaseX, nombreCaseY, imageBoutonSolo, imageBoutonEditeur, ligneX, ligneY, imageBoutonEditeurNiveauHaut, imageBoutonEditeurNiveauBas, imageBoutonEditeurNiveauGauche, imageBoutonEditeurNiveauDroite, imageBoutonEditeurSave, imageBoutonEditeurRetour, imageWIP, imageBoutonEditeurPoubelle, imageBoutonEditeurExit, imageEditeurInfos, fenetreinfosTest, imageBoutonEditeurBlocSolide, couleurBloc, typeDuBloc, imageBoutonEditeurBlocSpawn, delonespebloc, listeMonde, id_monde, solo, lienmonde, imageBoutonEditeurInfos
 
     cwd = os.getcwd()
     cwd = cwd.replace("\\", "/" )
@@ -58,6 +58,7 @@ def first_launch (): #La fonction "first_launch" permet de déclaré la plus par
     imageBoutonEditeurBlocPorte = PhotoImage(file= str(cwd)+"assets/images/bouton_bloc_porte.png")
     imageBoutonEditeurInfos = PhotoImage(file= str(cwd)+"assets/images/help.png")
     imageBoutonEditeurEditBloc = PhotoImage(file= str(cwd)+"assets/images/edit_bloc.png")
+    imageBoutonEditeurGomme = PhotoImage(file= str(cwd)+"assets/images/gomme.png")
     imageResetSolo = PhotoImage(file= str(cwd)+"assets/images/Reset.png")
     imageBoutonPlayTest = PhotoImage(file= str(cwd)+"assets/images/play_test.png")
     imageBoutonEditeurPoubelleMonde = PhotoImage(file = str(cwd)+"assets/images/poubelle_monde.png")
@@ -65,12 +66,13 @@ def first_launch (): #La fonction "first_launch" permet de déclaré la plus par
     imageMonde2 = PhotoImage(file=str(cwd)+"assets/images/M2.png")
     imageMonde3 = PhotoImage(file=str(cwd)+"assets/images/M3.png")
     musicDeFond = vlc.MediaPlayer(str(cwd)+"assets/musica/Gymnopédie No°1.wav")
+    fonctionDeplacement = mouvement_joueur
     init_keys(fenetre)
     menu()
     #bg_music()
 
 def lancement_edition (): #La fonction "lancement_edition" permet de mettre en place tout le système de la création de niveau
-    global edit, lienfichier, ligneX, fenetre_bouton, id_level, numeroNiveau, message_editeur
+    global edit, lienfichier, ligneX, fenetre_bouton, id_level, numeroNiveau, message_editeur, fonctionDeplacement
     close_menu() #Ferme le menu
 
 ######################################################################## Le cadirage
@@ -92,6 +94,7 @@ def lancement_edition (): #La fonction "lancement_edition" permet de mettre en p
     lienfichier = str(cwd)+"assets/data/editeur/monde"+str(id_monde)+"/niveau"+str(id_level[0])+str(id_level[1])+".txt"
     load_level() #Appel de la fonction qui charge les niveau
     load_world()
+    fonctionDeplacement = level_search
     #Fenetre des infos / boutons
     fenetre_bouton = tk.Toplevel() #Création de la fenetre des fonction/boutons de l'éditeur
     fenetre_bouton.geometry('312x621') #taille 1 bouton = taille que tu veux + 3
@@ -108,20 +111,17 @@ def lancement_edition (): #La fonction "lancement_edition" permet de mettre en p
     boutonEditeurPoubelle = Button(fenetre_bouton, image=imageBoutonEditeurPoubelle, bg='white', command=lambda:delete_all_blocks(""))
     boutonEditeurPoubelle.place(x=206,y=0)
 
-    bouton_niveau_up = Button(fenetre_bouton, image=imageBoutonEditeurNiveauHaut, bg='white', command=lambda:level_search("up"))
+    bouton_niveau_up = Button(fenetre_bouton, image=imageBoutonEditeurNiveauHaut, bg='white', command=lambda:level_search(0,"up"))
     bouton_niveau_up.place(x=103,y=103)
 
-    bouton_niveau_down = Button(fenetre_bouton, image=imageBoutonEditeurNiveauBas, bg='white', command=lambda:level_search("down"))
+    bouton_niveau_down = Button(fenetre_bouton, image=imageBoutonEditeurNiveauBas, bg='white', command=lambda:level_search(0,"down"))
     bouton_niveau_down.place(x=103,y=309)
     
-    bouton_niveau_left = Button(fenetre_bouton, image=imageBoutonEditeurNiveauGauche, bg='white', command=lambda:level_search("left"))
+    bouton_niveau_left = Button(fenetre_bouton, image=imageBoutonEditeurNiveauGauche, bg='white', command=lambda:level_search(0,"left"))
     bouton_niveau_left.place(x=0,y=206)
 
-    bouton_niveau_right = Button(fenetre_bouton, image=imageBoutonEditeurNiveauDroite, bg='white', command=lambda:level_search("right"))
+    bouton_niveau_right = Button(fenetre_bouton, image=imageBoutonEditeurNiveauDroite, bg='white', command=lambda:level_search(0,"right"))
     bouton_niveau_right.place(x=206,y=206)
-
-    """boutonEditeurInfo = Button(fenetre_bouton, image=imageBoutonEditeurInfos, bg='white', command=delete_all_level)
-    boutonEditeurInfo.place(x=103,y=412)"""
 
     boutonEditeurDellAll = Button(fenetre_bouton, image=imageBoutonEditeurPoubelleMonde, bg='white', command=delete_all_level)
     boutonEditeurDellAll.place(x=103,y=412)
@@ -141,7 +141,7 @@ def lancement_edition (): #La fonction "lancement_edition" permet de mettre en p
     bouton_item_key = Button(fenetre_bouton, image=imageBoutonEditeurItemCle, bg='white', command=lambda:type_Blocs("key"))
     bouton_item_key.place(x=0,y=309)
 
-    bouton_gomme = Button(fenetre_bouton, image=imageWIP, bg='white', command=delspebloc)
+    bouton_gomme = Button(fenetre_bouton, image=imageBoutonEditeurGomme, bg='white', command=delspebloc)
     bouton_gomme.place(x=0,y=412)
 
     bouton_bloc_port = Button(fenetre_bouton, image=imageBoutonEditeurBlocPorte, command=lambda:type_Blocs("porte"))
@@ -154,8 +154,9 @@ def lancement_edition (): #La fonction "lancement_edition" permet de mettre en p
     message_editeur.place(x=103,y=568, anchor=CENTER)
 
 def lancement_solo ():
-    global joueur, positionJoueur, lienfichier, id_level, solo
+    global joueur, positionJoueur, lienfichier, id_level, solo, fonctionDeplacement
     solo = True
+    fonctionDeplacement = mouvement_joueur
     id_level = [0,0]
     load_level()
     load_world()
@@ -212,9 +213,12 @@ def menu_pre_edition ():
 
     titreMonde = Label(menuPostEdit, text="Select World", font="Arial, 48", fg='white', bg='black')
     titreMonde.place(x=(largeur/2+largeur/4)/2, y=50, anchor=CENTER)
-    
+
     boutonEditPlayTest = Button(menuPostEdit, image=imageBoutonPlayTest, command=play_test)
     boutonEditPlayTest.place(x=(largeur/2+largeur/4)/2, y=(hauteur/2+hauteur/4)-(hauteur/2+hauteur/4)/1.37, anchor=CENTER)
+
+    boutonEditeurInfo = Button(menuPostEdit, image=imageBoutonEditeurInfos, command=info_editeur)
+    boutonEditeurInfo.place(x=(largeur/2+largeur/4)-75,y=75, anchor=CENTER)
 
 def monde_finder_editeur (numMonde):
     global id_monde, lienmonde, lienfichier
@@ -359,7 +363,7 @@ def mouvement_joueur (event, direction):
         if verify == False:
             #Collision limite map 
             if positionJoueur[xyJ] == posMax:
-                level_search(direction)
+                level_search(0,direction)
             #Mouvement
             else:
                 canevas.move(joueur, deplacement[0], deplacement[1])
@@ -447,7 +451,11 @@ def clic_gauche (event): #Utilisation du clic gauche (placer un bloc, détruire,
                     del listeNiveau[padsouris]
                     padsouris -= 1
                 padsouris += 1
-            listeNiveau.append({"coordsBloc" : [xSourisCase, ySourisCase], "idBloc" : canevas.create_rectangle(xSourisCase*nombrePixel, ySourisCase*nombrePixel, xSourisCase*nombrePixel+nombrePixel, ySourisCase*nombrePixel+nombrePixel, fill=couleurBloc), "typeBloc" : typeDuBloc, "color" : str(couleurBloc)})
+            if typeDuBloc == 2:
+                demiPixel = nombrePixel/4
+            else:
+                demiPixel = 0
+            listeNiveau.append({"coordsBloc" : [xSourisCase, ySourisCase], "idBloc" : canevas.create_rectangle(xSourisCase*nombrePixel+demiPixel, ySourisCase*nombrePixel+demiPixel, xSourisCase*nombrePixel+nombrePixel-demiPixel, ySourisCase*nombrePixel+nombrePixel-demiPixel, fill=couleurBloc), "typeBloc" : typeDuBloc, "color" : str(couleurBloc)})
 
     elif editBloc == True: #Y a un truc a faire ici niveau optimisation en mettant tout dans le même try
         try:
@@ -561,13 +569,14 @@ def load_world (): #Chargement du monde
         with open(lienmonde, "rb") as fichierMonde:
             listeMonde = pickle.load(fichierMonde)
 
-def info_editeur (event=0): #Fenêtre d'infos des action possible
+def info_editeur (): #Fenêtre d'infos des action possible
     global fenetreinfosTest, fenetre_infos
     if fenetreinfosTest == False:
         fenetre_infos = tk.Toplevel()
         fenetre_infos.resizable(False,False)
         fenetre_infos.geometry('1200x600')
         fenetre_infos.attributes('-topmost',1)
+        fenetre_infos.protocol("WM_DELETE_WINDOW", disable_event)
         infosLabel = Label(fenetre_infos, image=imageEditeurInfos)
         infosLabel.pack()
         fenetreinfosTest = True
@@ -722,7 +731,7 @@ def retour_menu (goToMenu): #Retour au menu
     lienfichier = "assets/data/menu.txt"
     load_level()
 
-def load_level (event=0): #Charge les niveau et détruit les ancien
+def load_level (): #Charge les niveau et détruit les ancien
     global lienfichier, listeNiveau, couleurBloc, typeDuBloc
     for blocinListeNiveau in listeNiveau:
         canevas.delete(blocinListeNiveau["idBloc"])
@@ -731,6 +740,9 @@ def load_level (event=0): #Charge les niveau et détruit les ancien
     if os.path.exists(lienfichier):
         with open(lienfichier, "rb") as fichier:
             listeNiveau = pickle.load(fichier)
+
+    elif solo == 1:
+        pass
 
     else:
         if edit == True:
@@ -742,162 +754,76 @@ def load_level (event=0): #Charge les niveau et détruit les ancien
 
     for blocinListeNiveau in listeNiveau:
         couleurBloc = blocinListeNiveau["color"]
-        blocinListeNiveau["idBloc"] = (canevas.create_rectangle(blocinListeNiveau["coordsBloc"][0]*nombrePixel, blocinListeNiveau["coordsBloc"][1]*nombrePixel, blocinListeNiveau["coordsBloc"][0]*nombrePixel+nombrePixel, blocinListeNiveau["coordsBloc"][1]*nombrePixel+nombrePixel, fill=couleurBloc))
+        if blocinListeNiveau["typeBloc"] == 2:
+            demiPixel = nombrePixel/4
+        else:
+            demiPixel = 0
+        blocinListeNiveau["idBloc"] = (canevas.create_rectangle(blocinListeNiveau["coordsBloc"][0]*nombrePixel+demiPixel, blocinListeNiveau["coordsBloc"][1]*nombrePixel+demiPixel, blocinListeNiveau["coordsBloc"][0]*nombrePixel+nombrePixel-demiPixel, blocinListeNiveau["coordsBloc"][1]*nombrePixel+nombrePixel-demiPixel, fill=couleurBloc))
     typeDuBloc = 0
     couleurBloc = 'black'
 
-def level_search (direction): #Cherche le bon niveau a charger
+def level_search (event, direction): #Cherche le bon niveau a charger
     global id_level, lienfichier, numeroNiveau
     if editTest == True:
-        if direction =='up':
-            lienfichier = str(cwd)+"assets/data/test_editeur/monde"+str(id_monde)+"/niveau"+str(id_level[0])+str(id_level[1]-1)+".txt"
-            if os.path.exists(lienfichier):
-                id_level[1] -= 1
-                load_level()
-                positionJoueur[1] = nombreCaseY-1
-                canevas.moveto(joueur, positionJoueur[0]*nombrePixel-1, positionJoueur[1]*nombrePixel-1)
-
-        if direction =='down':
-            lienfichier = str(cwd)+"assets/data/test_editeur/monde"+str(id_monde)+"/niveau"+str(id_level[0])+str(id_level[1]+1)+".txt"
-            if os.path.exists(lienfichier):
-                id_level[1] += 1
-                load_level()
-                positionJoueur[1] = 0
-                canevas.moveto(joueur, positionJoueur[0]*nombrePixel-1, -positionJoueur[1]*nombrePixel-1)
-
-        if direction =='left':
-            lienfichier = str(cwd)+"assets/data/test_editeur/monde"+str(id_monde)+"/niveau"+str(id_level[0]-1)+str(id_level[1])+".txt"
-            if os.path.exists(lienfichier):
-                id_level[0] -= 1
-                load_level()
-                positionJoueur[0] = nombreCaseX-1
-                canevas.moveto(joueur, positionJoueur[0]*nombrePixel-1, positionJoueur[1]*nombrePixel-1)
-
-        if direction =='right':
-            lienfichier = str(cwd)+"assets/data/test_editeur/monde"+str(id_monde)+"/niveau"+str(id_level[0]+1)+str(id_level[1])+".txt"
-            if os.path.exists(lienfichier):
-                id_level[0] += 1
-                load_level()
-                positionJoueur[0] = 0
-                canevas.moveto(joueur, -positionJoueur[0]*nombrePixel-1, positionJoueur[1]*nombrePixel-1)
-    
+        repertoirJeu = "test_editeur/"
     elif solo == True:
-        if direction =='up':
-            lienfichier = str(cwd)+"assets/data/solo/monde"+str(id_monde)+"/niveau"+str(id_level[0])+str(id_level[1]-1)+".txt"
-            if os.path.exists(lienfichier):
-                id_level[1] -= 1
-                load_level()
+        repertoirJeu = "solo/"
+    elif edit == True:
+        repertoirJeu = "editeur/"
+
+    save_level()
+    if direction =='up':
+        lienfichier = str(cwd)+"assets/data/"+str(repertoirJeu)+"monde"+str(id_monde)+"/niveau"+str(id_level[0])+str(id_level[1]-1)+".txt"
+        if os.path.exists(lienfichier):
+            id_level[1] -= 1
+            if solo == True:
                 positionJoueur[1] = nombreCaseY-1
                 canevas.moveto(joueur, positionJoueur[0]*nombrePixel-1, positionJoueur[1]*nombrePixel-1)
 
-        if direction =='down':
-            lienfichier = str(cwd)+"assets/data/solo/monde"+str(id_monde)+"/niveau"+str(id_level[0])+str(id_level[1]+1)+".txt"
-            if os.path.exists(lienfichier):
-                id_level[1] += 1
-                load_level()
+    if direction =='down':
+        lienfichier = str(cwd)+"assets/data/"+str(repertoirJeu)+"monde"+str(id_monde)+"/niveau"+str(id_level[0])+str(id_level[1]+1)+".txt"
+        if os.path.exists(lienfichier):
+            id_level[1] += 1
+            if solo == True:
                 positionJoueur[1] = 0
                 canevas.moveto(joueur, positionJoueur[0]*nombrePixel-1, -positionJoueur[1]*nombrePixel-1)
 
-        if direction =='left':
-            lienfichier = str(cwd)+"assets/data/solo/monde"+str(id_monde)+"/niveau"+str(id_level[0]-1)+str(id_level[1])+".txt"
-            if os.path.exists(lienfichier):
-                id_level[0] -= 1
-                load_level()
+    if direction =='left':
+        lienfichier = str(cwd)+"assets/data/"+str(repertoirJeu)+"monde"+str(id_monde)+"/niveau"+str(id_level[0]-1)+str(id_level[1])+".txt"
+        if os.path.exists(lienfichier):
+            id_level[0] -= 1
+            if solo == True:
                 positionJoueur[0] = nombreCaseX-1
                 canevas.moveto(joueur, positionJoueur[0]*nombrePixel-1, positionJoueur[1]*nombrePixel-1)
 
-        if direction =='right':
-            lienfichier = str(cwd)+"assets/data/solo/monde"+str(id_monde)+"/niveau"+str(id_level[0]+1)+str(id_level[1])+".txt"
-            if os.path.exists(lienfichier):
-                id_level[0] += 1
-                load_level()
+    if direction =='right':
+        lienfichier = str(cwd)+"assets/data/"+str(repertoirJeu)+"monde"+str(id_monde)+"/niveau"+str(id_level[0]+1)+str(id_level[1])+".txt"
+        if os.path.exists(lienfichier):
+            id_level[0] += 1
+            if solo == True:
                 positionJoueur[0] = 0
                 canevas.moveto(joueur, -positionJoueur[0]*nombrePixel-1, positionJoueur[1]*nombrePixel-1)
-    else:
-        if direction =='up':
-            lienfichier = "assets/data/editeur/monde"+str(id_monde)+"/niveau"+str(id_level[0])+str(id_level[1]-1)+".txt"
-            if os.path.exists(lienfichier):
-                lienfichier = "assets/data/editeur/monde"+str(id_monde)+"/niveau"+str(id_level[0])+str(id_level[1])+".txt"
-                save_level()
-                id_level[1] -= 1 # -1 comme repère en haut gauche
-                lienfichier = "assets/data/editeur/monde"+str(id_monde)+"/niveau"+str(id_level[0])+str(id_level[1])+".txt"
-                load_level()
-                numeroNiveau.config(text=id_level)
-            else:
-                lienfichier = "assets/data/editeur/monde"+str(id_monde)+"/niveau"+str(id_level[0])+str(id_level[1])+".txt"
-                save_level()
-                delete_all_blocks("FORCE")
-                id_level[1] -= 1
-                lienfichier = "assets/data/editeur/monde"+str(id_monde)+"/niveau"+str(id_level[0])+str(id_level[1])+".txt"
-                numeroNiveau.config(text=id_level)
 
-        if direction =='down':
-            lienfichier = "assets/data/editeur/monde"+str(id_monde)+"/niveau"+str(id_level[0])+str(id_level[1]+1)+".txt"
-            if os.path.exists(lienfichier):
-                lienfichier = "assets/data/editeur/monde"+str(id_monde)+"/niveau"+str(id_level[0])+str(id_level[1])+".txt"
-                save_level()
-                id_level[1] += 1
-                lienfichier = "assets/data/editeur/monde"+str(id_monde)+"/niveau"+str(id_level[0])+str(id_level[1])+".txt"
-                load_level()
-                numeroNiveau.config(text=id_level)
-            else:
-                lienfichier = "assets/data/editeur/monde"+str(id_monde)+"/niveau"+str(id_level[0])+str(id_level[1])+".txt"
-                save_level()
-                delete_all_blocks("FORCE")
-                id_level[1] += 1
-                lienfichier = "assets/data/editeur/monde"+str(id_monde)+"/niveau"+str(id_level[0])+str(id_level[1])+".txt"
-                numeroNiveau.config(text=id_level)
-
-        if direction =='left':
-            lienfichier = "assets/data/editeur/monde"+str(id_monde)+"/niveau"+str(id_level[0]-1)+str(id_level[1])+".txt"
-            if os.path.exists(lienfichier):
-                lienfichier = "assets/data/editeur/monde"+str(id_monde)+"/niveau"+str(id_level[0])+str(id_level[1])+".txt"
-                save_level()
-                id_level[0] -= 1
-                lienfichier = "assets/data/editeur/monde"+str(id_monde)+"/niveau"+str(id_level[0])+str(id_level[1])+".txt"
-                load_level()
-                numeroNiveau.config(text=id_level)
-            else:
-                lienfichier = "assets/data/editeur/monde"+str(id_monde)+"/niveau"+str(id_level[0])+str(id_level[1])+".txt"
-                save_level()
-                delete_all_blocks("FORCE")
-                id_level[0] -= 1
-                lienfichier = "assets/data/editeur/monde"+str(id_monde)+"/niveau"+str(id_level[0])+str(id_level[1])+".txt"
-                numeroNiveau.config(text=id_level)
-
-        if direction =='right':
-            lienfichier = "assets/data/editeur/monde"+str(id_monde)+"/niveau"+str(id_level[0]+1)+str(id_level[1])+".txt"
-            if os.path.exists(lienfichier):
-                lienfichier = "assets/data/editeur/monde"+str(id_monde)+"/niveau"+str(id_level[0])+str(id_level[1])+".txt"
-                save_level()
-                id_level[0] += 1
-                lienfichier = "assets/data/editeur/monde"+str(id_monde)+"/niveau"+str(id_level[0])+str(id_level[1])+".txt"
-                load_level()
-                numeroNiveau.config(text=id_level)
-            else:
-                lienfichier = "assets/data/editeur/monde"+str(id_monde)+"/niveau"+str(id_level[0])+str(id_level[1])+".txt"
-                save_level()
-                delete_all_blocks("FORCE")
-                id_level[0] += 1
-                lienfichier = "assets/data/editeur/monde"+str(id_monde)+"/niveau"+str(id_level[0])+str(id_level[1])+".txt"
-                numeroNiveau.config(text=id_level)
+    if edit == True:
+        numeroNiveau.config(text=id_level)
+    load_level()
 
 def init_keys(f): #Les Binds
     #Binds direction
-    f.bind("<Key-z>", lambda event : mouvement_joueur (event,"up"))
-    f.bind("<Key-s>", lambda event : mouvement_joueur (event,"down"))
-    f.bind("<Key-q>", lambda event : mouvement_joueur (event,"left"))
-    f.bind("<Key-d>", lambda event : mouvement_joueur (event,"right"))
+    f.bind("<Key-z>", lambda event : fonctionDeplacement (event,"up"))
+    f.bind("<Key-s>", lambda event : fonctionDeplacement (event,"down"))
+    f.bind("<Key-q>", lambda event : fonctionDeplacement (event,"left"))
+    f.bind("<Key-d>", lambda event : fonctionDeplacement (event,"right"))
 
-    f.bind("<Key-Z>", lambda event : mouvement_joueur (event,"up"))
-    f.bind("<Key-S>", lambda event : mouvement_joueur (event,"down"))
-    f.bind("<Key-Q>", lambda event : mouvement_joueur (event,"left"))
-    f.bind("<Key-D>", lambda event : mouvement_joueur (event,"right"))
+    f.bind("<Key-Z>", lambda event : fonctionDeplacement (event,"up"))
+    f.bind("<Key-S>", lambda event : fonctionDeplacement (event,"down"))
+    f.bind("<Key-Q>", lambda event : fonctionDeplacement (event,"left"))
+    f.bind("<Key-D>", lambda event : fonctionDeplacement (event,"right"))
 
-    f.bind("<Key-Up>", lambda event : mouvement_joueur (event,"up"))
-    f.bind("<Key-Down>", lambda event : mouvement_joueur (event,"down"))
-    f.bind("<Key-Left>", lambda event : mouvement_joueur (event,"left"))
-    f.bind("<Key-Right>", lambda event :mouvement_joueur (event,"right"))
+    f.bind("<Key-Up>", lambda event : fonctionDeplacement (event,"up"))
+    f.bind("<Key-Down>", lambda event : fonctionDeplacement (event,"down"))
+    f.bind("<Key-Left>", lambda event : fonctionDeplacement (event,"left"))
+    f.bind("<Key-Right>", lambda event : fonctionDeplacement (event,"right"))
 
     #Bind retour
     f.bind("<Escape>", lambda event : exit_key(event))
@@ -936,5 +862,6 @@ canevas.pack()
 fenetre.mainloop()
 
 """
-
+Changer d'emplacement l'aide
+réorganiser la fenetre editeur
 """
