@@ -1,7 +1,6 @@
 #test copycoly
 import shutil
 import os
-import distutils.dir_util
 
 cwd = os.getcwd()
 cwd = cwd.replace("\\", "/" )
