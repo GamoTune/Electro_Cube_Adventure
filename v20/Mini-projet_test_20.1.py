@@ -9,8 +9,8 @@ import vlc
 
 ################################################################### Les fonctions de mise en place des modes ###################################################################
 
-def first_launch (): #La fonction "first_launch" permet de déclaré la plus part des variable global
-    global editBloc, cwd, musicDeFond, imageBoutonPlayTest, fonctionDeplacement, imageBoutonEditeurGomme, imageBoutonEditeurPoubelleMonde, imageBoutonEditeurBlocPorte, editTest, originalPath, imageMonde1, imageMonde2, imageMonde3, imageResetSolo, imageBoutonEditeurItemCle, imageBoutonEditeurEditBloc, newColorBloc, freezeEdit, fenetreeditTest, listeNiveau, id_level, lienfichier, edit, nombrePixel, nombreCaseX, nombreCaseY, imageBoutonSolo, imageBoutonEditeur, ligneX, ligneY, imageBoutonEditeurNiveauHaut, imageBoutonEditeurNiveauBas, imageBoutonEditeurNiveauGauche, imageBoutonEditeurNiveauDroite, imageBoutonEditeurSave, imageBoutonEditeurRetour, imageWIP, imageBoutonEditeurPoubelle, imageBoutonEditeurExit, imageEditeurInfos, fenetreinfosTest, imageBoutonEditeurBlocSolide, couleurBloc, typeDuBloc, imageBoutonEditeurBlocSpawn, delonespebloc, listeMonde, id_monde, solo, lienmonde, imageBoutonEditeurInfos
+def first_launch (): #La fonction "first_launch" permet de déclaré la plus part des variable globald
+    global editBloc, cwd, musicDeFond, imageBoutonPlayTest, fonctionDeplacement, imageBoutonEditeurGommeSelect, imageBoutonEditeurGomme, imageBoutonEditeurPoubelleMonde, imageBoutonEditeurBlocPorte, editTest, originalPath, imageMonde1, imageMonde2, imageMonde3, imageResetSolo, imageBoutonEditeurItemCle, imageBoutonEditeurEditBloc, newColorBloc, freezeEdit, fenetreeditTest, listeNiveau, id_level, lienfichier, edit, nombrePixel, nombreCaseX, nombreCaseY, imageBoutonSolo, imageBoutonEditeur, ligneX, ligneY, imageBoutonEditeurNiveauHaut, imageBoutonEditeurNiveauBas, imageBoutonEditeurNiveauGauche, imageBoutonEditeurNiveauDroite, imageBoutonEditeurSave, imageBoutonEditeurRetour, imageWIP, imageBoutonEditeurPoubelle, imageBoutonEditeurExit, imageEditeurInfos, fenetreinfosTest, imageBoutonEditeurBlocSolide, couleurBloc, typeDuBloc, imageBoutonEditeurBlocSpawn, delonespebloc, listeMonde, id_monde, solo, lienmonde, imageBoutonEditeurInfos
 
     cwd = os.getcwd()
     cwd = cwd.replace("\\", "/" )
@@ -59,20 +59,22 @@ def first_launch (): #La fonction "first_launch" permet de déclaré la plus par
     imageBoutonEditeurInfos = PhotoImage(file= str(cwd)+"assets/images/help.png")
     imageBoutonEditeurEditBloc = PhotoImage(file= str(cwd)+"assets/images/edit_bloc.png")
     imageBoutonEditeurGomme = PhotoImage(file= str(cwd)+"assets/images/gomme.png")
+    imageBoutonEditeurGommeSelect = PhotoImage(file= str(cwd)+"assets/images/gomme_select.png")
     imageResetSolo = PhotoImage(file= str(cwd)+"assets/images/Reset.png")
     imageBoutonPlayTest = PhotoImage(file= str(cwd)+"assets/images/play_test.png")
     imageBoutonEditeurPoubelleMonde = PhotoImage(file = str(cwd)+"assets/images/poubelle_monde.png")
-    imageMonde1 = PhotoImage(file=str(cwd)+"assets/images/M1.png")
-    imageMonde2 = PhotoImage(file=str(cwd)+"assets/images/M2.png")
-    imageMonde3 = PhotoImage(file=str(cwd)+"assets/images/M3.png")
+    imageMonde1 = PhotoImage(file= str(cwd)+"assets/images/M1.png")
+    imageMonde2 = PhotoImage(file= str(cwd)+"assets/images/M2.png")
+    imageMonde3 = PhotoImage(file= str(cwd)+"assets/images/M3.png")
     musicDeFond = vlc.MediaPlayer(str(cwd)+"assets/musica/Gymnopédie No°1.wav")
+    
     fonctionDeplacement = mouvement_joueur
     init_keys(fenetre)
     menu()
     #bg_music()
 
 def lancement_edition (): #La fonction "lancement_edition" permet de mettre en place tout le système de la création de niveau
-    global edit, lienfichier, ligneX, fenetre_bouton, id_level, numeroNiveau, message_editeur, fonctionDeplacement
+    global edit, lienfichier, ligneX, fenetre_bouton, id_level, numeroNiveau, message_editeur, fonctionDeplacement, boutonGomme
     close_menu() #Ferme le menu
 
 ######################################################################## Le cadirage
@@ -101,57 +103,28 @@ def lancement_edition (): #La fonction "lancement_edition" permet de mettre en p
     fenetre_bouton.resizable(False,False) #Fenetre non redimentionable
     fenetre_bouton.attributes('-topmost',1)
     fenetre_bouton.protocol("WM_DELETE_WINDOW", disable_event)
+    fenetre_bouton.attributes('-alpha',1)
 
-    bouton_save = Button(fenetre_bouton, image=imageBoutonEditeurSave, command=save_level)
-    bouton_save.place(x=0,y=0)
-
-    bouton_retour = Button(fenetre_bouton, image=imageBoutonEditeurRetour, command=deleteLastBlock)
-    bouton_retour.place(x=103,y=0)
-
-    boutonEditeurPoubelle = Button(fenetre_bouton, image=imageBoutonEditeurPoubelle, command=lambda:delete_all_blocks(""))
-    boutonEditeurPoubelle.place(x=206,y=0)
-
-    bouton_niveau_up = Button(fenetre_bouton, image=imageBoutonEditeurNiveauHaut, command=lambda:level_search(0,"up"))
-    bouton_niveau_up.place(x=103,y=103)
-
-    bouton_niveau_down = Button(fenetre_bouton, image=imageBoutonEditeurNiveauBas, command=lambda:level_search(0,"down"))
-    bouton_niveau_down.place(x=103,y=309)
-    
-    bouton_niveau_left = Button(fenetre_bouton, image=imageBoutonEditeurNiveauGauche, command=lambda:level_search(0,"left"))
-    bouton_niveau_left.place(x=0,y=206)
-
-    bouton_niveau_right = Button(fenetre_bouton, image=imageBoutonEditeurNiveauDroite, command=lambda:level_search(0,"right"))
-    bouton_niveau_right.place(x=206,y=206)
-
-    boutonEditeurDellAll = Button(fenetre_bouton, image=imageBoutonEditeurPoubelleMonde, command=delete_all_level)
-    boutonEditeurDellAll.place(x=103,y=412)
-
-    boutonEditeurExit = Button(fenetre_bouton, image=imageBoutonEditeurExit, command=lambda:retour_menu("postEditMenu"))
-    boutonEditeurExit.place(x=206,y=515)
-
+    Button(fenetre_bouton, image=imageBoutonEditeurSave, command=save_level).place(x=0,y=0) #bouton_save
+    Button(fenetre_bouton, image=imageBoutonEditeurRetour, command=deleteLastBlock).place(x=103,y=0) #bouton_retour
+    Button(fenetre_bouton, image=imageBoutonEditeurPoubelle, command=lambda:delete_all_blocks("")).place(x=206,y=0) #boutonEditeurPoubelle
+    Button(fenetre_bouton, image=imageBoutonEditeurNiveauHaut, command=lambda:level_search("up")).place(x=103,y=103) #bouton_niveau_up
+    Button(fenetre_bouton, image=imageBoutonEditeurNiveauBas, command=lambda:level_search("down")).place(x=103,y=309) #bouton_niveau_down
+    Button(fenetre_bouton, image=imageBoutonEditeurNiveauGauche, command=lambda:level_search("left")).place(x=0,y=206) #bouton_niveau_left
+    Button(fenetre_bouton, image=imageBoutonEditeurNiveauDroite, command=lambda:level_search("right")).place(x=206,y=206) #bouton_niveau_right
+    Button(fenetre_bouton, image=imageBoutonEditeurPoubelleMonde, command=delete_all_level).place(x=103,y=412) #boutonEditeurDellAll
+    Button(fenetre_bouton, image=imageBoutonEditeurExit, command=lambda:retour_menu("postEditMenu")).place(x=206,y=515) #boutonEditeurExit
     numeroNiveau = Label(fenetre_bouton, text=id_level, font="Arial, 30")
-    numeroNiveau.pack(padx=103, pady=230)
-
-    bouton_bloc_solide = Button(fenetre_bouton, image=imageBoutonEditeurBlocSolide, command=lambda:type_Blocs("solide"))
-    bouton_bloc_solide.place(x=0,y=103)
-
-    bouton_bloc_spawn = Button(fenetre_bouton, image=imageBoutonEditeurBlocSpawn, command=lambda:type_Blocs("spawn"))
-    bouton_bloc_spawn.place(x=206,y=103)
-
-    bouton_item_key = Button(fenetre_bouton, image=imageBoutonEditeurItemCle, command=lambda:type_Blocs("key"))
-    bouton_item_key.place(x=0,y=309)
-
-    bouton_gomme = Button(fenetre_bouton, image=imageBoutonEditeurGomme, command=delspebloc)
-    bouton_gomme.place(x=0,y=412)
-
-    bouton_bloc_port = Button(fenetre_bouton, image=imageBoutonEditeurBlocPorte, command=lambda:type_Blocs("porte"))
-    bouton_bloc_port.place(x=206,y=309)
-
-    bouton_edit = Button(fenetre_bouton, image=imageBoutonEditeurEditBloc, command=set_edit_objet)
-    bouton_edit.place(x=206,y=412)
-    
+    numeroNiveau.pack(padx=103, pady=230) #numeroNiveau
+    Button(fenetre_bouton, image=imageBoutonEditeurBlocSolide, command=lambda:type_Blocs("solide")).place(x=0,y=103) #bouton_bloc_solide
+    Button(fenetre_bouton, image=imageBoutonEditeurBlocSpawn, command=lambda:type_Blocs("spawn")).place(x=206,y=103) #bouton_bloc_spawn
+    Button(fenetre_bouton, image=imageBoutonEditeurItemCle, command=lambda:type_Blocs("key")).place(x=0,y=309) #bouton_item_key
+    boutonGomme = Button(fenetre_bouton, image=imageBoutonEditeurGomme, command=delspebloc)
+    boutonGomme.place(x=0,y=412) #bouton_gomme
+    Button(fenetre_bouton, image=imageBoutonEditeurBlocPorte, command=lambda:type_Blocs("porte")).place(x=206,y=309) #bouton_bloc_port
+    Button(fenetre_bouton, image=imageBoutonEditeurEditBloc, command=set_edit_objet).place(x=206,y=412) #bouton_edit
     message_editeur = Label(fenetre_bouton, text="", font="Arial, 30" )
-    message_editeur.place(x=103,y=568, anchor=CENTER)
+    message_editeur.place(x=103,y=568, anchor=CENTER) #message_editeur
 
 def lancement_solo ():
     global joueur, positionJoueur, lienfichier, id_level, solo, fonctionDeplacement
@@ -172,7 +145,7 @@ def lancement_solo ():
         load_level()
         tkinter.messagebox.showerror("Erreur", "Il n'y a pas de bloc d'apparition dans ce monde")
     if solo == True:
-        joueur = canevas.create_rectangle(0, 0, nombrePixel, nombrePixel, fill='blue')
+        joueur = canevas.create_rectangle(0, 0, nombrePixel, nombrePixel, fill='blue', width=0)
         canevas.move(joueur,posjxstart*nombrePixel, posjystart*nombrePixel)
         positionJoueur = [posjxstart, posjystart] #0 = x & 1 = y
         close_menu()
@@ -292,7 +265,7 @@ def bg_music ():
 
 ################################################################### Fonction du joueur ###################################################################
 
-def mouvement_joueur (event, direction):
+def mouvement_joueur (direction):
     global positionJoueur, listeMonde
 
     if solo == True:
@@ -363,7 +336,7 @@ def mouvement_joueur (event, direction):
         if verify == False:
             #Collision limite map 
             if positionJoueur[xyJ] == posMax:
-                level_search(0,direction)
+                level_search(direction)
             #Mouvement
             else:
                 canevas.move(joueur, deplacement[0], deplacement[1])
@@ -432,15 +405,12 @@ def clic_gauche (event): #Utilisation du clic gauche (placer un bloc, détruire,
         verify = False
         while padsouris != len(listeNiveau):
             if xSourisCase == listeNiveau[padsouris]["coordsBloc"][0] and ySourisCase == listeNiveau[padsouris]["coordsBloc"][1]:
-
                 if delonespebloc == True: #La gomme
                     canevas.delete(listeNiveau[padsouris]["idBloc"])
                     del listeNiveau[padsouris]
                     padsouris -= 1
-
                 else:
                     verify = True
-
             padsouris += 1
 
         if verify == False and delonespebloc == False:
@@ -460,17 +430,8 @@ def clic_gauche (event): #Utilisation du clic gauche (placer un bloc, détruire,
     elif editBloc == True: #Y a un truc a faire ici niveau optimisation en mettant tout dans le même try
         try:
             entryIDcle.destroy()
-        except:
-            pass
-        try:
             boutonIDCleValidation.destroy()
-        except:
-            pass
-        try:
             couleurSet.destroy()
-        except:
-            pass
-        try:
             textIDKey.destroy()
         except:
             pass
@@ -531,7 +492,7 @@ def delete_all_blocks (val): #Destruction total du niveau
             canevas.delete(blocinListeNiveau["idBloc"])
         listeNiveau.clear()
 
-def deleteLastBlock (event=0): #Destruction du dernier bloc placé
+def deleteLastBlock (): #Destruction du dernier bloc placé
     global listeNiveau
     if len(listeNiveau) > 0 and edit == True:
         canevas.delete(listeNiveau[-1]["idBloc"])
@@ -585,11 +546,13 @@ def info_editeur (): #Fenêtre d'infos des action possible
         fenetreinfosTest = False
 
 def delspebloc (): #Toggle de la destruciton d'un bloc spécifique (utilise clic_gauche pour delete)
-    global delonespebloc
+    global delonespebloc, boutonGomme
     if delonespebloc == False:
         delonespebloc = True
+        boutonGomme.configure(image = imageBoutonEditeurGommeSelect)
     else:
         delonespebloc = False
+        boutonGomme.configure(image = imageBoutonEditeurGomme)
 
 def set_edit_objet (): #Mise en place du mode d'édition de bloc
     global edit, fenetreeditTest, fenetre_edit_bloc, editBloc, textTypeBlocSelect
@@ -663,7 +626,7 @@ def change_color (c): #Change la couleur du bloc selectionner
 def disable_event(): #Disable
    pass
 
-def exit_key (event): #Permet des retour au menu avec la touche "echap"
+def exit_key (): #Permet des retour au menu avec la touche "echap"
     global editTest
     if edit == True:
         retour_menu("postEditMenu")
@@ -762,7 +725,7 @@ def load_level (): #Charge les niveau et détruit les ancien
     typeDuBloc = 0
     couleurBloc = 'black'
 
-def level_search (event, direction): #Cherche le bon niveau a charger
+def level_search (direction): #Cherche le bon niveau a charger
     global id_level, lienfichier, numeroNiveau
     if editTest == True:
         repertoirJeu = "test_editeur/"
@@ -805,36 +768,36 @@ def level_search (event, direction): #Cherche le bon niveau a charger
                 canevas.moveto(joueur, -positionJoueur[0]*nombrePixel-1, positionJoueur[1]*nombrePixel-1)
 
     if edit == True:
-        numeroNiveau.config(text=id_level)
+        numeroNiveau.configure(text=id_level)
     load_level()
 
 def init_keys(f): #Les Binds
     #Binds direction
-    f.bind("<Key-z>", lambda event : fonctionDeplacement (event,"up"))
-    f.bind("<Key-s>", lambda event : fonctionDeplacement (event,"down"))
-    f.bind("<Key-q>", lambda event : fonctionDeplacement (event,"left"))
-    f.bind("<Key-d>", lambda event : fonctionDeplacement (event,"right"))
+    f.bind("<Key-z>", lambda event : fonctionDeplacement ("up"))
+    f.bind("<Key-s>", lambda event : fonctionDeplacement ("down"))
+    f.bind("<Key-q>", lambda event : fonctionDeplacement ("left"))
+    f.bind("<Key-d>", lambda event : fonctionDeplacement ("right"))
 
-    f.bind("<Key-Z>", lambda event : fonctionDeplacement (event,"up"))
-    f.bind("<Key-S>", lambda event : fonctionDeplacement (event,"down"))
-    f.bind("<Key-Q>", lambda event : fonctionDeplacement (event,"left"))
-    f.bind("<Key-D>", lambda event : fonctionDeplacement (event,"right"))
+    f.bind("<Key-Z>", lambda event : fonctionDeplacement ("up"))
+    f.bind("<Key-S>", lambda event : fonctionDeplacement ("down"))
+    f.bind("<Key-Q>", lambda event : fonctionDeplacement ("left"))
+    f.bind("<Key-D>", lambda event : fonctionDeplacement ("right"))
 
-    f.bind("<Key-Up>", lambda event : fonctionDeplacement (event,"up"))
-    f.bind("<Key-Down>", lambda event : fonctionDeplacement (event,"down"))
-    f.bind("<Key-Left>", lambda event : fonctionDeplacement (event,"left"))
-    f.bind("<Key-Right>", lambda event : fonctionDeplacement (event,"right"))
+    f.bind("<Key-Up>", lambda event : fonctionDeplacement ("up"))
+    f.bind("<Key-Down>", lambda event : fonctionDeplacement ("down"))
+    f.bind("<Key-Left>", lambda event : fonctionDeplacement ("left"))
+    f.bind("<Key-Right>", lambda event : fonctionDeplacement ("right"))
 
     #Bind retour
-    f.bind("<Escape>", lambda event : exit_key(event))
+    f.bind("<Escape>", lambda event : exit_key())
 
     #Bind clic gauche
     f.bind("<B1-Motion>", lambda event : clic_gauche(event))
     f.bind("<Button-1>", lambda event : clic_gauche(event))
 
     #Bind molette
-    f.bind("<Button-2>", lambda event : deleteLastBlock(event))
-    f.bind("<MouseWheel>", lambda event : deleteLastBlock(event))
+    f.bind("<Button-2>", lambda event : deleteLastBlock())
+    f.bind("<MouseWheel>", lambda event : deleteLastBlock())
 
 def reset_solo():
     attention = tkinter.messagebox.askyesno("Attention", "Voulez vous reset la progression ?")
@@ -862,6 +825,5 @@ canevas.pack()
 fenetre.mainloop()
 
 """
-Changer d'emplacement l'aide
-réorganiser la fenetre editeur
+Petit bug quand quand on change de niveau editeur, 2 niveau passe au lieux d'1
 """
