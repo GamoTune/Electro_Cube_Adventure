@@ -102,52 +102,52 @@ def lancement_edition (): #La fonction "lancement_edition" permet de mettre en p
     fenetre_bouton.attributes('-topmost',1)
     fenetre_bouton.protocol("WM_DELETE_WINDOW", disable_event)
 
-    bouton_save = Button(fenetre_bouton, image=imageBoutonEditeurSave, bg='white', command=save_level)
+    bouton_save = Button(fenetre_bouton, image=imageBoutonEditeurSave, command=save_level)
     bouton_save.place(x=0,y=0)
 
-    bouton_retour = Button(fenetre_bouton, image=imageBoutonEditeurRetour, bg='white', command=deleteLastBlock)
+    bouton_retour = Button(fenetre_bouton, image=imageBoutonEditeurRetour, command=deleteLastBlock)
     bouton_retour.place(x=103,y=0)
 
-    boutonEditeurPoubelle = Button(fenetre_bouton, image=imageBoutonEditeurPoubelle, bg='white', command=lambda:delete_all_blocks(""))
+    boutonEditeurPoubelle = Button(fenetre_bouton, image=imageBoutonEditeurPoubelle, command=lambda:delete_all_blocks(""))
     boutonEditeurPoubelle.place(x=206,y=0)
 
-    bouton_niveau_up = Button(fenetre_bouton, image=imageBoutonEditeurNiveauHaut, bg='white', command=lambda:level_search(0,"up"))
+    bouton_niveau_up = Button(fenetre_bouton, image=imageBoutonEditeurNiveauHaut, command=lambda:level_search(0,"up"))
     bouton_niveau_up.place(x=103,y=103)
 
-    bouton_niveau_down = Button(fenetre_bouton, image=imageBoutonEditeurNiveauBas, bg='white', command=lambda:level_search(0,"down"))
+    bouton_niveau_down = Button(fenetre_bouton, image=imageBoutonEditeurNiveauBas, command=lambda:level_search(0,"down"))
     bouton_niveau_down.place(x=103,y=309)
     
-    bouton_niveau_left = Button(fenetre_bouton, image=imageBoutonEditeurNiveauGauche, bg='white', command=lambda:level_search(0,"left"))
+    bouton_niveau_left = Button(fenetre_bouton, image=imageBoutonEditeurNiveauGauche, command=lambda:level_search(0,"left"))
     bouton_niveau_left.place(x=0,y=206)
 
-    bouton_niveau_right = Button(fenetre_bouton, image=imageBoutonEditeurNiveauDroite, bg='white', command=lambda:level_search(0,"right"))
+    bouton_niveau_right = Button(fenetre_bouton, image=imageBoutonEditeurNiveauDroite, command=lambda:level_search(0,"right"))
     bouton_niveau_right.place(x=206,y=206)
 
-    boutonEditeurDellAll = Button(fenetre_bouton, image=imageBoutonEditeurPoubelleMonde, bg='white', command=delete_all_level)
+    boutonEditeurDellAll = Button(fenetre_bouton, image=imageBoutonEditeurPoubelleMonde, command=delete_all_level)
     boutonEditeurDellAll.place(x=103,y=412)
 
-    boutonEditeurExit = Button(fenetre_bouton, image=imageBoutonEditeurExit, bg='white', command=lambda:retour_menu("postEditMenu"))
+    boutonEditeurExit = Button(fenetre_bouton, image=imageBoutonEditeurExit, command=lambda:retour_menu("postEditMenu"))
     boutonEditeurExit.place(x=206,y=515)
 
     numeroNiveau = Label(fenetre_bouton, text=id_level, font="Arial, 30")
     numeroNiveau.pack(padx=103, pady=230)
 
-    bouton_bloc_solide = Button(fenetre_bouton, image=imageBoutonEditeurBlocSolide, bg='white', command=lambda:type_Blocs("solide"))
+    bouton_bloc_solide = Button(fenetre_bouton, image=imageBoutonEditeurBlocSolide, command=lambda:type_Blocs("solide"))
     bouton_bloc_solide.place(x=0,y=103)
 
-    bouton_bloc_spawn = Button(fenetre_bouton, image=imageBoutonEditeurBlocSpawn, bg='white', command=lambda:type_Blocs("spawn"))
+    bouton_bloc_spawn = Button(fenetre_bouton, image=imageBoutonEditeurBlocSpawn, command=lambda:type_Blocs("spawn"))
     bouton_bloc_spawn.place(x=206,y=103)
 
-    bouton_item_key = Button(fenetre_bouton, image=imageBoutonEditeurItemCle, bg='white', command=lambda:type_Blocs("key"))
+    bouton_item_key = Button(fenetre_bouton, image=imageBoutonEditeurItemCle, command=lambda:type_Blocs("key"))
     bouton_item_key.place(x=0,y=309)
 
-    bouton_gomme = Button(fenetre_bouton, image=imageBoutonEditeurGomme, bg='white', command=delspebloc)
+    bouton_gomme = Button(fenetre_bouton, image=imageBoutonEditeurGomme, command=delspebloc)
     bouton_gomme.place(x=0,y=412)
 
     bouton_bloc_port = Button(fenetre_bouton, image=imageBoutonEditeurBlocPorte, command=lambda:type_Blocs("porte"))
     bouton_bloc_port.place(x=206,y=309)
 
-    bouton_edit = Button(fenetre_bouton, image=imageBoutonEditeurEditBloc, bg='white', command=set_edit_objet)
+    bouton_edit = Button(fenetre_bouton, image=imageBoutonEditeurEditBloc, command=set_edit_objet)
     bouton_edit.place(x=206,y=412)
     
     message_editeur = Label(fenetre_bouton, text="", font="Arial, 30" )
