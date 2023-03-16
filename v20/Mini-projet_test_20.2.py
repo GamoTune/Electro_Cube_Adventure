@@ -1,10 +1,5 @@
 #Import des bibliothèques
 import tkinter as tk, tkinter.messagebox; from tkinter import *; import pickle, os, shutil
-try:
-    import vlc
-except ImportError:
-    os.system('pip install python-vlc')
-import vlc
 
 
 ################################################################### Les fonctions de mise en place des modes ###################################################################
@@ -66,7 +61,6 @@ def first_launch (): #La fonction "first_launch" permet de déclaré la plus par
     imageMonde1 = PhotoImage(file= str(cwd)+"assets/images/M1.png")
     imageMonde2 = PhotoImage(file= str(cwd)+"assets/images/M2.png")
     imageMonde3 = PhotoImage(file= str(cwd)+"assets/images/M3.png")
-    musicDeFond = vlc.MediaPlayer(str(cwd)+"assets/musica/Gymnopédie No°1.wav")
     imageBGGlobal = PhotoImage(file= str(cwd)+"assets/images/fond_editeur.png")
     fonctionDeplacement = mouvement_joueur
 
@@ -75,7 +69,6 @@ def first_launch (): #La fonction "first_launch" permet de déclaré la plus par
 
     init_keys(fenetre)
     menu()
-    #bg_music()
 
 def lancement_edition (): #La fonction "lancement_edition" permet de mettre en place tout le système de la création de niveau
     global edit, lienfichier, ligneX, fenetre_bouton, id_level, numeroNiveau, message_editeur, fonctionDeplacement, boutonGomme
@@ -166,9 +159,6 @@ def play_test ():
     lienfichier = str(cwd)+"assets/data/test_editeur/monde"+str(id_monde)+"/niveau"+str(id_level[0])+str(id_level[1])+".txt"
     editTest = True
     lancement_solo()
-
-def bg_music ():
-    musicDeFond.play()
 
 
 ################################################################### Fonctions du joueur ###################################################################
