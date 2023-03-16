@@ -64,9 +64,9 @@ def first_launch (): #La fonction "first_launch" permet de déclaré la plus par
     imageBGGlobal = PhotoImage(file= str(cwd)+"assets/images/fond_editeur.png")
     fonctionDeplacement = mouvement_joueur
 
-    imageBGMenu = Label(fenetre, image=imageBGGlobal)
-    imageBGMenu.place(x=(largeur/2+largeur/4)/2, y=(largeur/2+largeur/4)/2, anchor=CENTER)
-
+    """imageBGMenu = Label(fenetre, image=imageBGGlobal)
+    imageBGMenu.place(x=(largeur/2+largeur/4)/2, y=(largeur/2+largeur/4)/2, anchor=CENTER)"""
+    print(nombreCaseX, nombreCaseY)
     init_keys(fenetre)
     menu()
 
@@ -233,7 +233,10 @@ def mouvement_joueur (direction):
 
         if verify == False:
             #Collision limite map 
+            print(positionJoueur[xyJ], posMax)
             if positionJoueur[xyJ] == posMax:
+                level_search(direction)
+            elif positionJoueur[xyJ] == int(posMax)+posJF: #Attention bout de scotch ##################################################################################
                 level_search(direction)
             #Mouvement
             else:

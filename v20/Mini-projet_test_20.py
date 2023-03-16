@@ -1,10 +1,5 @@
 #Import des bibliothèques
 import tkinter as tk, tkinter.messagebox; from tkinter import *; import pickle, os, shutil
-try:
-    import vlc
-except ImportError:
-    os.system('pip install python-vlc')
-import vlc
 
 
 ################################################################### Les fonctions de mise en place des modes ###################################################################
@@ -64,7 +59,6 @@ def first_launch (): #La fonction "first_launch" permet de déclaré la plus par
     imageMonde1 = PhotoImage(file=str(cwd)+"assets/images/M1.png")
     imageMonde2 = PhotoImage(file=str(cwd)+"assets/images/M2.png")
     imageMonde3 = PhotoImage(file=str(cwd)+"assets/images/M3.png")
-    musicDeFond = vlc.MediaPlayer(str(cwd)+"assets/musica/Gymnopédie No°1.wav")
     init_keys(fenetre)
     menu()
     #bg_music()

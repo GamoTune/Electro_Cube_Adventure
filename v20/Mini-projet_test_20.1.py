@@ -341,6 +341,7 @@ def mouvement_joueur (direction):
             else:
                 canevas.move(joueur, deplacement[0], deplacement[1])
                 positionJoueur[xyJ] = positionJoueur[xyJ]+posJF
+    print(positionJoueur)
 
 def touch_key (pad,blocinListeMonde):
     for blocinListeMonde2 in listeMonde:
@@ -360,7 +361,6 @@ def touch_porte(pad,blocinListeMonde):
     del listeNiveau[pad]
     save_level()
     save_world()
-
 
 ################################################################### Fonction du mode édition ###################################################################
 
@@ -814,6 +814,7 @@ fenetre = Tk()
 
 largeur = fenetre.winfo_screenwidth()
 hauteur = fenetre.winfo_screenheight()
+print(largeur, hauteur)
 
 fenetre.title("Game & Cube")
 fenetre.attributes('-fullscreen', True)
