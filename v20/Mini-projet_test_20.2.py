@@ -5,7 +5,7 @@ import tkinter as tk, tkinter.messagebox; from tkinter import *; import pickle, 
 ################################################################### Les fonctions de mise en place des modes ###################################################################
 
 def first_launch (): #La fonction "first_launch" permet de déclaré la plus part des variable globald
-    global editBloc, cwd, musicDeFond, imageBoutonPlayTest, imageBGGlobal, fonctionDeplacement, imageBoutonEditeurGommeSelect, imageBoutonEditeurGomme, imageBoutonEditeurPoubelleMonde, imageBoutonEditeurBlocPorte, editTest, originalPath, imageMonde1, imageMonde2, imageMonde3, imageResetSolo, imageBoutonEditeurItemCle, imageBoutonEditeurEditBloc, newColorBloc, freezeEdit, fenetreeditTest, listeNiveau, id_level, lienfichier, edit, nombrePixel, nombreCaseX, nombreCaseY, imageBoutonSolo, imageBoutonEditeur, ligneX, ligneY, imageBoutonEditeurNiveauHaut, imageBoutonEditeurNiveauBas, imageBoutonEditeurNiveauGauche, imageBoutonEditeurNiveauDroite, imageBoutonEditeurSave, imageBoutonEditeurRetour, imageWIP, imageBoutonEditeurPoubelle, imageBoutonEditeurExit, imageEditeurInfos, fenetreinfosTest, imageBoutonEditeurBlocSolide, couleurBloc, typeDuBloc, imageBoutonEditeurBlocSpawn, delonespebloc, listeMonde, id_monde, solo, lienmonde, imageBoutonEditeurInfos
+    global editBloc, cwd, imageBoutonPlayTest, imageBGGlobal, nombreCase, fonctionDeplacement, imageBoutonEditeurGommeSelect, imageBoutonEditeurGomme, imageBoutonEditeurPoubelleMonde, imageBoutonEditeurBlocPorte, editTest, originalPath, imageMonde1, imageMonde2, imageMonde3, imageResetSolo, imageBoutonEditeurItemCle, imageBoutonEditeurEditBloc, newColorBloc, freezeEdit, fenetreeditTest, listeNiveau, id_level, lienfichier, edit, imageBoutonSolo, imageBoutonEditeur, ligneX, ligneY, imageBoutonEditeurNiveauHaut, imageBoutonEditeurNiveauBas, imageBoutonEditeurNiveauGauche, imageBoutonEditeurNiveauDroite, imageBoutonEditeurSave, imageBoutonEditeurRetour, imageWIP, imageBoutonEditeurPoubelle, imageBoutonEditeurExit, imageEditeurInfos, fenetreinfosTest, imageBoutonEditeurBlocSolide, couleurBloc, typeDuBloc, imageBoutonEditeurBlocSpawn, delonespebloc, listeMonde, id_monde, solo, lienmonde, imageBoutonEditeurInfos
 
     cwd = os.getcwd()
     cwd = cwd.replace("\\", "/" )
@@ -20,9 +20,6 @@ def first_launch (): #La fonction "first_launch" permet de déclaré la plus par
     originalPath = str(cwd)+"assets/data/origine"
     edit = False #Permet de vérifier si le mode d'édition est activer [default : False]
     nombreCase = 48 #En largeur (default = 48)
-    nombrePixel = largeur/nombreCase #nombrePixel = nombre de pixels par case sur l'écran (en fonction de la résolution de l'écran, le nombre de pixel change pour toujours avoir le même nombre de case à l'écran)
-    nombreCaseX = largeur/nombrePixel #Le nombre de case en X permet de donner facilement au programme (pour déplacer le joueur d'un coté à un autre par exemple) le nombre de blocs max en X
-    nombreCaseY = hauteur/nombrePixel #Le nombre de case en Y permet de donner facilement au programme (pour déplacer le joueur d'un coté à un autre par exemple) le nombre de blocs max en Y
     ligneX = [] #Liste des ID des lignes X crées
     ligneY = [] #Liste des ID des lignes X crées
     fenetreinfosTest = False #Permet de vérifier si la fenetre d'info de l'éditeur est déjà créer
@@ -33,10 +30,11 @@ def first_launch (): #La fonction "first_launch" permet de déclaré la plus par
     delonespebloc = False #Permet de vérifier si la gomme de l'éditeur est déjà créer
     solo = False #Permet de lancer le solo
     freezeEdit = False #Permet de mettre en pose les fonctions de l'éditeur
-    editBloc = False #Permet de vérifier si la l'édition de bloc de l'éditeur est déjà créer
-    editTest = False
-    imageBoutonSolo = PhotoImage(file = str(cwd)+"assets/images/bouton_solo.png") #Image du bouton du solo sur le menu principal
-    imageBoutonEditeur = PhotoImage(file = str(cwd)+"assets/images/bouton_editeur.png") #Image du bouton de l'éditeur sur le menu principal
+    editBloc = False #Permet de vérifier si la fenetre de l'édition de bloc de l'éditeur est déjà créer
+    editTest = False #Permet de vérifier si la l'édition de bloc de l'éditeur est activer
+    #Import des images
+    imageBoutonSolo = PhotoImage(file = str(cwd)+"assets/images/bouton_solo.png")
+    imageBoutonEditeur = PhotoImage(file = str(cwd)+"assets/images/bouton_editeur.png")
     imageBoutonEditeurNiveauHaut = PhotoImage(file = str(cwd)+"assets/images/fleche_haut.png")
     imageBoutonEditeurNiveauBas = PhotoImage(file = str(cwd)+"assets/images/fleche_bas.png")
     imageBoutonEditeurNiveauGauche = PhotoImage(file = str(cwd)+"assets/images/fleche_gauche.png")
@@ -62,46 +60,42 @@ def first_launch (): #La fonction "first_launch" permet de déclaré la plus par
     imageMonde2 = PhotoImage(file= str(cwd)+"assets/images/M2.png")
     imageMonde3 = PhotoImage(file= str(cwd)+"assets/images/M3.png")
     imageBGGlobal = PhotoImage(file= str(cwd)+"assets/images/fond_editeur.png")
-    fonctionDeplacement = mouvement_joueur
-
-    """imageBGMenu = Label(fenetre, image=imageBGGlobal)
-    imageBGMenu.place(x=(largeur/2+largeur/4)/2, y=(largeur/2+largeur/4)/2, anchor=CENTER)"""
-    print(nombreCaseX, nombreCaseY)
-    init_keys(fenetre)
-    menu()
+    init_keys(fenetre) #Appel la fonction des binds 
+    grille()
+    menu() #Appe la fonction menu (affichage du main menu)
 
 def lancement_edition (): #La fonction "lancement_edition" permet de mettre en place tout le système de la création de niveau
     global edit, lienfichier, ligneX, fenetre_bouton, id_level, numeroNiveau, message_editeur, fonctionDeplacement, boutonGomme
     close_menu() #Ferme le menu
 
 ######################################################################## Le cadirage
-    ligneCreer_x = nombrePixel
-    ligneCreer_y = nombrePixel
+    ligneCreer_x = nombrePixel #Variable qui renseigne à quel x les lignes du cadriage doivent être placer
+    ligneCreer_y = nombrePixel #Variable qui renseigne à quel y les lignes du cadriage doivent être placer
 
 #Création des ligne de l'éditeur (le cadriage dans le fond qui permet de mieux savoir où les blocs seront placer)
-    while ligneCreer_x <= largeur: 
-        ligneX.append(canevas.create_line(ligneCreer_x, 0, ligneCreer_x, hauteur))
-        ligneCreer_x += nombrePixel
+    while ligneCreer_x <= largeur: #Temps que la bordure de l'écran n'est pas attein les lignes sont placer
+        ligneX.append(canevas.create_line(ligneCreer_x, 0, ligneCreer_x, hauteur)) #Crée une ligne vertical en fonction de "ligneCreer_x"
+        ligneCreer_x += nombrePixel #Ajout du nombre de pixel n'esaissaire entre 2 ligne (la taille d'un bloc)
 
-    while ligneCreer_y <= hauteur:
-        ligneY.append(canevas.create_line(0, ligneCreer_y, largeur, ligneCreer_y))
-        ligneCreer_y += nombrePixel
+    while ligneCreer_y <= hauteur: #Temps que la bordure de l'écran n'est pas attein les lignes sont placer
+        ligneY.append(canevas.create_line(0, ligneCreer_y, largeur, ligneCreer_y)) #Crée une ligne horizontal en fonction de "ligneCreer_y"
+        ligneCreer_y += nombrePixel #Ajout du nombre de pixel n'esaissaire entre 2 ligne (la taille d'un bloc)
 
 ######################################################################## L'édition
     edit = True #Indication au programme que l'éditeur est lancer et que les fonction de l'édition peuvent maintement fonctionnner
-    id_level = [0,0]
-    lienfichier = str(cwd)+"assets/data/editeur/monde"+str(id_monde)+"/niveau"+str(id_level[0])+str(id_level[1])+".txt"
-    load_level() #Appel de la fonction qui charge les niveau
-    load_world()
-    fonctionDeplacement = level_search
+    id_level = [0,0] #Le level de départ est [0,0]
+    lienfichier = str(cwd)+"assets/data/editeur/monde"+str(id_monde)+"/niveau"+str(id_level[0])+str(id_level[1])+".txt" #Changement du lien des ficier pour chercher le niveau dans le dossier editeur
+    load_level() #Appel de la fonction qui charge un niveau
+    load_world() #Appel de la fonction qui change un monde
+    fonctionDeplacement = level_search #Changement du binds des touches de direction pour changer de niveau plus facilement dans l'éditeur
     #Fenetre des infos / boutons
     fenetre_bouton = tk.Toplevel() #Création de la fenetre des fonction/boutons de l'éditeur
     fenetre_bouton.geometry('312x621') #taille 1 bouton = taille que tu veux + 3
     fenetre_bouton.resizable(False,False) #Fenetre non redimentionable
-    fenetre_bouton.attributes('-topmost',1)
-    fenetre_bouton.protocol("WM_DELETE_WINDOW", disable_event)
-    fenetre_bouton.attributes('-alpha',1)
-
+    fenetre_bouton.attributes('-topmost',1) #Fenetre toujours au premier plan
+    fenetre_bouton.protocol("WM_DELETE_WINDOW", disable_event) #Fenetre non detruisable manuelement
+    fenetre_bouton.attributes('-alpha',1) #Permet de changer l'opacité de la fenetre
+    #Création des boutons / texte sur la fenetre de l'éditeur
     Button(fenetre_bouton, image=imageBoutonEditeurSave, command=save_level).place(x=0,y=0) #bouton_save
     Button(fenetre_bouton, image=imageBoutonEditeurRetour, command=deleteLastBlock).place(x=103,y=0) #bouton_retour
     Button(fenetre_bouton, image=imageBoutonEditeurPoubelle, command=lambda:delete_all_blocks("")).place(x=206,y=0) #boutonEditeurPoubelle
@@ -111,7 +105,7 @@ def lancement_edition (): #La fonction "lancement_edition" permet de mettre en p
     Button(fenetre_bouton, image=imageBoutonEditeurNiveauDroite, command=lambda:level_search("right")).place(x=206,y=206) #bouton_niveau_right
     Button(fenetre_bouton, image=imageBoutonEditeurPoubelleMonde, command=delete_all_level).place(x=103,y=412) #boutonEditeurDellAll
     Button(fenetre_bouton, image=imageBoutonEditeurExit, command=lambda:retour_menu("postEditMenu")).place(x=206,y=515) #boutonEditeurExit
-    numeroNiveau = Label(fenetre_bouton, text=id_level, font="Arial, 30")
+    numeroNiveau = Label(fenetre_bouton, text=id_level, font="Arial, 30") #Affichage du numéro du niveau actuel
     numeroNiveau.pack(padx=103, pady=230) #numeroNiveau
     Button(fenetre_bouton, image=imageBoutonEditeurBlocSolide, command=lambda:type_Blocs("solide")).place(x=0,y=103) #bouton_bloc_solide
     Button(fenetre_bouton, image=imageBoutonEditeurBlocSpawn, command=lambda:type_Blocs("spawn")).place(x=206,y=103) #bouton_bloc_spawn
@@ -120,63 +114,64 @@ def lancement_edition (): #La fonction "lancement_edition" permet de mettre en p
     boutonGomme.place(x=0,y=412) #bouton_gomme
     Button(fenetre_bouton, image=imageBoutonEditeurBlocPorte, command=lambda:type_Blocs("porte")).place(x=206,y=309) #bouton_bloc_port
     Button(fenetre_bouton, image=imageBoutonEditeurEditBloc, command=set_edit_objet).place(x=206,y=412) #bouton_edit
-    message_editeur = Label(fenetre_bouton, text="", font="Arial, 30" )
+    message_editeur = Label(fenetre_bouton, text="", font="Arial, 30" ) #Affiche du type de bloc / erreur / info général
     message_editeur.place(x=103,y=568, anchor=CENTER) #message_editeur
 
 def lancement_solo ():
     global joueur, positionJoueur, lienfichier, id_level, solo, fonctionDeplacement
-    solo = True
-    fonctionDeplacement = mouvement_joueur
-    id_level = [0,0]
-    load_level()
-    load_world()
-    for pasdubloc in listeNiveau:
-        if pasdubloc["typeBloc"] == 1:
+    solo = True #Active le mod solo
+    fonctionDeplacement = mouvement_joueur #Change les binds des déplacements pour déplacer le joueur
+    id_level = [0,0] #Change l'id des niveaux en [0,0] pur commencer au start d'un niveau
+    load_level() #Charge le niveau
+    load_world() #Charge le monde
+    for pasdubloc in listeNiveau: #Cherche si un bloc d'apparition du joueur existe dans le niveau [0,0] pour faire aparaitre 
+        if pasdubloc["typeBloc"] == 1: #Si il existe, les coordonées d'apparition sont mis à jour
             posjxstart = pasdubloc["coordsBloc"][0]
             posjystart = pasdubloc["coordsBloc"][1]
-            break
-    try: posjxstart
-    except:
-        solo = False
-        lienfichier = "assets/data/menu.txt"
-        load_level()
-        tkinter.messagebox.showerror("Erreur", "Il n'y a pas de bloc d'apparition dans ce monde")
-    if solo == True:
-        joueur = canevas.create_rectangle(0, 0, nombrePixel, nombrePixel, fill='blue', width=0)
-        canevas.move(joueur,posjxstart*nombrePixel, posjystart*nombrePixel)
-        positionJoueur = [posjxstart, posjystart] #0 = x & 1 = y
-        close_menu()
+            break #Quand les coordonnées sont trouver, la boucle s'arrete pour ne pas chercher des coordonnées pour rien
+    try: posjxstart #Si in n'y a pas de bloc d'apparition, la variable n'est pas déclarer donc il y a une erreur
+    except: #Si il n'y a donc pas de coordonnées d'appartion, le mode solo ne se lance pas
+        solo = False #Désactivation du mode solo
+        lienfichier = "assets/data/menu.txt" #Changement du lien pour charger le menu
+        load_level() #Chargement du menu
+        tkinter.messagebox.showerror("Erreur", "Il n'y a pas de bloc d'apparition dans ce monde") #Affichage d'un message d'erreur
+    else: #Si il y a un bloc d'apparition
+        joueur = canevas.create_rectangle(0, 0, nombrePixel, nombrePixel, fill='blue', width=0) #Création du joueur
+        canevas.move(joueur,posjxstart*nombrePixel, posjystart*nombrePixel) #Déplacement du joueur au coordonnées d'apparition
+        positionJoueur = [posjxstart, posjystart] #0 = x & 1 = y #Actualisation des position du joueur sur la grille
+        close_menu() #Fermeture du menu
 
 def play_test ():
     global lienmonde, lienfichier, editTest, id_level
-    originalPath = str(cwd)+"assets/data/editeur"
-    copyPath = str(cwd)+"assets/data/test_editeur/"
-    if os.path.exists(copyPath):
-        shutil.rmtree(copyPath)
-    shutil.copytree(originalPath, copyPath)
-    id_level = [0,0]
-    lienmonde = str(cwd)+"assets/data/test_editeur/monde"+str(id_monde)+"_info.txt"
-    lienfichier = str(cwd)+"assets/data/test_editeur/monde"+str(id_monde)+"/niveau"+str(id_level[0])+str(id_level[1])+".txt"
-    editTest = True
-    lancement_solo()
+    originalPath = str(cwd)+"assets/data/editeur" #"originalPath" contient le lien du dossier éditeur
+    copyPath = str(cwd)+"assets/data/test_editeur/" #"copyPath" contient le lien du dossier test_editeur où vont etre copier les fichier de l'éditeur pour ne pas modifier les fichier dans l'éditeur
+    if os.path.exists(copyPath): #Si le docier contient déjà quelque chose, il est détruit puis recréer 
+        shutil.rmtree(copyPath) #Suprétion du docier
+    shutil.copytree(originalPath, copyPath) #Création de la copie du docier d'origine
+    id_level = [0,0] #Le niveau a charger est le [0,0]
+    lienmonde = str(cwd)+"assets/data/test_editeur/monde"+str(id_monde)+"_info.txt" #Mise à jour du lien pour charger le monde
+    lienfichier = str(cwd)+"assets/data/test_editeur/monde"+str(id_monde)+"/niveau"+str(id_level[0])+str(id_level[1])+".txt" #Mise à jour du lien pour charger le niveau
+    editTest = True #Le mode du test des niveau de l'éditeur est activer
+    lancement_solo() #Appel de la fonction du lancement du solo
 
 
 ################################################################### Fonctions du joueur ###################################################################
 
-def mouvement_joueur (direction):
+def mouvement_joueur (direction): #Permet au joueur de ce déplacer dans un niveau et d'intéragire avec des objets
+    #Direction est un paramètre de la fonction, renseigne sur le direction soueyter par l'utilisateur
     global positionJoueur, listeMonde
+    
+    if solo == True: #Si le mode solo est activer la fonction sera utilisable, sinon, non
+        pad = 0 #Variable temporaire pour une boucle while
+        verify = False #verify est une variable local qui indique à une partie de la fonction si elle peut etre executer
 
-    if solo == True:
-        pad = 0
-        verify = False
-
-        if direction == "up":
-            posJTestX = 0
-            posJTestY = -1
-            xyJ = 1
-            posJF = -1
-            posMax = 0
-            deplacement = [0, -nombrePixel]
+        if direction == "up": #Si la direction est egale à "up"
+            posJTestX = 0 #Test de la prochaine position du joueur dans la grille pour x
+            posJTestY = -1 #Test de la prochaine position du joueur dans la grille pour y
+            xyJ = 1 #Indique quel est l'axe qui est demander (0=x et 1=y)
+            posJF = -1 #Donne de combien doit être changer les coordonnées du joueur en fonction de l'axe
+            posMax = 0 #Donne la position max du joueur sur la grille 
+            deplacement = [0, -nombrePixel] #Donne de combien le joueur doit ce déplacer sur la grille
 
         elif direction == "down":
             posJTestX = 0
@@ -202,50 +197,47 @@ def mouvement_joueur (direction):
             posMax = nombreCaseX-1
             deplacement = [+nombrePixel, 0]
         #Collision bloc
-        while pad != len(listeNiveau):
-            if  positionJoueur[0]+posJTestX == listeNiveau[pad]["coordsBloc"][0] and positionJoueur[1]+posJTestY == listeNiveau[pad]["coordsBloc"][1]:
+        while pad != len(listeNiveau): #Parcours de la liste des blocs pour savoir si la prochaine destination du joueur se trouve sur un bloc ou non
+            if  positionJoueur[0]+posJTestX == listeNiveau[pad]["coordsBloc"][0] and positionJoueur[1]+posJTestY == listeNiveau[pad]["coordsBloc"][1]: #Vérification
                 #Collision avec bloc solide
-                if listeNiveau[pad]["typeBloc"] == 0:
-                    verify = True
+                if listeNiveau[pad]["typeBloc"] == 0: #Vérification du type du bloc # 0 = bloc solide
+                    verify = True #verify=True signifie que la partie d'aprés ne peut pas s'executé
 
                 #Collision avec bloc spawn
-                elif listeNiveau[pad]["typeBloc"] == 1:
-                    verify = False
+                elif listeNiveau[pad]["typeBloc"] == 1: # 1 = spawn
+                    verify = False #La suite va pouvoir s'éxécuté
 
                 #Collision avec clé
-                elif listeNiveau[pad]["typeBloc"] == 2:
+                elif listeNiveau[pad]["typeBloc"] == 2: # 2 = clé
                     verify = False
 
-                    for blocinListeMonde in listeMonde:
-                        if positionJoueur[0]+posJTestX == blocinListeMonde["coordsBloc"][0] and positionJoueur[1]+posJTestY == blocinListeMonde["coordsBloc"][1] and blocinListeMonde["idLevel"] == str(id_level) and blocinListeMonde["keyCollect"] == 0: #Permet de savoir si le bloc exite déjà dans la liste
-                                touch_key(pad,blocinListeMonde)
-                                pad -= 1
+                    for blocinListeMonde in listeMonde: #Parcours de la liste Monde pour trouver de quel clé il s'agit
+                        if positionJoueur[0]+posJTestX == blocinListeMonde["coordsBloc"][0] and positionJoueur[1]+posJTestY == blocinListeMonde["coordsBloc"][1] and blocinListeMonde["idLevel"] == str(id_level) and blocinListeMonde["keyCollect"] == 0: #Vérification que la clé n'est pas déjà été prise
+                                touch_key(pad,blocinListeMonde) #Une fois que la clé est trouver, la fonction touch_key est appeler
+                                pad -= 1 #Comme un bloc est détruit, un petit retour en arrière sur le parcours des bloc est obligatoire
 
                 #Collision avec bloc porte
-                elif listeNiveau[pad]["typeBloc"] == 3:
+                elif listeNiveau[pad]["typeBloc"] == 3: # 3 = porte
                     verify = True
-                    for blocinListeMonde in listeMonde:
-                        if positionJoueur[0]+posJTestX == blocinListeMonde["coordsBloc"][0] and positionJoueur[1]+posJTestY == blocinListeMonde["coordsBloc"][1] and blocinListeMonde["idLevel"] == str(id_level) and blocinListeMonde["keyCollect"] == 1: #Permet de savoir si le bloc exite déjà dans la liste
-                                touch_porte(pad,blocinListeMonde)
-                                pad -= 1
+                    for blocinListeMonde in listeMonde: #Parcours de la liste Monde pour trouver de quel porte il s'agit
+                        if positionJoueur[0]+posJTestX == blocinListeMonde["coordsBloc"][0] and positionJoueur[1]+posJTestY == blocinListeMonde["coordsBloc"][1] and blocinListeMonde["idLevel"] == str(id_level) and blocinListeMonde["keyCollect"] == 1: #Vérification que la clé est déjà été prise
+                                touch_porte(pad,blocinListeMonde) #Une fois que la porte est trouver, la fonction touch_porte est appeler
+                                pad -= 1 #Comme un bloc est détruit, un petit retour en arrière sur le parcours des bloc est obligatoire
 
-            pad += 1
+            pad += 1 #Ajout de 1 à pad pour avancer dans la boucle while
 
-        if verify == False:
+        if verify == False: #Si verify = False (donc que aucun bloc ne bloque le passage), une vérification des limite de l'écran s'impose
             #Collision limite map 
-            print(positionJoueur[xyJ], posMax)
-            if positionJoueur[xyJ] == posMax:
-                level_search(direction)
-            elif positionJoueur[xyJ] == int(posMax)+posJF: #Attention bout de scotch ##################################################################################
-                level_search(direction)
+            if positionJoueur[xyJ] == posMax: #Si la position du joueur est egale à la limite de l'écran (ou de la map)
+                level_search(direction) #La fonction level_search est appeler
             #Mouvement
-            else:
-                canevas.move(joueur, deplacement[0], deplacement[1])
-                positionJoueur[xyJ] = positionJoueur[xyJ]+posJF
+            else: #Sinon
+                canevas.move(joueur, deplacement[0], deplacement[1]) #Le joueur est déplacer sur la case demander
+                positionJoueur[xyJ] = positionJoueur[xyJ]+posJF #Les coordonnées du joueur sont actualiser
 
-def touch_key (pad,blocinListeMonde):
-    for blocinListeMonde2 in listeMonde:
-        if blocinListeMonde2["idKeyPorte"] == blocinListeMonde["idKeyPorte"]:
+def touch_key (pad,blocinListeMonde): #Fonction touch_key permet de récupérer une clé
+    for blocinListeMonde2 in listeMonde: #Parcours de la liste Monde 
+        if blocinListeMonde2["idKeyPorte"] == blocinListeMonde["idKeyPorte"]: #Si l'identifient de la clé correspond à selui demander alors
             blocinListeMonde2["keyCollect"] = 1
     canevas.delete(listeNiveau[pad]["idBloc"])
     del listeNiveau[pad]
@@ -524,6 +516,11 @@ def change_color (c): #Change la couleur du bloc selectionner
 
 ################################################################### Fonctions du fonctionnement global du programme ###################################################################
 
+def grille (): #Met en place la grille des blocs 
+    global nombrePixel, nombreCaseX, nombreCaseY, nombreCase
+    nombrePixel = largeur/nombreCase #nombrePixel = nombre de pixels par case sur l'écran (en fonction de la résolution de l'écran, le nombre de pixel change pour toujours avoir le même nombre de case à l'écran)
+    nombreCaseX = round(largeur/nombrePixel) #Le nombre de case en X permet de donner facilement au programme (pour déplacer le joueur d'un coté à un autre par exemple) le nombre de blocs max en X
+    nombreCaseY = round(hauteur/nombrePixel) #Le nombre de case en Y permet de donner facilement au programme (pour déplacer le joueur d'un coté à un autre par exemple) le nombre de blocs max en Y
 
 def disable_event(): #Disable
    pass
@@ -824,5 +821,5 @@ canevas.pack()
 fenetre.mainloop()
 
 """
-Petit bug quand quand on change de niveau editeur, 2 niveau passe au lieux d'1
+2 clé ne peuvent pas avoir le même id sinon irécuprable
 """
