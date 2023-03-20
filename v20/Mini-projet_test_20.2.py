@@ -1,11 +1,16 @@
 #Import des bibliothèques
-import tkinter as tk, tkinter.messagebox; from tkinter import *; import pickle, os, shutil
+import tkinter as tk, tkinter.messagebox; from tkinter import *; import pickle, os, shutil, webbrowser
+try:
+    from PIL import Image, ImageTk
+except:
+    os.system('pip install Pillow')
+from PIL import Image, ImageTk
 
 
 ################################################################### Les fonctions de mise en place des modes ###################################################################
 
-def first_launch (): #La fonction "first_launch" permet de déclaré la plus part des variable globald
-    global editBloc, cwd, imageBoutonPlayTest, imageBGGlobal, nombreCase, fonctionDeplacement, imageBoutonEditeurGommeSelect, imageBoutonEditeurGomme, imageBoutonEditeurPoubelleMonde, imageBoutonEditeurBlocPorte, editTest, originalPath, imageMonde1, imageMonde2, imageMonde3, imageResetSolo, imageBoutonEditeurItemCle, imageBoutonEditeurEditBloc, newColorBloc, freezeEdit, fenetreeditTest, listeNiveau, id_level, lienfichier, edit, imageBoutonSolo, imageBoutonEditeur, ligneX, ligneY, imageBoutonEditeurNiveauHaut, imageBoutonEditeurNiveauBas, imageBoutonEditeurNiveauGauche, imageBoutonEditeurNiveauDroite, imageBoutonEditeurSave, imageBoutonEditeurRetour, imageWIP, imageBoutonEditeurPoubelle, imageBoutonEditeurExit, imageEditeurInfos, fenetreinfosTest, imageBoutonEditeurBlocSolide, couleurBloc, typeDuBloc, imageBoutonEditeurBlocSpawn, delonespebloc, listeMonde, id_monde, solo, lienmonde, imageBoutonEditeurInfos
+def start (): #La fonction "start" permet de déclaré la plus part des variable globald
+    global editBloc, cwd, imageBoutonPlayTest, bgMenu, nextFree, imageOK, imageInfoBouton, tailleImage, ratioImage, bgMenuSolo, ratioFenetre, bgMenuEdition, nombreCase, fonctionDeplacement, imageBoutonEditeurGommeSelect, imageBoutonEditeurGomme, imageBoutonEditeurPoubelleMonde, imageBoutonEditeurBlocPorte, editTest, originalPath, imageMonde1, imageMonde2, imageMonde3, imageResetSolo, imageBoutonEditeurItemCle, imageBoutonEditeurEditBloc, newColorBloc, freezeEdit, fenetreeditTest, listeNiveau, id_level, lienfichier, edit, imageBoutonSolo, imageBoutonEditeur, ligneX, ligneY, imageBoutonEditeurNiveauHaut, imageBoutonEditeurNiveauBas, imageBoutonEditeurNiveauGauche, imageBoutonEditeurNiveauDroite, imageBoutonEditeurSave, imageBoutonEditeurRetour, imageWIP, imageBoutonEditeurPoubelle, imageBoutonEditeurExit, imageBoutonEditeurBlocSolide, couleurBloc, typeDuBloc, imageBoutonEditeurBlocSpawn, delonespebloc, listeMonde, id_monde, solo, lienmonde, imageBoutonEditeurInfos
 
     cwd = os.getcwd()
     cwd = cwd.replace("\\", "/" )
@@ -20,9 +25,9 @@ def first_launch (): #La fonction "first_launch" permet de déclaré la plus par
     originalPath = str(cwd)+"assets/data/origine"
     edit = False #Permet de vérifier si le mode d'édition est activer [default : False]
     nombreCase = 48 #En largeur (default = 48)
+    nextFree = 0
     ligneX = [] #Liste des ID des lignes X crées
     ligneY = [] #Liste des ID des lignes X crées
-    fenetreinfosTest = False #Permet de vérifier si la fenetre d'info de l'éditeur est déjà créer
     fenetreeditTest = False #Permet de vérifier si la fenetre d'edition de bloc de l'éditeur est déjà créer
     couleurBloc = 'black' #Défini la couleur d'un bloc
     newColorBloc = 'red' #Défini la nouvelle couleur du bloc
@@ -33,33 +38,41 @@ def first_launch (): #La fonction "first_launch" permet de déclaré la plus par
     editBloc = False #Permet de vérifier si la fenetre de l'édition de bloc de l'éditeur est déjà créer
     editTest = False #Permet de vérifier si la l'édition de bloc de l'éditeur est activer
     #Import des images
-    imageBoutonSolo = PhotoImage(file = str(cwd)+"assets/images/bouton_solo.png")
-    imageBoutonEditeur = PhotoImage(file = str(cwd)+"assets/images/bouton_editeur.png")
-    imageBoutonEditeurNiveauHaut = PhotoImage(file = str(cwd)+"assets/images/fleche_haut.png")
-    imageBoutonEditeurNiveauBas = PhotoImage(file = str(cwd)+"assets/images/fleche_bas.png")
-    imageBoutonEditeurNiveauGauche = PhotoImage(file = str(cwd)+"assets/images/fleche_gauche.png")
-    imageBoutonEditeurNiveauDroite = PhotoImage(file = str(cwd)+"assets/images/fleche_droite.png")
-    imageBoutonEditeurSave = PhotoImage(file = str(cwd)+"assets/images/save.png")
-    imageBoutonEditeurRetour = PhotoImage(file = str(cwd)+"assets/images/retour.png")
-    imageWIP = PhotoImage(file = str(cwd)+"assets/images/WIP.png")
-    imageBoutonEditeurPoubelle = PhotoImage(file = str(cwd)+"assets/images/poubelle.png")
-    imageBoutonEditeurExit = PhotoImage(file = str(cwd)+"assets/images/exit.png")
-    imageEditeurInfos = PhotoImage(file = str(cwd)+"assets/images/Menu_infos.png")
-    imageBoutonEditeurBlocSolide = PhotoImage(file = str(cwd)+"assets/images/bouton_bloc_solide.png")
-    imageBoutonEditeurBlocSpawn = PhotoImage(file= str(cwd)+"assets/images/bouton_bloc_spawn.png")
-    imageBoutonEditeurItemCle = PhotoImage(file= str(cwd)+"assets/images/bouton_item_cle.png")
-    imageBoutonEditeurBlocPorte = PhotoImage(file= str(cwd)+"assets/images/bouton_bloc_porte.png")
-    imageBoutonEditeurInfos = PhotoImage(file= str(cwd)+"assets/images/help.png")
-    imageBoutonEditeurEditBloc = PhotoImage(file= str(cwd)+"assets/images/edit_bloc.png")
-    imageBoutonEditeurGomme = PhotoImage(file= str(cwd)+"assets/images/gomme.png")
-    imageBoutonEditeurGommeSelect = PhotoImage(file= str(cwd)+"assets/images/gomme_select.png")
-    imageResetSolo = PhotoImage(file= str(cwd)+"assets/images/Reset.png")
-    imageBoutonPlayTest = PhotoImage(file= str(cwd)+"assets/images/play_test.png")
-    imageBoutonEditeurPoubelleMonde = PhotoImage(file = str(cwd)+"assets/images/poubelle_monde.png")
-    imageMonde1 = PhotoImage(file= str(cwd)+"assets/images/M1.png")
-    imageMonde2 = PhotoImage(file= str(cwd)+"assets/images/M2.png")
-    imageMonde3 = PhotoImage(file= str(cwd)+"assets/images/M3.png")
-    imageBGGlobal = PhotoImage(file= str(cwd)+"assets/images/fond_editeur.png")
+    ratioFenetre = largeur/2560 #Calcule d'un ratio entre la résolution utilisé par l'utilisateur et la résolution utilisé pour mettre en place toutes les position d'image
+    tailleImage = 100
+    ratioImage = tailleImage*ratioFenetre
+    #Redimentionnement des images pour correspondre à la résolution voulue
+    imageBoutonSolo = ImageTk.PhotoImage(Image.open(str(cwd)+"assets/images/bouton_solo.png").resize((int(ratioImage), int(ratioImage)))) 
+    imageBoutonEditeur = ImageTk.PhotoImage(Image.open(str(cwd)+"assets/images/bouton_editeur.png").resize((int(ratioImage), int(ratioImage))))
+    imageBoutonEditeurNiveauHaut = ImageTk.PhotoImage(Image.open(str(cwd)+"assets/images/fleche_haut.png").resize((int(ratioImage), int(ratioImage))))
+    imageBoutonEditeurNiveauBas = ImageTk.PhotoImage(Image.open((cwd)+"assets/images/fleche_bas.png").resize((int(ratioImage), int(ratioImage))))
+    imageBoutonEditeurNiveauGauche = ImageTk.PhotoImage(Image.open(str(cwd)+"assets/images/fleche_gauche.png").resize((int(ratioImage), int(ratioImage))))
+    imageBoutonEditeurNiveauDroite = ImageTk.PhotoImage(Image.open(str(cwd)+"assets/images/fleche_droite.png").resize((int(ratioImage), int(ratioImage))))
+    imageBoutonEditeurSave = ImageTk.PhotoImage(Image.open(str(cwd)+"assets/images/save.png").resize((int(ratioImage), int(ratioImage))))
+    imageBoutonEditeurRetour = ImageTk.PhotoImage(Image.open(str(cwd)+"assets/images/retour.png").resize((int(ratioImage), int(ratioImage))))
+    imageWIP = ImageTk.PhotoImage(Image.open(str(cwd)+"assets/images/WIP.png").resize((int(ratioImage), int(ratioImage))))
+    imageBoutonEditeurPoubelle = ImageTk.PhotoImage(Image.open(str(cwd)+"assets/images/poubelle.png").resize((int(ratioImage), int(ratioImage))))
+    imageBoutonEditeurExit = ImageTk.PhotoImage(Image.open(str(cwd)+"assets/images/exit.png").resize((int(ratioImage), int(ratioImage))))
+    imageBoutonEditeurBlocSolide = ImageTk.PhotoImage(Image.open(str(cwd)+"assets/images/bouton_bloc_solide.png").resize((int(ratioImage), int(ratioImage))))
+    imageBoutonEditeurBlocSpawn = ImageTk.PhotoImage(Image.open(str(cwd)+"assets/images/bouton_bloc_spawn.png").resize((int(ratioImage), int(ratioImage))))
+    imageBoutonEditeurItemCle = ImageTk.PhotoImage(Image.open(str(cwd)+"assets/images/bouton_item_cle.png").resize((int(ratioImage), int(ratioImage))))
+    imageBoutonEditeurBlocPorte = ImageTk.PhotoImage(Image.open(str(cwd)+"assets/images/bouton_bloc_porte.png").resize((int(ratioImage), int(ratioImage))))
+    imageBoutonEditeurInfos = ImageTk.PhotoImage(Image.open(str(cwd)+"assets/images/help.png").resize((int(ratioImage), int(ratioImage))))
+    imageBoutonEditeurEditBloc = ImageTk.PhotoImage(Image.open(str(cwd)+"assets/images/edit_bloc.png").resize((int(ratioImage), int(ratioImage))))
+    imageBoutonEditeurGomme = ImageTk.PhotoImage(Image.open(str(cwd)+"assets/images/gomme.png").resize((int(ratioImage), int(ratioImage))))
+    imageBoutonEditeurGommeSelect = ImageTk.PhotoImage(Image.open(str(cwd)+"assets/images/gomme_select.png").resize((int(ratioImage), int(ratioImage))))
+    imageResetSolo = ImageTk.PhotoImage(Image.open(str(cwd)+"assets/images/Reset.png").resize((int(ratioImage), int(ratioImage))))
+    imageBoutonPlayTest = ImageTk.PhotoImage(Image.open(str(cwd)+"assets/images/play_test.png").resize((int(ratioImage), int(ratioImage))))
+    imageBoutonEditeurPoubelleMonde = ImageTk.PhotoImage(Image.open(str(cwd)+"assets/images/poubelle_monde.png").resize((int(ratioImage), int(ratioImage))))
+    imageMonde1 = ImageTk.PhotoImage(Image.open(str(cwd)+"assets/images/M1.png").resize((int(ratioImage), int(ratioImage))))
+    imageMonde2 = ImageTk.PhotoImage(Image.open(str(cwd)+"assets/images/M2.png").resize((int(ratioImage), int(ratioImage))))
+    imageMonde3 = ImageTk.PhotoImage(Image.open(str(cwd)+"assets/images/M3.png").resize((int(ratioImage), int(ratioImage))))
+    bgMenu = ImageTk.PhotoImage(Image.open(str(cwd)+"assets/images/menu_bg.png").resize((int(largeur/2+largeur/4),int(hauteur/2+hauteur/4))))
+    bgMenuSolo = ImageTk.PhotoImage(Image.open(str(cwd)+"assets/images/menu_solo.png").resize((int(largeur/2+largeur/4),int(hauteur/2+hauteur/4))))
+    bgMenuEdition = ImageTk.PhotoImage(Image.open(str(cwd)+"assets/images/menu_editeur.png").resize((int(largeur/2+largeur/4),int(hauteur/2+hauteur/4))))
+    imageOK = ImageTk.PhotoImage(Image.open(str(cwd)+"assets/images/ok.png").resize((int(ratioImage), int(ratioImage))))
+    imageInfoBouton = ImageTk.PhotoImage(Image.open(str(cwd)+"assets/images/info_bouton.png").resize((int(ratioImage), int(ratioImage))))
+    
     init_keys(fenetre) #Appel la fonction des binds 
     grille()
     menu() #Appe la fonction menu (affichage du main menu)
@@ -90,32 +103,32 @@ def lancement_edition (): #La fonction "lancement_edition" permet de mettre en p
     fonctionDeplacement = level_search #Changement du binds des touches de direction pour changer de niveau plus facilement dans l'éditeur
     #Fenetre des infos / boutons
     fenetre_bouton = tk.Toplevel() #Création de la fenetre des fonction/boutons de l'éditeur
-    fenetre_bouton.geometry('312x621') #taille 1 bouton = taille que tu veux + 3
+    fenetre_bouton.geometry("%dx%d%+d%+d" % (300*ratioFenetre,600*ratioFenetre,50,50)) #taille 1 bouton = taille que tu veux + 3 
     fenetre_bouton.resizable(False,False) #Fenetre non redimentionable
     fenetre_bouton.attributes('-topmost',1) #Fenetre toujours au premier plan
     fenetre_bouton.protocol("WM_DELETE_WINDOW", disable_event) #Fenetre non detruisable manuelement
-    fenetre_bouton.attributes('-alpha',1) #Permet de changer l'opacité de la fenetre
+    fenetre_bouton.config(background='#ffffff')
     #Création des boutons / texte sur la fenetre de l'éditeur
-    Button(fenetre_bouton, image=imageBoutonEditeurSave, command=save_level).place(x=0,y=0) #bouton_save
-    Button(fenetre_bouton, image=imageBoutonEditeurRetour, command=deleteLastBlock).place(x=103,y=0) #bouton_retour
-    Button(fenetre_bouton, image=imageBoutonEditeurPoubelle, command=lambda:delete_all_blocks("")).place(x=206,y=0) #boutonEditeurPoubelle
-    Button(fenetre_bouton, image=imageBoutonEditeurNiveauHaut, command=lambda:level_search("up")).place(x=103,y=103) #bouton_niveau_up
-    Button(fenetre_bouton, image=imageBoutonEditeurNiveauBas, command=lambda:level_search("down")).place(x=103,y=309) #bouton_niveau_down
-    Button(fenetre_bouton, image=imageBoutonEditeurNiveauGauche, command=lambda:level_search("left")).place(x=0,y=206) #bouton_niveau_left
-    Button(fenetre_bouton, image=imageBoutonEditeurNiveauDroite, command=lambda:level_search("right")).place(x=206,y=206) #bouton_niveau_right
-    Button(fenetre_bouton, image=imageBoutonEditeurPoubelleMonde, command=delete_all_level).place(x=103,y=412) #boutonEditeurDellAll
-    Button(fenetre_bouton, image=imageBoutonEditeurExit, command=lambda:retour_menu("postEditMenu")).place(x=206,y=515) #boutonEditeurExit
-    numeroNiveau = Label(fenetre_bouton, text=id_level, font="Arial, 30") #Affichage du numéro du niveau actuel
-    numeroNiveau.pack(padx=103, pady=230) #numeroNiveau
-    Button(fenetre_bouton, image=imageBoutonEditeurBlocSolide, command=lambda:type_Blocs("solide")).place(x=0,y=103) #bouton_bloc_solide
-    Button(fenetre_bouton, image=imageBoutonEditeurBlocSpawn, command=lambda:type_Blocs("spawn")).place(x=206,y=103) #bouton_bloc_spawn
-    Button(fenetre_bouton, image=imageBoutonEditeurItemCle, command=lambda:type_Blocs("key")).place(x=0,y=309) #bouton_item_key
-    boutonGomme = Button(fenetre_bouton, image=imageBoutonEditeurGomme, command=delspebloc)
-    boutonGomme.place(x=0,y=412) #bouton_gomme
-    Button(fenetre_bouton, image=imageBoutonEditeurBlocPorte, command=lambda:type_Blocs("porte")).place(x=206,y=309) #bouton_bloc_port
-    Button(fenetre_bouton, image=imageBoutonEditeurEditBloc, command=set_edit_objet).place(x=206,y=412) #bouton_edit
-    message_editeur = Label(fenetre_bouton, text="", font="Arial, 30" ) #Affiche du type de bloc / erreur / info général
-    message_editeur.place(x=103,y=568, anchor=CENTER) #message_editeur
+    Button(fenetre_bouton, image=imageBoutonEditeurSave, relief='groove', bd=0, bg='#ffffff', command=save_level).place(x=ratioImage/2,y=ratioImage/2, anchor=CENTER) #bouton_save
+    Button(fenetre_bouton, image=imageBoutonEditeurRetour, relief='groove', bd=0, bg='#ffffff', command=deleteLastBlock).place(x=ratioImage+ratioImage/2,y=ratioImage/2, anchor=CENTER) #bouton_retour
+    Button(fenetre_bouton, image=imageBoutonEditeurPoubelle, relief='groove', bd=0, bg='#ffffff', command=lambda:delete_all_blocks("")).place(x=ratioImage*2+ratioImage/2,y=ratioImage/2, anchor=CENTER) #boutonEditeurPoubelle
+    Button(fenetre_bouton, image=imageBoutonEditeurNiveauHaut, relief='groove', bd=0, bg='#ffffff', command=lambda:level_search("up")).place(x=ratioImage+ratioImage/2,y=ratioImage+ratioImage/2, anchor=CENTER) #bouton_niveau_up
+    Button(fenetre_bouton, image=imageBoutonEditeurNiveauBas, relief='groove', bd=0, bg='#ffffff', command=lambda:level_search("down")).place(x=ratioImage+ratioImage/2,y=ratioImage*3+ratioImage/2, anchor=CENTER) #bouton_niveau_down
+    Button(fenetre_bouton, image=imageBoutonEditeurNiveauGauche, relief='groove', bd=0, bg='#ffffff', command=lambda:level_search("left")).place(x=ratioImage/2,y=ratioImage*2+ratioImage/2, anchor=CENTER) #bouton_niveau_left
+    Button(fenetre_bouton, image=imageBoutonEditeurNiveauDroite, relief='groove', bd=0, bg='#ffffff', command=lambda:level_search("right")).place(x=ratioImage*2+ratioImage/2,y=ratioImage*2+ratioImage/2, anchor=CENTER) #bouton_niveau_right
+    Button(fenetre_bouton, image=imageBoutonEditeurPoubelleMonde, relief='groove', bd=0, bg='#ffffff', command=delete_all_level).place(x=ratioImage+ratioImage/2,y=ratioImage*4+ratioImage/2, anchor=CENTER) #boutonEditeurDellAll
+    Button(fenetre_bouton, image=imageBoutonEditeurExit, relief='groove', bd=0, bg='#ffffff', command=lambda:retour_menu("postEditMenu")).place(x=ratioImage*2+ratioImage/2,y=ratioImage*5+ratioImage/2, anchor=CENTER) #boutonEditeurExit
+    numeroNiveau = Label(fenetre_bouton, text=id_level, font="Arial, 30", bg='#ffffff') #Affichage du numéro du niveau actuel
+    numeroNiveau.place(x=ratioImage+ratioImage/2,y=ratioImage*2+ratioImage/2, anchor=CENTER) #numeroNiveau
+    Button(fenetre_bouton, image=imageBoutonEditeurBlocSolide, relief='groove', bd=0, bg='#ffffff', command=lambda:type_Blocs("solide")).place(x=ratioImage/2,y=ratioImage+ratioImage/2, anchor=CENTER) #bouton_bloc_solide
+    Button(fenetre_bouton, image=imageBoutonEditeurBlocSpawn, relief='groove', bd=0, bg='#ffffff', command=lambda:type_Blocs("spawn")).place(x=ratioImage*2+ratioImage/2,y=ratioImage+ratioImage/2, anchor=CENTER) #bouton_bloc_spawn
+    Button(fenetre_bouton, image=imageBoutonEditeurItemCle, relief='groove', bd=0, bg='#ffffff', command=lambda:type_Blocs("key")).place(x=ratioImage/2,y=ratioImage*3+ratioImage/2, anchor=CENTER) #bouton_item_key
+    boutonGomme = Button(fenetre_bouton, image=imageBoutonEditeurGomme, relief='groove', bd=0, bg='#ffffff', command=delspebloc)
+    boutonGomme.place(x=ratioImage/2,y=ratioImage*4+ratioImage/2, anchor=CENTER) #bouton_gomme
+    Button(fenetre_bouton, image=imageBoutonEditeurBlocPorte, relief='groove', bd=0, bg='#ffffff', command=lambda:type_Blocs("porte")).place(x=ratioImage*2+ratioImage/2,y=ratioImage*3+ratioImage/2, anchor=CENTER) #bouton_bloc_port
+    Button(fenetre_bouton, image=imageBoutonEditeurEditBloc, relief='groove', bd=0, bg='#ffffff', command=set_edit_objet).place(x=ratioImage*2+ratioImage/2,y=ratioImage*4+ratioImage/2, anchor=CENTER) #bouton_edit
+    message_editeur = Label(fenetre_bouton, text="", font="Arial, 25", bg='#ffffff' ) #Affiche du type de bloc / erreur / info général
+    message_editeur.place(x=ratioImage,y=ratioImage*5+ratioImage/2, anchor=CENTER) #message_editeur
 
 def lancement_solo ():
     global joueur, positionJoueur, lienfichier, id_level, solo, fonctionDeplacement
@@ -235,10 +248,10 @@ def mouvement_joueur (direction): #Permet au joueur de ce déplacer dans un nive
                 canevas.move(joueur, deplacement[0], deplacement[1]) #Le joueur est déplacer sur la case demander
                 positionJoueur[xyJ] = positionJoueur[xyJ]+posJF #Les coordonnées du joueur sont actualiser
 
-def touch_key (pad,blocinListeMonde): #Fonction touch_key permet de récupérer une clé
-    for blocinListeMonde2 in listeMonde: #Parcours de la liste Monde 
-        if blocinListeMonde2["idKeyPorte"] == blocinListeMonde["idKeyPorte"]: #Si l'identifient de la clé correspond à selui demander alors
-            blocinListeMonde2["keyCollect"] = 1
+def touch_key (pad,laCle): #Fonction touch_key permet de récupérer une clé
+    for blocTest in listeMonde: #Parcours de la liste Monde 
+        if blocTest["idKeyPorte"] == laCle["idKeyPorte"]: #Si l'identifient de la clé correspond à selui demander alors
+            blocTest["keyCollect"] = 1
     canevas.delete(listeNiveau[pad]["idBloc"])
     del listeNiveau[pad]
     save_level()
@@ -283,7 +296,7 @@ def type_Blocs (tBloc): #Indication du type de bloc à placer
         message_editeur.config(text="Bloc porte")
 
 def clic_gauche (event): #Utilisation du clic gauche (placer un bloc, détruire, selectionner...)
-    global listeNiveau, entryIDcle, boutonIDCleValidation, selectBlocID, couleurSet, textIDKey, padsouris, selectBlocCoordX, selectBlocCoordY
+    global listeNiveau, entryIDcle, boutonIDCleValidation, selectBlocID, couleurSet, textIDKey, padsouris, selectBlocCoordX, selectBlocCoordY, slectBloc
 
     xSourisCase,ySourisCase=event.x,event.y
 
@@ -320,12 +333,13 @@ def clic_gauche (event): #Utilisation du clic gauche (placer un bloc, détruire,
                 demiPixel = 0
             listeNiveau.append({"coordsBloc" : [xSourisCase, ySourisCase], "idBloc" : canevas.create_rectangle(xSourisCase*nombrePixel+demiPixel, ySourisCase*nombrePixel+demiPixel, xSourisCase*nombrePixel+nombrePixel-demiPixel, ySourisCase*nombrePixel+nombrePixel-demiPixel, fill=couleurBloc), "typeBloc" : typeDuBloc, "color" : str(couleurBloc)})
 
-    elif editBloc == True: #Y a un truc a faire ici niveau optimisation en mettant tout dans le même try
+    elif editBloc == True:
         try:
             entryIDcle.destroy()
             boutonIDCleValidation.destroy()
             couleurSet.destroy()
             textIDKey.destroy()
+            infoBouton.destroy()
         except:
             pass
         verifyEdit = False
@@ -355,18 +369,22 @@ def clic_gauche (event): #Utilisation du clic gauche (placer un bloc, détruire,
                 if verifyEdit == True:
                     selectBlocCoordX = blocinListeNiveau["coordsBloc"][0]
                     selectBlocCoordY = blocinListeNiveau["coordsBloc"][1]
+                    slectBloc = blocinListeNiveau
 
-                    entryIDcle = Entry(fenetre_edit_bloc, bg="lightgrey", width=10, font="Arial, 24")
-                    entryIDcle.place(x=250, y=150)
+                    entryIDcle = Entry(fenetre_edit_bloc, bg="lightgrey", width=int(10*ratioFenetre), font=("Arial", int(24*ratioFenetre)))
+                    entryIDcle.place(x=275*ratioFenetre, y=110*ratioFenetre)
 
-                    boutonIDCleValidation = Button(fenetre_edit_bloc, image=imageWIP, command=lambda:getKeyID(entryIDcle.get()))
-                    boutonIDCleValidation.place(x=25,y=150)
+                    boutonIDCleValidation = Button(fenetre_edit_bloc, image=imageOK, relief='groove', bd=0, bg='black', command=lambda:getKeyID(str(entryIDcle.get())))
+                    boutonIDCleValidation.place(x=25*ratioFenetre,y=175*ratioFenetre)
 
-                    textIDKey = Label(fenetre_edit_bloc, text="ID :", font="Arial, 24")
-                    textIDKey.place(x=175,y=150) 
+                    infoBouton = Button(fenetre_edit_bloc, image=imageInfoBouton, relief='groove', bd=0, bg='black', command=id_exist)
+                    infoBouton.place(x=130*ratioFenetre,y=175*ratioFenetre)
 
-                    couleurSet = Scale(fenetre_edit_bloc, orient='horizontal', from_=1, to=8, resolution=1, tickinterval=2, length=180, label='Couleur', font=("Arial, 10"), command=change_color)
-                    couleurSet.place(x=250,y=200)
+                    textIDKey = Label(fenetre_edit_bloc, text="ID :", font=("Arial", int(24*ratioFenetre)))
+                    textIDKey.place(x=130*ratioFenetre,y=110*ratioFenetre) 
+
+                    couleurSet = Scale(fenetre_edit_bloc, orient='horizontal', from_=1, to=8, resolution=1, tickinterval=2, length=180*ratioFenetre, label='Couleur', font=("Arial", int(10*ratioFenetre)), command=change_color)
+                    couleurSet.place(x=275*ratioFenetre,y=150*ratioFenetre)
                 break
             else:
                 textTypeBlocSelect.config(text="Air")
@@ -424,19 +442,7 @@ def load_world (): #Chargement du monde
             listeMonde = pickle.load(fichierMonde)
 
 def info_editeur (): #Fenêtre d'infos des action possible
-    global fenetreinfosTest, fenetre_infos
-    if fenetreinfosTest == False:
-        fenetre_infos = tk.Toplevel()
-        fenetre_infos.resizable(False,False)
-        fenetre_infos.geometry('1200x600')
-        fenetre_infos.attributes('-topmost',1)
-        fenetre_infos.protocol("WM_DELETE_WINDOW", disable_event)
-        infosLabel = Label(fenetre_infos, image=imageEditeurInfos)
-        infosLabel.pack()
-        fenetreinfosTest = True
-    elif fenetreinfosTest == True:
-        fenetre_infos.destroy()
-        fenetreinfosTest = False
+    webbrowser.open(str(cwd)+"assets/Guide_editeur.pdf")
 
 def delspebloc (): #Toggle de la destruciton d'un bloc spécifique (utilise clic_gauche pour delete)
     global delonespebloc, boutonGomme
@@ -452,18 +458,18 @@ def set_edit_objet (): #Mise en place du mode d'édition de bloc
     if fenetreeditTest == False:
         fenetre_edit_bloc = tk.Toplevel()
         fenetre_edit_bloc.resizable(False,False)
-        fenetre_edit_bloc.geometry('500x300')
+        fenetre_edit_bloc.geometry("%dx%d%+d%+d" % (500*ratioFenetre,300*ratioFenetre,50,50))
         fenetre_edit_bloc.attributes('-topmost',1)
         fenetre_edit_bloc.protocol("WM_DELETE_WINDOW", disable_event)
 
-        titreEdit = Label(fenetre_edit_bloc, text="Edit Object", font="Arial, 32")
-        titreEdit.place(x=250,y=20, anchor=CENTER)
+        titreEdit = Label(fenetre_edit_bloc, text="Edit Object", font=("Arial", int(32*ratioFenetre)))
+        titreEdit.place(x=ratioImage*2+ratioImage/2,y=20*ratioFenetre, anchor=CENTER)
 
-        textTypeBloc = Label(fenetre_edit_bloc, text="Type Bloc : ", font="Arial, 24")
-        textTypeBloc.place(x=25, y=75)
+        textTypeBloc = Label(fenetre_edit_bloc, text="Type Bloc : ", font=("Arial", int(24*ratioFenetre)))
+        textTypeBloc.place(x=25*ratioFenetre, y=65*ratioFenetre)
 
-        textTypeBlocSelect = Label(fenetre_edit_bloc, text="None", font="Arial, 24")
-        textTypeBlocSelect.place(x=250, y=75)
+        textTypeBlocSelect = Label(fenetre_edit_bloc, text="None", font=("Arial", int(24*ratioFenetre)))
+        textTypeBlocSelect.place(x=275*ratioFenetre, y=65*ratioFenetre)
 
         fenetreeditTest = True
         edit = False
@@ -475,7 +481,7 @@ def set_edit_objet (): #Mise en place du mode d'édition de bloc
         editBloc = False
 
 def getKeyID (IDValue): #Enregistre les infos d'une clé
-    global listeMonde
+    global listeMonde, message_editeur
     verify = False
     if IDValue == "":
         IDValue = '0'
@@ -487,6 +493,7 @@ def getKeyID (IDValue): #Enregistre les infos d'une clé
     if verify == False:
         listeMonde.append({"idKeyPorte" : IDValue, "coordsBloc" : [selectBlocCoordX, selectBlocCoordY], "idLevel" : str(id_level), "keyCollect" : 0})
     save_world()
+    print(listeMonde)
 
 def change_color (c): #Change la couleur du bloc selectionner
     global listeNiveau, newColorBloc
@@ -512,6 +519,12 @@ def change_color (c): #Change la couleur du bloc selectionner
         if blocinListeNiveau["idBloc"] == selectBlocID:
             blocinListeNiveau["color"] = newColorBloc
             break
+
+def id_exist ():
+    listeIDExist = []
+    for id in listeMonde:
+        listeIDExist.append(id["idKeyPorte"])
+    print(sorted(listeIDExist))
 
 
 ################################################################### Fonctions du fonctionnement global du programme ###################################################################
@@ -571,49 +584,46 @@ def load_level (): #Charge les niveau et détruit les ancien
 
 def level_search (direction): #Cherche le bon niveau a charger
     global id_level, lienfichier, numeroNiveau
-    if editTest == True:
-        repertoirJeu = "test_editeur/"
-    elif solo == True:
-        repertoirJeu = "solo/"
-    elif edit == True:
-        repertoirJeu = "editeur/"
+    if editBloc == False:
+        if editTest == True:
+            repertoirJeu = "test_editeur/"
+        elif solo == True:
+            repertoirJeu = "solo/"
+        elif edit == True:
+            repertoirJeu = "editeur/"
 
-    save_level()
-    if direction =='up':
-        lienfichier = str(cwd)+"assets/data/"+str(repertoirJeu)+"monde"+str(id_monde)+"/niveau"+str(id_level[0])+str(id_level[1]-1)+".txt"
-        if os.path.exists(lienfichier):
+        save_level()
+        if direction =='up':
+            lienfichier = str(cwd)+"assets/data/"+str(repertoirJeu)+"monde"+str(id_monde)+"/niveau"+str(id_level[0])+str(id_level[1]-1)+".txt"
             id_level[1] -= 1
             if solo == True:
                 positionJoueur[1] = nombreCaseY-1
                 canevas.moveto(joueur, positionJoueur[0]*nombrePixel-1, positionJoueur[1]*nombrePixel-1)
 
-    if direction =='down':
-        lienfichier = str(cwd)+"assets/data/"+str(repertoirJeu)+"monde"+str(id_monde)+"/niveau"+str(id_level[0])+str(id_level[1]+1)+".txt"
-        if os.path.exists(lienfichier):
+        if direction =='down':
+            lienfichier = str(cwd)+"assets/data/"+str(repertoirJeu)+"monde"+str(id_monde)+"/niveau"+str(id_level[0])+str(id_level[1]+1)+".txt"
             id_level[1] += 1
             if solo == True:
                 positionJoueur[1] = 0
                 canevas.moveto(joueur, positionJoueur[0]*nombrePixel-1, -positionJoueur[1]*nombrePixel-1)
 
-    if direction =='left':
-        lienfichier = str(cwd)+"assets/data/"+str(repertoirJeu)+"monde"+str(id_monde)+"/niveau"+str(id_level[0]-1)+str(id_level[1])+".txt"
-        if os.path.exists(lienfichier):
+        if direction =='left':
+            lienfichier = str(cwd)+"assets/data/"+str(repertoirJeu)+"monde"+str(id_monde)+"/niveau"+str(id_level[0]-1)+str(id_level[1])+".txt"
             id_level[0] -= 1
             if solo == True:
                 positionJoueur[0] = nombreCaseX-1
                 canevas.moveto(joueur, positionJoueur[0]*nombrePixel-1, positionJoueur[1]*nombrePixel-1)
 
-    if direction =='right':
-        lienfichier = str(cwd)+"assets/data/"+str(repertoirJeu)+"monde"+str(id_monde)+"/niveau"+str(id_level[0]+1)+str(id_level[1])+".txt"
-        if os.path.exists(lienfichier):
+        if direction =='right':
+            lienfichier = str(cwd)+"assets/data/"+str(repertoirJeu)+"monde"+str(id_monde)+"/niveau"+str(id_level[0]+1)+str(id_level[1])+".txt"
             id_level[0] += 1
             if solo == True:
                 positionJoueur[0] = 0
                 canevas.moveto(joueur, -positionJoueur[0]*nombrePixel-1, positionJoueur[1]*nombrePixel-1)
 
-    if edit == True:
-        numeroNiveau.configure(text=id_level)
-    load_level()
+        if edit == True:
+            numeroNiveau.configure(text=id_level)
+        load_level()
 
 def init_keys(f): #Les Binds
     #Binds direction
@@ -660,13 +670,16 @@ def menu ():
     menuFrame = Frame(fenetre, width=largeur/2+largeur/4, height=hauteur/2+hauteur/4 ,bg='black')
     menuFrame.place(x=largeur/2, y=hauteur/2,anchor=CENTER)
 
-    boutonSolo = Button(menuFrame, image=imageBoutonSolo, command=menu_pre_solo)
+    fondMenu = Label(menuFrame, image=bgMenu)
+    fondMenu.place(x=(largeur/2+largeur/4)/2, y=(hauteur/2+hauteur/4)/2, anchor=CENTER)
+
+    boutonSolo = Button(menuFrame, image=imageBoutonSolo, relief='groove', bd=0, bg='black', command=menu_pre_solo)
     boutonSolo.place(x=(largeur/2+largeur/4)/2-((largeur/2+largeur/4)/2)/2, y=(hauteur/2+hauteur/4)/2, anchor=CENTER)
 
-    boutonEditeur = Button(menuFrame, image=imageBoutonEditeur, command=menu_pre_edition)
+    boutonEditeur = Button(menuFrame, image=imageBoutonEditeur, relief='groove', bd=0, bg='black', command=menu_pre_edition)
     boutonEditeur.place(x=(largeur/2+largeur/4)/2+((largeur/2+largeur/4)/2)/2, y=(hauteur/2+hauteur/4)/2, anchor=CENTER)
 
-    boutonExit = Button(menuFrame, image=imageBoutonEditeurExit, command=fenetre.destroy)
+    boutonExit = Button(menuFrame, image=imageBoutonEditeurExit, relief='groove', bd=0, bg='black', command=fenetre.destroy)
     boutonExit.place(x=(largeur/2+largeur/4)/2, y=(hauteur/2+hauteur/4)/2, anchor=CENTER)
 
 def menu_pre_edition ():
@@ -675,30 +688,29 @@ def menu_pre_edition ():
     menuPostEdit = Frame(fenetre, width=largeur/2+largeur/4, height=hauteur/2+hauteur/4 ,bg='black')
     menuPostEdit.place(x=largeur/2, y=hauteur/2,anchor=CENTER)
 
-    boutonExitEdit = Button(menuPostEdit, image=imageBoutonEditeurExit, command=lambda:retour_menu("Menu"))
+    fondMenuEdition = Label(menuPostEdit, image=bgMenuEdition)
+    fondMenuEdition.place(x=(largeur/2+largeur/4)/2, y=(hauteur/2+hauteur/4)/2, anchor=CENTER)
+
+    boutonExitEdit = Button(menuPostEdit, image=imageBoutonEditeurExit, relief='groove', bd=0, bg='black', command=lambda:retour_menu("Menu"))
     boutonExitEdit.place(x=(largeur/2+largeur/4)/2, y=(hauteur/2+hauteur/4)/2, anchor=CENTER)
 
-    boutonEditeurMonde1 = Button(menuPostEdit, image=imageMonde1, command=lambda:monde_finder_editeur(1))
+    boutonEditeurMonde1 = Button(menuPostEdit, image=imageMonde1, relief='groove', bd=0, bg='black', command=lambda:monde_finder_editeur(1))
     boutonEditeurMonde1.place(x=(largeur/2+largeur/4)/2-((largeur/2+largeur/4)/2)/4, y=(hauteur/2+hauteur/4)/2, anchor=CENTER)
 
-    boutonEditeurMonde2 = Button(menuPostEdit, image=imageMonde2, command=lambda:monde_finder_editeur(2))
+    boutonEditeurMonde2 = Button(menuPostEdit, image=imageMonde2, relief='groove', bd=0, bg='black', command=lambda:monde_finder_editeur(2))
     boutonEditeurMonde2.place(x=(largeur/2+largeur/4)/2, y=(hauteur/2+hauteur/4)/1.37, anchor=CENTER)
 
-    boutonEditeurMonde3 = Button(menuPostEdit, image=imageMonde3, command=lambda:monde_finder_editeur(3))
+    boutonEditeurMonde3 = Button(menuPostEdit, image=imageMonde3, relief='groove', bd=0, bg='black', command=lambda:monde_finder_editeur(3))
     boutonEditeurMonde3.place(x=(largeur/2+largeur/4)/2+((largeur/2+largeur/4)/2)/4, y=(hauteur/2+hauteur/4)/2, anchor=CENTER)
 
-    titreMonde = Label(menuPostEdit, text="Select World", font="Arial, 48", fg='white', bg='black')
-    titreMonde.place(x=(largeur/2+largeur/4)/2, y=50, anchor=CENTER)
-
-    boutonEditPlayTest = Button(menuPostEdit, image=imageBoutonPlayTest, command=play_test)
+    boutonEditPlayTest = Button(menuPostEdit, image=imageBoutonPlayTest, relief='groove', bd=0, bg='black', command=play_test)
     boutonEditPlayTest.place(x=(largeur/2+largeur/4)/2, y=(hauteur/2+hauteur/4)-(hauteur/2+hauteur/4)/1.37, anchor=CENTER)
 
-    boutonEditeurInfo = Button(menuPostEdit, image=imageBoutonEditeurInfos, command=info_editeur)
-    boutonEditeurInfo.place(x=(largeur/2+largeur/4)-75,y=75, anchor=CENTER)
+    boutonEditeurInfo = Button(menuPostEdit, image=imageBoutonEditeurInfos, relief='groove', bd=0, bg='black', command=info_editeur)
+    boutonEditeurInfo.place(x=(largeur/2+largeur/4)-ratioImage*2,y=ratioImage*2, anchor=CENTER)
 
 def monde_finder_editeur (numMonde):
     global id_monde, lienmonde, lienfichier
-
     id_monde = numMonde
     lienmonde = str(cwd)+"assets/data/editeur/monde"+str(id_monde)+"_info.txt"
     lienfichier = str(cwd)+"assets/data/editeur/monde"+str(id_monde)+"/niveau"+str(id_level[0])+str(id_level[1])+".txt"
@@ -710,23 +722,23 @@ def menu_pre_solo ():
     menuPostSolo = Frame(fenetre, width=largeur/2+largeur/4, height=hauteur/2+hauteur/4 ,bg='black')
     menuPostSolo.place(x=largeur/2, y=hauteur/2,anchor=CENTER)
 
-    boutonExitSolo = Button(menuPostSolo, image=imageBoutonEditeurExit, command=lambda:retour_menu("Menu"))
+    fondMenuSolo = Label(menuPostSolo, image=bgMenuSolo)
+    fondMenuSolo.place(x=(largeur/2+largeur/4)/2, y=(hauteur/2+hauteur/4)/2, anchor=CENTER)
+
+    boutonExitSolo = Button(menuPostSolo, image=imageBoutonEditeurExit, relief='groove', bd=0, bg='black', command=lambda:retour_menu("Menu"))
     boutonExitSolo.place(x=(largeur/2+largeur/4)/2, y=(hauteur/2+hauteur/4)/2, anchor=CENTER)
 
-    boutonSoloMonde1 = Button(menuPostSolo, image=imageMonde1, command=lambda:monde_finder_solo(1))
+    boutonSoloMonde1 = Button(menuPostSolo, image=imageMonde1, relief='groove', bd=0, bg='black', command=lambda:monde_finder_solo(1))
     boutonSoloMonde1.place(x=(largeur/2+largeur/4)/2-((largeur/2+largeur/4)/2)/4, y=(hauteur/2+hauteur/4)/2, anchor=CENTER)
 
-    boutonSoloMonde2 = Button(menuPostSolo, image=imageMonde2, command=lambda:monde_finder_solo(2))
+    boutonSoloMonde2 = Button(menuPostSolo, image=imageMonde2, relief='groove', bd=0, bg='black', command=lambda:monde_finder_solo(2))
     boutonSoloMonde2.place(x=(largeur/2+largeur/4)/2, y=(hauteur/2+hauteur/4)/1.37, anchor=CENTER)
 
-    boutonSoloMonde3 = Button(menuPostSolo, image=imageMonde3, command=lambda:monde_finder_solo(3))
+    boutonSoloMonde3 = Button(menuPostSolo, image=imageMonde3, relief='groove', bd=0, bg='black', command=lambda:monde_finder_solo(3))
     boutonSoloMonde3.place(x=(largeur/2+largeur/4)/2+((largeur/2+largeur/4)/2)/4, y=(hauteur/2+hauteur/4)/2, anchor=CENTER)
 
-    boutonSoloReset = Button(menuPostSolo, image=imageResetSolo, command=reset_solo)
+    boutonSoloReset = Button(menuPostSolo, image=imageResetSolo, relief='groove', bd=0, bg='black', command=reset_solo)
     boutonSoloReset.place(x=(largeur/2+largeur/4)/2, y=(hauteur/2+hauteur/4)-(hauteur/2+hauteur/4)/1.37, anchor=CENTER)
-
-    titreSolo = Label(menuPostSolo, text="WIP", font="Arial, 48", fg='white', bg='black')
-    titreSolo.place(x=(largeur/2+largeur/4)/2, y=50, anchor=CENTER)
 
 def monde_finder_solo (numMonde):
     global id_monde, lienmonde, lienfichier
@@ -750,7 +762,7 @@ def close_menu ():
         pass
 
 def retour_menu (goToMenu): #Retour au menu
-    global lienfichier, solo, fenetreinfosTest, fenetreeditTest, edit, ligneX, ligneY, joueur, id_level
+    global lienfichier, solo, fenetreeditTest, edit, ligneX, ligneY, joueur, id_level
 
     if goToMenu == "postEditMenu":
         fenetre_bouton.destroy()
@@ -768,11 +780,6 @@ def retour_menu (goToMenu): #Retour au menu
         for paddeLigne in ligneY:
             canevas.delete(paddeLigne)
         ligneY.clear()
-        try:
-            fenetre_infos.destroy()
-            fenetreinfosTest = 0
-        except:
-            pass
         menuPostEdit.place(x=largeur/2, y=hauteur/2,anchor=CENTER)
 
     elif goToMenu == "postSoloMenu":
@@ -816,10 +823,6 @@ fenetre.attributes('-fullscreen', True)
 canevas = Canvas(fenetre, width=largeur, height=hauteur,bg='#3b3b3b')
 
 ################################################################### Autre ###################################################################
-first_launch()
+start()
 canevas.pack()
 fenetre.mainloop()
-
-"""
-2 clé ne peuvent pas avoir le même id sinon irécuprable
-"""
