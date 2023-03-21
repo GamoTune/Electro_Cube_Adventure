@@ -10,13 +10,23 @@ from PIL import Image, ImageTk
 ################################################################### Les fonctions de mise en place des modes ###################################################################
 
 def start (): #La fonction "start" permet de déclaré la plus part des variable globald
-    global editBloc, cwd, imageBoutonPlayTest, bgMenu, nextFree, imageOK, imageInfoBouton, tailleImage, ratioImage, bgMenuSolo, ratioFenetre, bgMenuEdition, nombreCase, fonctionDeplacement, imageBoutonEditeurGommeSelect, imageBoutonEditeurGomme, imageBoutonEditeurPoubelleMonde, imageBoutonEditeurBlocPorte, editTest, originalPath, imageMonde1, imageMonde2, imageMonde3, imageResetSolo, imageBoutonEditeurItemCle, imageBoutonEditeurEditBloc, newColorBloc, fenetreeditTest, listeNiveau, id_level, lienfichier, edit, imageBoutonSolo, imageBoutonEditeur, ligneX, ligneY, imageBoutonEditeurNiveauHaut, imageBoutonEditeurNiveauBas, imageBoutonEditeurNiveauGauche, imageBoutonEditeurNiveauDroite, imageBoutonEditeurSave, imageBoutonEditeurRetour, imageWIP, imageBoutonEditeurPoubelle, imageBoutonEditeurExit, imageBoutonEditeurBlocSolide, couleurBloc, typeDuBloc, imageBoutonEditeurBlocSpawn, editGomme, listeMonde, id_monde, solo, lienmonde, imageBoutonEditeurInfos
+    global editBloc, cwd, imageBoutonPlayTest, niveauActuel, bgMenu, nextFree, imageOK, imageInfoBouton, tailleImage, ratioImage, bgMenuSolo, ratioFenetre, bgMenuEdition, nombreCase, fonctionDeplacement, imageBoutonEditeurGommeSelect, imageBoutonEditeurGomme, imageBoutonEditeurPoubelleMonde, imageBoutonEditeurBlocPorte, editTest, originalPath, imageMonde1, imageMonde2, imageMonde3, imageResetSolo, imageBoutonEditeurItemCle, imageBoutonEditeurEditBloc, newColorBloc, fenetreeditTest, listeNiveau, id_level, lienfichier, edit, imageBoutonSolo, imageBoutonEditeur, ligneX, ligneY, imageBoutonEditeurNiveauHaut, imageBoutonEditeurNiveauBas, imageBoutonEditeurNiveauGauche, imageBoutonEditeurNiveauDroite, imageBoutonEditeurSave, imageBoutonEditeurRetour, imageWIP, imageBoutonEditeurPoubelle, imageBoutonEditeurExit, imageBoutonEditeurBlocSolide, couleurBloc, typeDuBloc, imageBoutonEditeurBlocSpawn, editGomme, listeMonde, id_monde, solo, lienmonde, imageBoutonEditeurInfos
 
     cwd = os.getcwd()
     cwd = cwd.replace("\\", "/" )
     cwd = cwd+str("/")
     #Les coordonnées virtuel sont des coordonnées d'une matrice créée en fonction du nombre de cases à l'écran (défini avec "nombreCase")
-    listeNiveau = [] # Default : [{"coordsBloc" : [], "idBloc" : 0, "typeBloc" : 0, "color" : ""}] Cette liste contient toutes les informations sur les blocs d'un niveau
+    listeNiveau = {"niveaux" : []}
+    """{
+        "niveaux" : [
+            {"id" : 0, "x" : 0, "y" : 0, "bloc" : [
+                {"x" : 0, "y" : 0, "idBloc" : 0, "typeBloc" : 0, "color" : ""}]
+            }
+        ]}"""
+    for niveauActuel in listeNiveau["niveaux"]:
+        if len(niveauActuel) > 0:
+            if niveauActuel["x"] == 0 and niveauActuel["y"] == 0:
+                break
     listeMonde = [] # Default : [{"type" : 0, "idKeyPorte" : 0, "coordsBloc" : [], "idLevel" : "", "keyCollect" : 0}] Cette liste contient toutes les spécificités des bloc des niveau du monde
     id_level = [0,0] #Numéro du niveau dans le quel on est (quand on change de niveau on ajoute ou retire 1 ) [default : [0,0]]
     id_monde = 1 #Numéro du monde dans le quel on est
@@ -71,7 +81,6 @@ def start (): #La fonction "start" permet de déclaré la plus part des variable
     bgMenuEdition = ImageTk.PhotoImage(Image.open(str(cwd)+"assets/images/menu_editeur.png").resize((int(largeur/2+largeur/4),int(hauteur/2+hauteur/4))))
     imageOK = ImageTk.PhotoImage(Image.open(str(cwd)+"assets/images/ok.png").resize((int(ratioImage), int(ratioImage))))
     imageInfoBouton = ImageTk.PhotoImage(Image.open(str(cwd)+"assets/images/info_bouton.png").resize((int(ratioImage), int(ratioImage))))
-    
     init_keys(fenetre) #Appel la fonction des binds 
     grille()
     menu() #Appe la fonction menu (affichage du main menu)
@@ -96,9 +105,7 @@ def lancement_edition (): #La fonction "lancement_edition" permet de mettre en p
 ######################################################################## L'édition
     edit = True #Indication au programme que l'éditeur est lancer et que les fonction de l'édition peuvent maintement fonctionnner
     id_level = [0,0] #Le level de départ est [0,0]
-    lienfichier = str(cwd)+"assets/data/editeur/monde"+str(id_monde)+"/niveau"+str(id_level[0])+str(id_level[1])+".txt" #Changement du lien des ficier pour chercher le niveau dans le dossier editeur
-    load_level() #Appel de la fonction qui charge un niveau
-    load_world() #Appel de la fonction qui change un monde
+    lienfichier = str(cwd)+"assets/data/editeur/monde"+str(id_monde)+"/niveau.txt" #Changement du lien des ficier pour chercher le niveau dans le dossier editeur
     fonctionDeplacement = level_search #Changement du binds des touches de direction pour changer de niveau plus facilement dans l'éditeur
     #Fenetre des infos / boutons
     fenetre_bouton = tk.Toplevel() #Création de la fenetre des fonction/boutons de l'éditeur
@@ -129,14 +136,17 @@ def lancement_edition (): #La fonction "lancement_edition" permet de mettre en p
     message_editeur = Label(fenetre_bouton, text="", font="Arial, 25", bg='#ffffff' ) #Affiche du type de bloc / erreur / info général
     message_editeur.place(x=ratioImage,y=ratioImage*5+ratioImage/2, anchor=CENTER) #message_editeur
 
+    level_search('n') #Appel de la fonction qui charge un niveau
+    load_world() #Appel de la fonction qui change un monde
+
 def lancement_solo ():
     global joueur, positionJoueur, lienfichier, id_level, solo, fonctionDeplacement
     solo = True #Active le mod solo
     fonctionDeplacement = mouvement_joueur #Change les binds des déplacements pour déplacer le joueur
     id_level = [0,0] #Change l'id des niveaux en [0,0] pur commencer au start d'un niveau
-    load_level() #Charge le niveau
+    level_search('n')#Charge le niveau
     load_world() #Charge le monde
-    for pasdubloc in listeNiveau: #Cherche si un bloc d'apparition du joueur existe dans le niveau [0,0] pour faire aparaitre 
+    for pasdubloc in niveauActuel["blocs"]: #Cherche si un bloc d'apparition du joueur existe dans le niveau [0,0] pour faire aparaitre 
         if pasdubloc["typeBloc"] == 1: #Si il existe, les coordonées d'apparition sont mis à jour
             posjxstart = pasdubloc["coordsBloc"][0]
             posjystart = pasdubloc["coordsBloc"][1]
@@ -145,7 +155,7 @@ def lancement_solo ():
     except: #Si il n'y a donc pas de coordonnées d'appartion, le mode solo ne se lance pas
         solo = False #Désactivation du mode solo
         lienfichier = "assets/data/menu.txt" #Changement du lien pour charger le menu
-        load_level() #Chargement du menu
+        level_search('n') #Chargement du menu
         tkinter.messagebox.showerror("Erreur", "Il n'y a pas de bloc d'apparition dans ce monde") #Affichage d'un message d'erreur
     else: #Si il y a un bloc d'apparition
         joueur = canevas.create_rectangle(0, 0, nombrePixel, nombrePixel, fill='blue', width=0) #Création du joueur
@@ -162,14 +172,14 @@ def play_test ():
     shutil.copytree(originalPath, copyPath) #Création de la copie du docier d'origine
     id_level = [0,0] #Le niveau a charger est le [0,0]
     lienmonde = str(cwd)+"assets/data/test_editeur/monde"+str(id_monde)+"_info.txt" #Mise à jour du lien pour charger le monde
-    lienfichier = str(cwd)+"assets/data/test_editeur/monde"+str(id_monde)+"/niveau"+str(id_level[0])+str(id_level[1])+".txt" #Mise à jour du lien pour charger le niveau
+    lienfichier = str(cwd)+"assets/data/test_editeur/monde"+str(id_monde)+"/niveau.txt" #Mise à jour du lien pour charger le niveau
     editTest = True #Le mode du test des niveau de l'éditeur est activer
     lancement_solo() #Appel de la fonction du lancement du solo
 
 
 ################################################################### Fonctions du joueur ###################################################################
 
-def mouvement_joueur (direction): #Permet au joueur de ce déplacer dans un niveau et d'intéragire avec des objets
+def mouvement_joueur (direction): #Permet au joueur de ce déplacer dans un niveau et d'intéragire avec des objetslisteNiveau["niveau"]
     #Direction est un paramètre de la fonction, renseigne sur le direction soueyter par l'utilisateur
     global positionJoueur, listeMonde
     
@@ -210,18 +220,18 @@ def mouvement_joueur (direction): #Permet au joueur de ce déplacer dans un nive
             deplacement = [+nombrePixel, 0]
         #Collision bloc
         stop = False
-        while pad != len(listeNiveau): #Parcours de la liste des blocs pour savoir si la prochaine destination du joueur se trouve sur un bloc ou non
-            if  positionJoueur[0]+posJTestX == listeNiveau[pad]["coordsBloc"][0] and positionJoueur[1]+posJTestY == listeNiveau[pad]["coordsBloc"][1]: #Vérification
+        while pad != len(niveauActuel["blocs"]): #Parcours de la liste des blocs pour savoir si la prochaine destination du joueur se trouve sur un bloc ou non
+            if  positionJoueur[0]+posJTestX == niveauActuel["blocs"][pad]["x"] and positionJoueur[1]+posJTestY == niveauActuel["blocs"][pad]["y"]: #Vérification
                 #Collision avec bloc solide
-                if listeNiveau[pad]["typeBloc"] == 0: #Vérification du type du bloc # 0 = bloc solide
+                if niveauActuel["blocs"][pad]["typeBloc"] == 0: #Vérification du type du bloc # 0 = bloc solide
                     verify = True #verify=True signifie que la partie d'aprés ne peut pas s'executé
 
                 #Collision avec bloc spawn
-                elif listeNiveau[pad]["typeBloc"] == 1: # 1 = spawn
+                elif niveauActuel["blocs"][pad]["typeBloc"] == 1: # 1 = spawn
                     verify = False #La suite va pouvoir s'éxécuté
 
                 #Collision avec clé
-                elif listeNiveau[pad]["typeBloc"] == 2: # 2 = clé
+                elif niveauActuel["blocs"][pad]["typeBloc"] == 2: # 2 = clé
                     verify = False
                     for blocinListeMonde in listeMonde: #Parcours de la liste Monde pour trouver de quel clé il s'agit
                         if positionJoueur[0]+posJTestX == blocinListeMonde["coordsBloc"][0] and positionJoueur[1]+posJTestY == blocinListeMonde["coordsBloc"][1] and blocinListeMonde["idLevel"] == str(id_level) and blocinListeMonde["keyCollect"] == 0: #Vérification que la clé n'est pas déjà été prise
@@ -229,14 +239,14 @@ def mouvement_joueur (direction): #Permet au joueur de ce déplacer dans un nive
                                 pad -= 1 #Comme un bloc est détruit, un petit retour en arrière sur le parcours des bloc est obligatoire
 
                 #Collision avec bloc porte
-                elif listeNiveau[pad]["typeBloc"] == 3: # 3 = porte
+                elif niveauActuel["blocs"][pad]["typeBloc"] == 3: # 3 = porte
                     verify = True
                     for blocinListeMonde in listeMonde: #Parcours de la liste Monde pour trouver de quel porte il s'agit
                         if positionJoueur[0]+posJTestX == blocinListeMonde["coordsBloc"][0] and positionJoueur[1]+posJTestY == blocinListeMonde["coordsBloc"][1] and blocinListeMonde["idLevel"] == str(id_level) and blocinListeMonde["keyCollect"] == 1: #Vérification que la clé est déjà été prise
                                 touch_porte(pad,blocinListeMonde) #Une fois que la porte est trouver, la fonction touch_porte est appeler
                                 pad -= 1 #Comme un bloc est détruit, un petit retour en arrière sur le parcours des bloc est obligatoire
 
-                elif listeNiveau[pad]["typeBloc"] == 4: # 4 = tp
+                elif niveauActuel["blocs"][pad]["typeBloc"] == 4: # 4 = tp
                     verify = True
                     for blocinListeMonde in listeMonde: #Parcours de la liste Monde pour trouver de quel porte il s'agit
                         print(blocinListeMonde)
@@ -261,8 +271,8 @@ def touch_key (pad,laCle): #Fonction touch_key permet de récupérer une clé
     for blocTest in listeMonde: #Parcours de la liste Monde 
         if blocTest["idKeyPorte"] == laCle["idKeyPorte"] and blocTest["type"] == 3: #Si l'identifient de la clé correspond à selui demander alors
             blocTest["keyCollect"] = 1
-    canevas.delete(listeNiveau[pad]["idBloc"])
-    del listeNiveau[pad]
+    canevas.delete(niveauActuel["blocs"][pad]["idBloc"])
+    del niveauActuel["blocs"][pad]
     save_level()
     save_world()
 
@@ -271,8 +281,8 @@ def touch_porte(pad,blocinListeMonde):
         if blocTest["idKeyPorte"] == blocinListeMonde["idKeyPorte"] and blocTest["type"] == 3:
             del blocTest
             break
-    canevas.delete(listeNiveau[pad]["idBloc"])
-    del listeNiveau[pad]
+    canevas.delete(niveauActuel["blocs"][pad]["idBloc"])
+    del niveauActuel["blocs"][pad]
     save_level()
     save_world()
 
@@ -319,42 +329,40 @@ def type_Blocs (tBloc): #Indication du type de bloc à placer
         couleurBloc = 'white'
         message_editeur.config(text="Bloc TP")
 
-
-
-
-
 def clic_gauche (event):
-    xSourisGrille,ySourisGrille=event.x,event.y
+    if editGomme == True or editBloc == True or edit == True:
+        xSourisGrille,ySourisGrille=event.x,event.y
 
-    xSourisGrille = (xSourisGrille/nombrePixel)
-    xSourisGrille = int(xSourisGrille)
+        xSourisGrille = (xSourisGrille/nombrePixel)
+        xSourisGrille = int(xSourisGrille)
 
-    ySourisGrille = (ySourisGrille/nombrePixel)
-    ySourisGrille = int(ySourisGrille)
+        ySourisGrille = (ySourisGrille/nombrePixel)
+        ySourisGrille = int(ySourisGrille)
 
-    print("Done 1")
-    print(len(listeNiveau))
-    if editGomme == True:
-        gomme(xSourisGrille, ySourisGrille)
-    elif editBloc == True:
-        edit_bloc(xSourisGrille, ySourisGrille)
-    elif edit == True:
-        pose_bloc(xSourisGrille, ySourisGrille)
+        print("niveau :",niveauActuel)
+        print("liste :",listeNiveau)
+
+        if editGomme == True:
+            gomme(xSourisGrille, ySourisGrille)
+        elif editBloc == True:
+            edit_bloc(xSourisGrille, ySourisGrille)
+        elif edit == True:
+            pose_bloc(xSourisGrille, ySourisGrille)
 
 def pose_bloc (coordX, coordY):
-    global listeNiveau
+    global niveauActuel
     ok = True
     padsouris = 0
-    while padsouris < len(listeNiveau):
-        if listeNiveau[padsouris]["coordsBloc"] == [coordX, coordY]: #Vérification de si le bloc d'apparition existe déjà
+    while padsouris < len(niveauActuel["blocs"]):
+        if niveauActuel["blocs"][padsouris]["x"] == coordX and niveauActuel["blocs"][padsouris]["x"] == coordY: #Vérification de si le bloc d'apparition existe déjà
             ok = False
         padsouris += 1
     if ok == True:
         padsouris = 0
-        while padsouris != len(listeNiveau):
-            if listeNiveau[padsouris]["typeBloc"] == 1 and typeDuBloc == 1: #Vérification de si le bloc d'apparition existe déjà
-                canevas.delete(listeNiveau[padsouris]["idBloc"])
-                del listeNiveau[padsouris]
+        while padsouris != len(niveauActuel["blocs"]):
+            if niveauActuel["blocs"][padsouris]["typeBloc"] == 1 and typeDuBloc == 1: #Vérification de si le bloc d'apparition existe déjà
+                canevas.delete(niveauActuel["blocs"][padsouris]["idBloc"])
+                del niveauActuel["blocs"][padsouris]
                 padsouris -= 1
             padsouris += 1
 
@@ -362,18 +370,18 @@ def pose_bloc (coordX, coordY):
             demiPixel = nombrePixel/4
         else:
             demiPixel = 0
-        listeNiveau.append({"coordsBloc" : [coordX, coordY], "idBloc" : canevas.create_rectangle(coordX*nombrePixel+demiPixel, coordY*nombrePixel+demiPixel, coordX*nombrePixel+nombrePixel-demiPixel, coordY*nombrePixel+nombrePixel-demiPixel, fill=couleurBloc), "typeBloc" : typeDuBloc, "color" : str(couleurBloc)})
+        niveauActuel["blocs"].append({"x" : coordX, "y" : coordY, "idBloc" : canevas.create_rectangle(coordX*nombrePixel+demiPixel, coordY*nombrePixel+demiPixel, coordX*nombrePixel+nombrePixel-demiPixel, coordY*nombrePixel+nombrePixel-demiPixel, fill=couleurBloc), "typeBloc" : typeDuBloc, "color" : str(couleurBloc)})
 
 def gomme (coordX, coordY):
     padsouris = 0
-    while padsouris != len(listeNiveau):
-        if coordX == listeNiveau[padsouris]["coordsBloc"][0] and coordY == listeNiveau[padsouris]["coordsBloc"][1]:
-            canevas.delete(listeNiveau[padsouris]["idBloc"])
+    while padsouris != len(niveauActuel["blocs"]):
+        if coordX == niveauActuel["blocs"][padsouris]["x"] and coordY == niveauActuel["blocs"][padsouris]["y"]:
+            canevas.delete(niveauActuel["blocs"][padsouris]["idBloc"])
             for blocinListeMonde in listeMonde:
-                if blocinListeMonde["coordsBloc"] == listeNiveau[padsouris]["coordsBloc"] and blocinListeMonde["idLevel"] == str(id_level):
+                if blocinListeMonde["coordsBloc"] == [niveauActuel["blocs"][padsouris]["x"],niveauActuel["blocs"][padsouris]["y"]] and blocinListeMonde["idLevel"] == str(id_level):
                     del blocinListeMonde
                     break
-            del listeNiveau[padsouris]
+            del niveauActuel["blocs"][padsouris]
             padsouris -= 1
         padsouris += 1
 
@@ -398,8 +406,8 @@ def edit_bloc (coordX, coordY):
 
     verifyEditKeyPorte = False
     verifyEditTP = False
-    for blocinListeNiveau in listeNiveau:
-        if coordX == blocinListeNiveau["coordsBloc"][0] and coordY == blocinListeNiveau["coordsBloc"][1]:
+    for blocinListeNiveau in niveauActuel["blocs"]:
+        if coordX == blocinListeNiveau["x"] and coordY == blocinListeNiveau["y"]:
             if blocinListeNiveau["typeBloc"] == 0:
                 textTypeBlocSelect.config(text="Bloc Solide")
                 selectBlocID = blocinListeNiveau["idBloc"]
@@ -424,8 +432,8 @@ def edit_bloc (coordX, coordY):
                 verifyEditTP = True
 
             if verifyEditKeyPorte == True:
-                selectBlocCoordX = blocinListeNiveau["coordsBloc"][0]
-                selectBlocCoordY = blocinListeNiveau["coordsBloc"][1]
+                selectBlocCoordX = blocinListeNiveau["x"]
+                selectBlocCoordY = blocinListeNiveau["y"]
                 selectedBloc = blocinListeNiveau
                 entryIDcle = Entry(fenetre_edit_bloc, bg="lightgrey", width=int(10*ratioFenetre), font=("Arial", int(24*ratioFenetre)))
                 entryIDcle.place(x=275*ratioFenetre, y=110*ratioFenetre)
@@ -439,8 +447,8 @@ def edit_bloc (coordX, coordY):
                 couleurSet.place(x=275*ratioFenetre,y=150*ratioFenetre)
             
             elif verifyEditTP == True:
-                selectBlocCoordX = blocinListeNiveau["coordsBloc"][0]
-                selectBlocCoordY = blocinListeNiveau["coordsBloc"][1]
+                selectBlocCoordX = blocinListeNiveau["coordsBloc"]["x"]
+                selectBlocCoordY = blocinListeNiveau["coordsBloc"]["y"]
                 selectedBloc = blocinListeNiveau
                 textIDTP1 = Label(fenetre_edit_bloc, text="ID départ", font=("Arial", int(24*ratioFenetre)))
                 textIDTP1.place(x=100*ratioFenetre,y=130*ratioFenetre,anchor=CENTER)
@@ -458,34 +466,30 @@ def edit_bloc (coordX, coordY):
             textTypeBlocSelect.config(text="Air")
 
 
-
-
-
-
 def delete_all_blocks (val): #Destruction total du niveau
-    global listeNiveau
+    global niveauActuel
     if val != "FORCE":
         attention = tkinter.messagebox.askyesno("Attention", "Voulez vous détruire tout les blocs de ce niveau ?")
         if attention:
             val = "FORCE"
     if val == "FORCE":
-        for blocinListeNiveau in listeNiveau:
+        for blocinListeNiveau in niveauActuel["blocs"]:
             for blocinListeMonde in listeMonde:
-                if blocinListeMonde["coordsBloc"] == blocinListeNiveau["coordsBloc"] and blocinListeMonde["idLevel"] == str(id_level):
+                if blocinListeMonde["coordsBloc"] == (blocinListeNiveau["x"], blocinListeNiveau["y"] )and blocinListeMonde["idLevel"] == str(id_level):
                     listeMonde.remove(blocinListeMonde)
             canevas.delete(blocinListeNiveau["idBloc"])
-        listeNiveau.clear()
+        niveauActuel["blocs"].clear()
 
 def deleteLastBlock (): #Destruction du dernier bloc placé
-    global listeNiveau
-    if len(listeNiveau) > 0 and edit == True:
-        canevas.delete(listeNiveau[-1]["idBloc"])
-        if listeNiveau[-1]["typeBloc"] == 2:
+    global niveauActuel
+    if len(niveauActuel["blocs"]) > 0 and edit == True:
+        canevas.delete(niveauActuel["blocs"][-1]["idBloc"])
+        if niveauActuel["blocs"][-1]["typeBloc"] == 2 or niveauActuel["blocs"][-1]["typeBloc"] == 3 or niveauActuel["blocs"][-1]["typeBloc"] == 4:
             for blocinListeMonde in listeMonde:
-                if blocinListeMonde["coordsBloc"] == listeNiveau[-1]["coordsBloc"]:
+                if blocinListeMonde["coordsBloc"] == (niveauActuel["blocs"][-1]["x"],niveauActuel["blocs"][-1]["y"]):
                     del blocinListeMonde
                     break
-        del listeNiveau[-1]
+        del niveauActuel["blocs"][-1]
 
 def delete_all_level():
     global id_level
@@ -501,18 +505,20 @@ def delete_all_level():
 def save_level (): #Sauvegarde du niveau
     with open(lienfichier, "wb") as fichierNiveau:
         pickle.dump(listeNiveau, fichierNiveau)
-        print(lienfichier)
 
 def save_world (): #Sauvegarde du monde
     with open(lienmonde, "wb") as fichierMonde:
         pickle.dump(listeMonde, fichierMonde)
 
 def load_world (): #Chargement du monde
-    global listeMonde
+    global listeMonde, listeNiveau
     listeMonde.clear()
     if os.path.exists(lienmonde):
         with open(lienmonde, "rb") as fichierMonde:
             listeMonde = pickle.load(fichierMonde)
+    if os.path.exists(lienfichier):
+        with open(lienfichier, "rb") as fichierNiveau:
+            listeNiveau = pickle.load(fichierNiveau)
 
 def info_editeur (): #Fenêtre d'infos des action possible
     webbrowser.open(str(cwd)+"assets/Guide_editeur.pdf")
@@ -580,7 +586,7 @@ def getTPID (IDValue):
     print(listeMonde)
 
 def change_color (c): #Change la couleur du bloc selectionner
-    global listeNiveau, newColorBloc
+    global niveauActuel, newColorBloc
     if couleurSet.get() == 1:
         newColorBloc = 'red'
     elif couleurSet.get() == 2:
@@ -599,7 +605,7 @@ def change_color (c): #Change la couleur du bloc selectionner
         newColorBloc = 'brown'
 
     canevas.itemconfig(selectBlocID, fill=newColorBloc)
-    for blocinListeNiveau in listeNiveau:
+    for blocinListeNiveau in niveauActuel["blocs"]:
         if blocinListeNiveau["idBloc"] == selectBlocID:
             blocinListeNiveau["color"] = newColorBloc
             break
@@ -636,36 +642,23 @@ def exit_key (): #Permet des retour au menu avec la touche "echap"
         retour_menu("Menu")
 
 def load_level (): #Charge les niveau et détruit les ancien
-    global lienfichier, listeNiveau, couleurBloc, typeDuBloc
-    for blocinListeNiveau in listeNiveau:
-        canevas.delete(blocinListeNiveau["idBloc"])
-    listeNiveau.clear()
+    global lienfichier, couleurBloc, typeDuBloc, niveauActuel
+    if len(niveauActuel) > 0:
+        for blocinListeNiveau in niveauActuel["blocs"]:
+            canevas.delete(blocinListeNiveau["idBloc"])
 
-    if os.path.exists(lienfichier):
-        with open(lienfichier, "rb") as fichier:
-            listeNiveau = pickle.load(fichier)
-    elif solo == 1:
-        pass
-    else:
-        if edit == True:
-            with open(lienfichier, "wb") as fichierNiveau:
-                pickle.dump(listeNiveau, fichierNiveau)
-
-    for blocinListeNiveau in listeNiveau:
-        del blocinListeNiveau["idBloc"]
-
-    for blocinListeNiveau in listeNiveau:
-        couleurBloc = blocinListeNiveau["color"]
-        if blocinListeNiveau["typeBloc"] == 2:
-            demiPixel = nombrePixel/4
-        else:
-            demiPixel = 0
-        blocinListeNiveau["idBloc"] = (canevas.create_rectangle(blocinListeNiveau["coordsBloc"][0]*nombrePixel+demiPixel, blocinListeNiveau["coordsBloc"][1]*nombrePixel+demiPixel, blocinListeNiveau["coordsBloc"][0]*nombrePixel+nombrePixel-demiPixel, blocinListeNiveau["coordsBloc"][1]*nombrePixel+nombrePixel-demiPixel, fill=couleurBloc))
-    typeDuBloc = 0
-    couleurBloc = 'black'
+        for blocinListeNiveau in niveauActuel["blocs"]:
+            couleurBloc = blocinListeNiveau["color"]
+            if blocinListeNiveau["typeBloc"] == 2:
+                demiPixel = nombrePixel/4
+            else:
+                demiPixel = 0
+            blocinListeNiveau["idBloc"] = (canevas.create_rectangle(blocinListeNiveau["x"]*nombrePixel+demiPixel, blocinListeNiveau["y"]*nombrePixel+demiPixel, blocinListeNiveau["x"]*nombrePixel+nombrePixel-demiPixel, blocinListeNiveau["y"]*nombrePixel+nombrePixel-demiPixel, fill=couleurBloc))
+        typeDuBloc = 0
+        couleurBloc = 'black'
 
 def level_search (direction): #Cherche le bon niveau a charger
-    global id_level, lienfichier, numeroNiveau
+    global id_level, lienfichier, numeroNiveau, niveauActuel
     if editBloc == False:
         if editTest == True:
             repertoirJeu = "test_editeur/"
@@ -676,33 +669,33 @@ def level_search (direction): #Cherche le bon niveau a charger
 
         save_level()
         if direction =='up':
-            lienfichier = str(cwd)+"assets/data/"+str(repertoirJeu)+"monde"+str(id_monde)+"/niveau"+str(id_level[0])+str(id_level[1]-1)+".txt"
             id_level[1] -= 1
             if solo == True:
                 positionJoueur[1] = nombreCaseY-1
                 canevas.moveto(joueur, positionJoueur[0]*nombrePixel-1, positionJoueur[1]*nombrePixel-1)
         elif direction =='down':
-            lienfichier = str(cwd)+"assets/data/"+str(repertoirJeu)+"monde"+str(id_monde)+"/niveau"+str(id_level[0])+str(id_level[1]+1)+".txt"
             id_level[1] += 1
             if solo == True:
                 positionJoueur[1] = 0
                 canevas.moveto(joueur, positionJoueur[0]*nombrePixel-1, -positionJoueur[1]*nombrePixel-1)
         elif direction =='left':
-            lienfichier = str(cwd)+"assets/data/"+str(repertoirJeu)+"monde"+str(id_monde)+"/niveau"+str(id_level[0]-1)+str(id_level[1])+".txt"
             id_level[0] -= 1
             if solo == True:
                 positionJoueur[0] = nombreCaseX-1
                 canevas.moveto(joueur, positionJoueur[0]*nombrePixel-1, positionJoueur[1]*nombrePixel-1)
         elif direction =='right':
-            lienfichier = str(cwd)+"assets/data/"+str(repertoirJeu)+"monde"+str(id_monde)+"/niveau"+str(id_level[0]+1)+str(id_level[1])+".txt"
             id_level[0] += 1
             if solo == True:
                 positionJoueur[0] = 0
                 canevas.moveto(joueur, -positionJoueur[0]*nombrePixel-1, positionJoueur[1]*nombrePixel-1)
         else:
-            lienfichier = str(cwd)+"assets/data/"+str(repertoirJeu)+"monde"+str(id_monde)+"/niveau"+str(id_level[0])+str(id_level[1])+".txt"
+            pass
+        for niveauActuel in listeNiveau["niveaux"]:
+                if niveauActuel["x"] == id_level[0] and niveauActuel["y"] == id_level[1]:
+                    break
         if edit == True:
             numeroNiveau.configure(text=id_level)
+        print(niveauActuel)
         load_level()
 
 def init_keys(f): #Les Binds
@@ -793,7 +786,7 @@ def monde_finder_editeur (numMonde):
     global id_monde, lienmonde, lienfichier
     id_monde = numMonde
     lienmonde = str(cwd)+"assets/data/editeur/monde"+str(id_monde)+"_info.txt"
-    lienfichier = str(cwd)+"assets/data/editeur/monde"+str(id_monde)+"/niveau"+str(id_level[0])+str(id_level[1])+".txt"
+    lienfichier = str(cwd)+"assets/data/editeur/monde"+str(id_monde)+"/niveau.txt"
     lancement_edition()
 
 def menu_pre_solo ():
@@ -824,7 +817,7 @@ def monde_finder_solo (numMonde):
     global id_monde, lienmonde, lienfichier
     id_monde = numMonde
     lienmonde = str(cwd)+"assets/data/solo/monde"+str(id_monde)+"_info.txt"
-    lienfichier = str(cwd)+"assets/data/solo/monde"+str(id_monde)+"/niveau"+str(id_level[0])+str(id_level[1])+".txt"
+    lienfichier = str(cwd)+"assets/data/solo/monde"+str(id_monde)+"/niveau.txt"
     lancement_solo()
 
 def close_menu ():
@@ -888,7 +881,6 @@ def retour_menu (goToMenu): #Retour au menu
         menuPostEdit.place(x=largeur/2, y=hauteur/2,anchor=CENTER)
         save_level()
         save_world()
-    lienfichier = "assets/data/menu.txt"
     load_level()
 
 ################################################################### Mise en place de la fenetre ###################################################################
