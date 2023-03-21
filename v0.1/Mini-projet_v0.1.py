@@ -898,3 +898,5 @@ canevas = Canvas(fenetre, width=largeur, height=hauteur,bg='#3b3b3b')
 start()
 canevas.pack()
 fenetre.mainloop()
+
+"changer le nivo actu en index et donc changer toute les fois où il y est"
