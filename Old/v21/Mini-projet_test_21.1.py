@@ -319,10 +319,6 @@ def type_Blocs (tBloc): #Indication du type de bloc à placer
         couleurBloc = 'white'
         message_editeur.config(text="Bloc TP")
 
-
-
-
-
 def clic_gauche (event):
     xSourisGrille,ySourisGrille=event.x,event.y
 
@@ -456,11 +452,6 @@ def edit_bloc (coordX, coordY):
             break
         else:
             textTypeBlocSelect.config(text="Air")
-
-
-
-
-
 
 def delete_all_blocks (val): #Destruction total du niveau
     global listeNiveau
