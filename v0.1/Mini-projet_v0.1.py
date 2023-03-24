@@ -7,8 +7,6 @@ except:
 from PIL import Image, ImageTk
 
 
-
-
 ################################################################### Les fonctions de mise en place du programme ###################################################################
 
 def start(): #La fonction "start" permet de déclaré la plus part des variable global
@@ -251,7 +249,7 @@ def menu_solo():
     boutonSoloMonde3 = Button(menuSoloFrame, image=imageMonde3, relief='groove', bd=0, bg='black', command=lambda:lancement_solo(3))
     boutonSoloMonde3.place(x=(largeurFenetre/2+largeurFenetre/4)/2+((largeurFenetre/2+largeurFenetre/4)/2)/4, y=(hauteurFenetre/2+hauteurFenetre/4)/2, anchor=CENTER)
 
-    boutonSoloReset = Button(menuSoloFrame, image=imageResetSolo, relief='groove', bd=0, bg='black') #command=reset_solo
+    boutonSoloReset = Button(menuSoloFrame, image=imageResetSolo, relief='groove', bd=0, bg='black', command=reset_solo)
     boutonSoloReset.place(x=(largeurFenetre/2+largeurFenetre/4)/2, y=(hauteurFenetre/2+hauteurFenetre/4)-(hauteurFenetre/2+hauteurFenetre/4)/1.37, anchor=CENTER)
 
 def exit_menu():
@@ -305,7 +303,7 @@ def lancement_editeur(id):
     Button(fenetre_editeur, image=imageBoutonEditeurNiveauBas, relief='groove', bd=0, bg='#ffffff', command=lambda:change_level("down")).place(x=ratioImage+ratioImage/2,y=ratioImage*3+ratioImage/2, anchor=CENTER) #bouton_niveau_down
     Button(fenetre_editeur, image=imageBoutonEditeurNiveauGauche, relief='groove', bd=0, bg='#ffffff', command=lambda:change_level("left")).place(x=ratioImage/2,y=ratioImage*2+ratioImage/2, anchor=CENTER) #bouton_niveau_left
     Button(fenetre_editeur, image=imageBoutonEditeurNiveauDroite, relief='groove', bd=0, bg='#ffffff', command=lambda:change_level("right")).place(x=ratioImage*2+ratioImage/2,y=ratioImage*2+ratioImage/2, anchor=CENTER) #bouton_niveau_right
-    #Button(fenetre_editeur, image=imageBoutonEditeurPoubelleMonde, relief='groove', bd=0, bg='#ffffff', command=delete_all_level).place(x=ratioImage+ratioImage/2,y=ratioImage*4+ratioImage/2, anchor=CENTER) #boutonEditeurDellAll
+    Button(fenetre_editeur, image=imageBoutonEditeurPoubelleMonde, relief='groove', bd=0, bg='#ffffff', command=del_all_level).place(x=ratioImage+ratioImage/2,y=ratioImage*4+ratioImage/2, anchor=CENTER) #boutonEditeurDellAll
     Button(fenetre_editeur, image=imageBoutonEditeurExit, relief='groove', bd=0, bg='#ffffff', command=exit_editeur).place(x=ratioImage*2+ratioImage/2,y=ratioImage*5+ratioImage/2, anchor=CENTER) #boutonEditeurExit
     numeroNiveau = Label(fenetre_editeur, text=id_level, font="Arial, 30", bg='#ffffff') #Affichage du numéro du niveau actuel
     numeroNiveau.place(x=ratioImage+ratioImage/2,y=ratioImage*2+ratioImage/2, anchor=CENTER) #numeroNiveau
@@ -443,11 +441,18 @@ def del_last_bloc():
 
 def del_all_blocs():
     global monde
+    cacher_niveau()
+    monde[niveau] = list()
+    save(id_monde)
+
+def del_all_level():
+    global monde, id_level
     attention = tkinter.messagebox.askyesno("Attention", "Voulez vous détruire tout les blocs de ce niveau ?")
     if attention:
         cacher_niveau()
-        monde[niveau] = list()
-        save(id_monde)
+        monde[niveau].clear()
+        id_level = [0,0]
+        save(id)
 
 def toggle_gomme ():
     global etatEditeur
@@ -815,12 +820,14 @@ def exit_test_editeur():
     canevas.delete(joueur)
     positionJoueur.clear()
 
+def reset_solo():
+    attention = tkinter.messagebox.askyesno("Attention", "Voulez vous reset la progression ?")
+    if attention:
+        originalPath = racine+"assets/data/origine"
+        copyPath = racine+"assets/data/solo/"
+        shutil.rmtree(copyPath)
+        shutil.copytree(originalPath, copyPath)
+
 
 ################################################################### Autre ###################################################################
-
 start()
-
-
-"""
-reset
-"""
