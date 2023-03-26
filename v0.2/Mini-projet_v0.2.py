@@ -43,7 +43,7 @@ def start(): #La fonction "start" permet de déclaré la plus part des variable 
 
 
     monde = {   "niveaux": {"0,0":[]},
-                "lastCoords":[[0,0],[0,0],[0,0]],
+                "lastCoords":[[],[],[]],
                 "time":[0,0,0]
              }
     etatJeu="init"
@@ -259,12 +259,13 @@ def menu_solo():
     boutonSoloReset.place(x=(largeurFenetre/2+largeurFenetre/4)/2, y=(hauteurFenetre/2+hauteurFenetre/4)-(hauteurFenetre/2+hauteurFenetre/4)/1.37, anchor=CENTER)
 
 def menu_resultat():
-    global menuResultatFrame
+    global menuResultatFrame, etatJeu
+    
     menuResultatFrame = Frame(fenetre, width=largeurFenetre/2+largeurFenetre/4, height=hauteurFenetre/2+hauteurFenetre/4 ,bg='black')
     menuResultatFrame.place(x=largeurFenetre/2, y=hauteurFenetre/2,anchor=CENTER)
 
     Label(menuResultatFrame, image=bgmenuresultat).place(x=(largeurFenetre/2+largeurFenetre/4)/2, y=(hauteurFenetre/2+hauteurFenetre/4)/2, anchor=CENTER)
-    Label(menuResultatFrame, text=(f"Temps : {temps}s"), font=("Arial", int(30*ratioFenetre)), bg='black', fg='white').place(x=(largeurFenetre/2+largeurFenetre/4)/2, y=(hauteurFenetre/2+hauteurFenetre/4)/2, anchor=CENTER)
+    Label(menuResultatFrame, text=("Temps : "+str(monde["time"][id_monde-1])+" s"), font=("Arial", int(30*ratioFenetre)), bg='black', fg='white').place(x=(largeurFenetre/2+largeurFenetre/4)/2, y=(hauteurFenetre/2+hauteurFenetre/4)/2, anchor=CENTER)
     Button(menuResultatFrame, image=imageBoutonEditeurExit, relief='groove', bd=0, bg='#ffffff', command=exit_menu).place(x=(largeurFenetre/2+largeurFenetre/4)/2,y=(hauteurFenetre/2+hauteurFenetre/4)-ratioImage, anchor=CENTER) #boutonEditeurExit
 
 def exit_menu():
@@ -359,11 +360,13 @@ def lancement_solo(id):
             posjxstart = bloc["x"]
             posjystart = bloc["y"]
             break #Quand les coordonnées sont trouver, la boucle s'arrete pour ne pas chercher des coordonnées pour rien
-    try: posjxstart
+    try:
+        posjxstart = monde["lastCoords"][id_monde-1][0]
+        posjystart = monde["lastCoords"][id_monde-1][1]
     except:
-        etatJeu = "menuSolo"
-        tkinter.messagebox.showerror("Erreur", "Il n'y a pas de bloc d'apparition dans ce monde") #Affichage d'un message d'erreur
-    else:
+        pass
+    try:
+        posjxstart
         close_menu()
         affichage_niveau()
         temps = 0
@@ -371,6 +374,9 @@ def lancement_solo(id):
         joueur = canevas.create_rectangle(0, 0, nombrePixel, nombrePixel, fill='blue', width=0) #Création du joueur
         canevas.move(joueur,posjxstart*nombrePixel, posjystart*nombrePixel) #Déplacement du joueur au coordonnées d'apparition
         positionJoueur = [posjxstart, posjystart] #0 = x & 1 = y #Actualisation des position du joueur sur la grille
+    except:
+        etatJeu = "menuSolo"
+        tkinter.messagebox.showerror("Erreur", "Il n'y a pas de bloc d'apparition dans ce monde") #Affichage d'un message d'erreur
 
 def lancement_test_edition():
     global id_level, etatJeu, joueur, positionJoueur
@@ -388,16 +394,15 @@ def lancement_test_edition():
             posjxstart = bloc["x"]
             posjystart = bloc["y"]
             break #Quand les coordonnées sont trouver, la boucle s'arrete pour ne pas chercher des coordonnées pour rien
-    try: posjxstart
-    except:
-        etatJeu = "menuEdition"
-        tkinter.messagebox.showerror("Erreur", "Il n'y a pas de bloc d'apparition dans ce monde") #Affichage d'un message d'erreur
-    else:
+    if posjxstart is not None:
         close_menu()
         affichage_niveau()
         joueur = canevas.create_rectangle(0, 0, nombrePixel, nombrePixel, fill='blue', width=0) #Création du joueur
         canevas.move(joueur,posjxstart*nombrePixel, posjystart*nombrePixel) #Déplacement du joueur au coordonnées d'apparition
         positionJoueur = [posjxstart, posjystart] #0 = x & 1 = y #Actualisation des position du joueur sur la grille
+    else:
+        etatJeu = "menuEdition"
+        tkinter.messagebox.showerror("Erreur", "Il n'y a pas de bloc d'apparition dans ce monde") #Affichage d'un message d'erreur
 
 def exit_editeur():
     global etatJeu, etatEditeur
@@ -413,14 +418,16 @@ def exit_editeur():
     menuEditionFrame.place(x=largeurFenetre/2, y=hauteurFenetre/2,anchor=CENTER)
 
 def exit_solo():
-    global etatJeu
+    global etatJeu, monde
+    monde["lastCoords"][id_monde-1] = positionJoueur
+    monde["time"][id_monde-1] += temps
     save(id_monde)
-    stop_timer()
     cacher_niveau()
-    etatJeu="menuSolo"
+    fenetre.after_cancel(boucleTemps)
     menuPrincipalFrame.place(x=largeurFenetre/2, y=hauteurFenetre/2,anchor=CENTER)
     menuSoloFrame.place(x=largeurFenetre/2, y=hauteurFenetre/2,anchor=CENTER)
     canevas.delete(joueur)
+    etatJeu = "menuSolo"
     positionJoueur.clear()
 
 def exit_test_editeur():
@@ -770,23 +777,20 @@ def tp_joueur(indexBloc):
                 except: return
 
 def fin_niveau():
+    global monde, etatJeu
     if etatJeu == "solo":
         exit_solo()
-        save_time()
+        etatJeu = "solo"
+        menu_resultat()
+        monde["time"][id_monde-1] = 0
+        save(id_monde)
+        etatJeu = "menuResultat"
 
 def chrono():
     global temps, boucleTemps
     temps += 1
+    print(temps)
     boucleTemps = fenetre.after(1000, chrono)
-
-def save_time():
-    global monde, etatJeu
-    monde["time"][id_monde-1] += temps
-    etatJeu = "menuResultat"
-    menu_resultat()
-
-def stop_timer():
-    fenetre.after_cancel(boucleTemps)
 
 
 ################################################################### Fonctions du fonctionnement global du programme ###################################################################
