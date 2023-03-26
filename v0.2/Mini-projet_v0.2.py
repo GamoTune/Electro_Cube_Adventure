@@ -1,16 +1,12 @@
 #Import des bibliothèques
-import tkinter as tk, tkinter.messagebox; from tkinter import *; import pickle, os, shutil, webbrowser, time
-try:
-    from PIL import Image, ImageTk
-except:
-    os.system('pip install Pillow')
-from PIL import Image, ImageTk
+import tkinter as tk, tkinter.messagebox; from tkinter import *; import pickle, os, shutil, webbrowser; from PIL import Image, ImageTk
+
 
 
 ################################################################### Les fonctions de mise en place du programme ###################################################################
 
 def start(): #La fonction "start" permet de déclaré la plus part des variable global
-    global monde, fenetre, etatEditeur, nombrePixel, imageBoutonEditeurFinish, largeurFenetre, hauteurFenetre, canevas, lienIconeFenetre, etatJeu, nombreCaseY, nombreCaseX, editBloc, racine, imageBoutonPlayTest, bgMenu, imageOK, imageInfoBouton, tailleImage, ratioImage, bgmenuSoloFrame, ratioFenetre, bgMenuEdition, nombreCase, imageBoutonEditeurGommeSelect, imageBoutonEditeurGomme, imageBoutonEditeurPoubelleMonde, imageBoutonEditeurBlocPorte, editTest, imageMonde1, imageMonde2, imageMonde3, imageResetSolo, imageBoutonEditeurItemCle, imageBoutonEditeurEditBloc, fenetreeditTest, id_level, imageBoutonSolo, imageBoutonEditeur, ligneX, ligneY, imageBoutonEditeurNiveauHaut, imageBoutonEditeurNiveauBas, imageBoutonEditeurNiveauGauche, imageBoutonEditeurNiveauDroite, imageBoutonEditeurTP, imageBoutonEditeurRetour, imageWIP, imageBoutonEditeurPoubelle, imageBoutonEditeurExit, imageBoutonEditeurBlocSolide, couleurBloc, typeDuBloc, imageBoutonEditeurBlocSpawn, editGomme, id_monde, imageBoutonEditeurInfos
+    global monde, fenetre, etatEditeur, nombrePixel, bgmenuresultat, imageBoutonEditeurFinish, largeurFenetre, hauteurFenetre, canevas, lienIconeFenetre, etatJeu, nombreCaseY, nombreCaseX, editBloc, racine, imageBoutonPlayTest, bgMenu, imageOK, imageInfoBouton, tailleImage, ratioImage, bgmenuSoloFrame, ratioFenetre, bgMenuEdition, nombreCase, imageBoutonEditeurGommeSelect, imageBoutonEditeurGomme, imageBoutonEditeurPoubelleMonde, imageBoutonEditeurBlocPorte, editTest, imageMonde1, imageMonde2, imageMonde3, imageResetSolo, imageBoutonEditeurItemCle, imageBoutonEditeurEditBloc, fenetreeditTest, id_level, imageBoutonSolo, imageBoutonEditeur, ligneX, ligneY, imageBoutonEditeurNiveauHaut, imageBoutonEditeurNiveauBas, imageBoutonEditeurNiveauGauche, imageBoutonEditeurNiveauDroite, imageBoutonEditeurTP, imageBoutonEditeurRetour, imageWIP, imageBoutonEditeurPoubelle, imageBoutonEditeurExit, imageBoutonEditeurBlocSolide, couleurBloc, typeDuBloc, imageBoutonEditeurBlocSpawn, editGomme, id_monde, imageBoutonEditeurInfos
 
     ################################################################### Mise en place de la fenetre et du canevas
 
@@ -26,25 +22,30 @@ def start(): #La fonction "start" permet de déclaré la plus part des variable 
 
 
     """monde={
-        "0,0":[
-                    {"idAssoc" : 0, "idTk":0, "x":0, "y":0, "type":0, "couleur":"black", "collect":0},
-                    {"idAssoc" : 0, "idTk":0, "x":1, "y":0, "type":2, "couleur":"blue", "collect":0},
-                    {"idAssoc" : 0, "idTk":0, "x":1, "y":1, "type":4, "couleur":"red", "collect":0}
-            ],
+            "niveaux":{
+                    "0,0":[
+                                {"idAssoc" : 0, "idTk":0, "x":0, "y":0, "type":0, "couleur":"black", "collect":0},
+                                {"idAssoc" : 0, "idTk":0, "x":1, "y":0, "type":2, "couleur":"blue", "collect":0},
+                                {"idAssoc" : 0, "idTk":0, "x":1, "y":1, "type":4, "couleur":"red", "collect":0}
+                        ],
 
-        "0,1":[
-                    {"idAssoc" : 0, "idTk":0, "x":0, "y":0, "type":1, "couleur":"black", "collect":0},
-                    {"idAssoc" : 0, "idTk":0, "x":1,"y":0, "type":3, "couleur":"blue", "collect":0},
-                    {"idAssoc" : 0, "idTk":0, "x":1, "y":1, "type":9, "couleur":"red", "collect":0}
-            ]
+                    "0,1":[
+                                {"idAssoc" : 0, "idTk":0, "x":0, "y":0, "type":1, "couleur":"black", "collect":0},
+                                {"idAssoc" : 0, "idTk":0, "x":1,"y":0, "type":3, "couleur":"blue", "collect":0},
+                                {"idAssoc" : 0, "idTk":0, "x":1, "y":1, "type":9, "couleur":"red", "collect":0}
+                        ]
+                    },
+            "time":[
+                ]
+
+            "last"
             }"""
 
 
-    monde = {
-        "0,0":[
-        
-        ]
-    }
+    monde = {   "niveaux": {"0,0":[]},
+                "lastCoords":[[0,0],[0,0],[0,0]],
+                "time":[0,0,0]
+             }
     etatJeu="init"
     etatEditeur = "pose"
     racine = os.getcwd()
@@ -105,6 +106,7 @@ def start(): #La fonction "start" permet de déclaré la plus part des variable 
     imageOK = ImageTk.PhotoImage(Image.open(racine+"assets/images/ok.png").resize((ratioImage, ratioImage)))
     imageInfoBouton = ImageTk.PhotoImage(Image.open(racine+"assets/images/info_bouton.png").resize((ratioImage, ratioImage)))
     imageBoutonEditeurFinish = ImageTk.PhotoImage(Image.open(racine+"assets/images/bouton_bloc_finish.png").resize((ratioImage, ratioImage)))
+    bgmenuresultat = ImageTk.PhotoImage(Image.open(racine+"assets/images/menu_result.png").resize((int(largeurFenetre/2+largeurFenetre/4),int(hauteurFenetre/2+hauteurFenetre/4))))
     lienIconeFenetre = racine+"assets/images/icone.ico"
 
     nombrePixel = largeurFenetre/nombreCase #nombrePixel = nombre de pixels par case sur l'écran (en fonction de la résolution de l'écran, le nombre de pixel change pour toujours avoir le même nombre de case à l'écran)
@@ -201,6 +203,8 @@ def menu_principal():
     boutonExit = Button(menuPrincipalFrame, image=imageBoutonEditeurExit, relief='groove', bd=0, bg='black', command=exit_menu)
     boutonExit.place(x=(largeurFenetre/2+largeurFenetre/4)/2, y=(hauteurFenetre/2+hauteurFenetre/4)/2, anchor=CENTER)
 
+    Label(menuPrincipalFrame, text="Beta 0.2", font=("Arial", int(12*ratioFenetre)), bg='black', fg='white').place(x=(largeurFenetre/2+largeurFenetre/4)/2, y=(hauteurFenetre/2+hauteurFenetre/4)-10, anchor=CENTER)
+
 def menu_edition():
     global menuEditionFrame,etatJeu
     etatJeu="menuEdition"
@@ -254,6 +258,15 @@ def menu_solo():
     boutonSoloReset = Button(menuSoloFrame, image=imageResetSolo, relief='groove', bd=0, bg='black', command=reset_solo)
     boutonSoloReset.place(x=(largeurFenetre/2+largeurFenetre/4)/2, y=(hauteurFenetre/2+hauteurFenetre/4)-(hauteurFenetre/2+hauteurFenetre/4)/1.37, anchor=CENTER)
 
+def menu_resultat():
+    global menuResultatFrame
+    menuResultatFrame = Frame(fenetre, width=largeurFenetre/2+largeurFenetre/4, height=hauteurFenetre/2+hauteurFenetre/4 ,bg='black')
+    menuResultatFrame.place(x=largeurFenetre/2, y=hauteurFenetre/2,anchor=CENTER)
+
+    Label(menuResultatFrame, image=bgmenuresultat).place(x=(largeurFenetre/2+largeurFenetre/4)/2, y=(hauteurFenetre/2+hauteurFenetre/4)/2, anchor=CENTER)
+    Label(menuResultatFrame, text=(f"Temps : {temps}s"), font=("Arial", int(30*ratioFenetre)), bg='black', fg='white').place(x=(largeurFenetre/2+largeurFenetre/4)/2, y=(hauteurFenetre/2+hauteurFenetre/4)/2, anchor=CENTER)
+    Button(menuResultatFrame, image=imageBoutonEditeurExit, relief='groove', bd=0, bg='#ffffff', command=exit_menu).place(x=(largeurFenetre/2+largeurFenetre/4)/2,y=(hauteurFenetre/2+hauteurFenetre/4)-ratioImage, anchor=CENTER) #boutonEditeurExit
+
 def exit_menu():
     global etatJeu
     match etatJeu:
@@ -266,6 +279,11 @@ def exit_menu():
         case "menuSolo":
             menuSoloFrame.place_forget()
             etatJeu="menuPrincipal"
+
+        case "menuResultat":
+            menuResultatFrame.destroy()
+            etatJeu="menuSolo"
+
         case _:
             exit_mode()
 
@@ -282,7 +300,6 @@ def close_menu():
         case "editeur": menuEditionFrame.place_forget()
         case "solo": menuSoloFrame.place_forget()
         case "test_editeur": menuEditionFrame.place_forget()
-
 
 
 ################################################################### Fonctions de lancement des modes ###################################################################
@@ -331,13 +348,13 @@ def lancement_editeur(id):
     message_editeur.place(x=ratioImage+ratioImage/2,y=ratioImage*6+ratioImage/2, anchor=CENTER) #message_editeur
 
 def lancement_solo(id):
-    global id_monde, id_level, etatJeu, positionJoueur, joueur, tempsSec, tempsMin
+    global id_monde, id_level, etatJeu, positionJoueur, joueur, temps
     etatJeu = "solo"
     id_monde = id
     get_monde(id_monde)
     id_level = [0,0]
     get_niveau(id_level)
-    for bloc in monde[niveau]: #Cherche si un bloc d'apparition du joueur existe dans le niveau [0,0] pour faire aparaitre 
+    for bloc in monde["niveaux"][niveau]: #Cherche si un bloc d'apparition du joueur existe dans le niveau [0,0] pour faire aparaitre 
         if bloc["type"] == 1: #Si il existe, les coordonées d'apparition sont mis à jour
             posjxstart = bloc["x"]
             posjystart = bloc["y"]
@@ -349,8 +366,8 @@ def lancement_solo(id):
     else:
         close_menu()
         affichage_niveau()
-        tempsSec = time.localtime()[5]
-        tempsMin = time.localtime()[4]
+        temps = 0
+        chrono()
         joueur = canevas.create_rectangle(0, 0, nombrePixel, nombrePixel, fill='blue', width=0) #Création du joueur
         canevas.move(joueur,posjxstart*nombrePixel, posjystart*nombrePixel) #Déplacement du joueur au coordonnées d'apparition
         positionJoueur = [posjxstart, posjystart] #0 = x & 1 = y #Actualisation des position du joueur sur la grille
@@ -366,7 +383,7 @@ def lancement_test_edition():
     get_monde(id_monde)
     id_level = [0,0]
     get_niveau(id_level)
-    for bloc in monde[niveau]: #Cherche si un bloc d'apparition du joueur existe dans le niveau [0,0] pour faire aparaitre 
+    for bloc in monde["niveaux"][niveau]: #Cherche si un bloc d'apparition du joueur existe dans le niveau [0,0] pour faire aparaitre 
         if bloc["type"] == 1: #Si il existe, les coordonées d'apparition sont mis à jour
             posjxstart = bloc["x"]
             posjystart = bloc["y"]
@@ -377,7 +394,6 @@ def lancement_test_edition():
         tkinter.messagebox.showerror("Erreur", "Il n'y a pas de bloc d'apparition dans ce monde") #Affichage d'un message d'erreur
     else:
         close_menu()
-
         affichage_niveau()
         joueur = canevas.create_rectangle(0, 0, nombrePixel, nombrePixel, fill='blue', width=0) #Création du joueur
         canevas.move(joueur,posjxstart*nombrePixel, posjystart*nombrePixel) #Déplacement du joueur au coordonnées d'apparition
@@ -399,6 +415,7 @@ def exit_editeur():
 def exit_solo():
     global etatJeu
     save(id_monde)
+    stop_timer()
     cacher_niveau()
     etatJeu="menuSolo"
     menuPrincipalFrame.place(x=largeurFenetre/2, y=hauteurFenetre/2,anchor=CENTER)
@@ -471,30 +488,30 @@ def clic_gauche (event):
 def pose_bloc(x,y):
     global monde
     indexBloc = 0
-    for bloc in monde[niveau]:
+    for bloc in monde["niveaux"][niveau]:
         if bloc["x"] == x and bloc ["y"] == y:
             return
         if bloc["type"] == 1 and typeDuBloc == 1 or bloc["type"] == 5 and typeDuBloc == 5:
             canevas.delete(bloc["idTk"])
-            del monde[niveau][indexBloc]
+            del monde["niveaux"][niveau][indexBloc]
         indexBloc += 1
     demiPixel = 0
     if typeDuBloc == 2:
         demiPixel = nombrePixel/4
-    monde[niveau].append({"idAssoc" : 0, "idTk":canevas.create_rectangle(x*nombrePixel+demiPixel, y*nombrePixel+demiPixel, x*nombrePixel+nombrePixel-demiPixel, y*nombrePixel+nombrePixel-demiPixel, fill=couleurBloc), "x":x, "y":y, "type":typeDuBloc, "couleur":couleurBloc, "collect":0})
+    monde["niveaux"][niveau].append({"idAssoc" : 0, "idTk":canevas.create_rectangle(x*nombrePixel+demiPixel, y*nombrePixel+demiPixel, x*nombrePixel+nombrePixel-demiPixel, y*nombrePixel+nombrePixel-demiPixel, fill=couleurBloc), "x":x, "y":y, "type":typeDuBloc, "couleur":couleurBloc, "collect":0})
     save(id_monde)
 
 def del_last_bloc():
     global monde
-    if etatJeu == "editeur" and len(monde[niveau]) > 0:
-        canevas.delete(monde[niveau][-1]["idTk"])
-        del monde[niveau][-1]
+    if etatJeu == "editeur" and len(monde["niveaux"][niveau]) > 0:
+        canevas.delete(monde["niveaux"][niveau][-1]["idTk"])
+        del monde["niveaux"][niveau][-1]
         save(id_monde)
 
 def del_all_blocs():
     global monde
     cacher_niveau()
-    monde[niveau] = list()
+    monde["niveaux"][niveau] = list()
     save(id_monde)
 
 def del_all_level():
@@ -502,12 +519,12 @@ def del_all_level():
     attention = tkinter.messagebox.askyesno("Attention", "Voulez vous détruire tout les blocs de ce niveau ?")
     if attention:
         cacher_niveau()
-        for niveauTest in monde:
-            monde[niveauTest].clear()
+        for niveauTest in monde["niveaux"]:
+            monde["niveaux"][niveauTest].clear()
         id_level = [0,0]
         save(id_monde)
 
-def toggle_gomme ():
+def toggle_gomme():
     global etatEditeur, boutonGomme
     if etatEditeur != "gomme":
         etatEditeur = "gomme"
@@ -519,10 +536,10 @@ def toggle_gomme ():
 def gomme(x,y):
     if etatJeu == "editeur":
         indexBloc = 0
-        for bloc in monde[niveau]:
+        for bloc in monde["niveaux"][niveau]:
             if bloc["x"] == x and bloc["y"] == y:
                 canevas.delete(bloc["idTk"])
-                del monde[niveau][indexBloc]
+                del monde["niveaux"][niveau][indexBloc]
                 break
             indexBloc += 1
 
@@ -547,7 +564,7 @@ def set_edit_fenetre():
 
 def edit_bloc(x,y):
     global selectBloc, selectNiveau
-    for bloc in monde[niveau]:
+    for bloc in monde["niveaux"][niveau]:
         if bloc["x"] == x and bloc["y"] == y:
             selectNiveau = niveau
             selectBloc = bloc
@@ -611,17 +628,17 @@ def config_edit_fenetre(typeB):
 def get_key(id):
     global monde
     indexBloc = 0
-    for bloc in monde[niveau]:
+    for bloc in monde["niveaux"][niveau]:
         if bloc["x"] == selectBloc["x"] and bloc["y"] == selectBloc["y"]:
-            monde[niveau][indexBloc]["idAssoc"] = id
+            monde["niveaux"][niveau][indexBloc]["idAssoc"] = id
         indexBloc += 1
 
 def get_tp(id):
     global monde
     indexBloc = 0
-    for bloc in monde[niveau]:
+    for bloc in monde["niveaux"][niveau]:
         if bloc["x"] == selectBloc["x"] and bloc["y"] == selectBloc["y"]:
-            monde[niveau][indexBloc]["idAssoc"] = id
+            monde["niveaux"][niveau][indexBloc]["idAssoc"] = id
         indexBloc += 1
 
 def change_color (c): #Change la couleur du bloc selectionner
@@ -636,9 +653,9 @@ def change_color (c): #Change la couleur du bloc selectionner
         case 7: newColorBloc = 'brown'
 
     indexBloc = 0
-    for bloc in monde[niveau]:
+    for bloc in monde["niveaux"][niveau]:
         if bloc["x"] == selectBloc["x"] and bloc["y"] == selectBloc["y"]:
-            monde[niveau][indexBloc]["couleur"] = newColorBloc
+            monde["niveaux"][niveau][indexBloc]["couleur"] = newColorBloc
             canevas.itemconfig(bloc["idTk"], fill=bloc["couleur"])
             save(id_monde)
             break
@@ -689,7 +706,7 @@ def mouvement_joueur(direction):
 
         indexBloc = 0
         ok = True
-        for bloc in monde[niveau]:
+        for bloc in monde["niveaux"][niveau]:
             if bloc["x"] == posJTestX and bloc["y"] == posJTestY:
                 if bloc["type"] == 0:
                     ok = False
@@ -722,57 +739,55 @@ def mouvement_joueur(direction):
 
 def ramasse_cle(indexBloc):
     global monde
-    monde[niveau][indexBloc]["collect"] = 1
-    canevas.delete(monde[niveau][indexBloc]["idTk"])
+    monde["niveaux"][niveau][indexBloc]["collect"] = 1
+    canevas.delete(monde["niveaux"][niveau][indexBloc]["idTk"])
 
 def ouvre_porte(indexBloc):
     global monde
-    print(monde[niveau][indexBloc]["idAssoc"])
-    for niveauTest in monde:
-        for bloc in monde[niveauTest]:
-            if bloc["type"] == 2 and bloc["collect"] == 1 and bloc["idAssoc"] == monde[niveau][indexBloc]["idAssoc"]:
-                monde[niveau][indexBloc]["collect"] = 1
-                canevas.delete(monde[niveau][indexBloc]["idTk"])
+    for niveauTest in monde["niveaux"]:
+        for bloc in monde["niveaux"][niveauTest]:
+            if bloc["type"] == 2 and bloc["collect"] == 1 and bloc["idAssoc"] == monde["niveaux"][niveau][indexBloc]["idAssoc"]:
+                monde["niveaux"][niveau][indexBloc]["collect"] = 1
+                canevas.delete(monde["niveaux"][niveau][indexBloc]["idTk"])
                 return True
 
     return False
 
 def tp_joueur(indexBloc):
     global id_level, positionJoueur
-    for niveauTest in monde:
-        for bloc in monde[niveauTest]:
+    for niveauTest in monde["niveaux"]:
+        for bloc in monde["niveaux"][niveauTest]:
             if bloc["type"] == 4:
-                print(bloc)
-                print(type(bloc["idAssoc"]))
-                print(bloc["idAssoc"])
-                if bloc["idAssoc"][0] == monde[niveau][indexBloc]["idAssoc"][1]:
-                    get_list_niveau(niveauTest)
-                    cacher_niveau()
-                    get_niveau(id_level) #La fonction get_niveau est appeler
-                    affichage_niveau()
-                    positionJoueur = [bloc["x"],bloc["y"]]
-                    canevas.moveto(joueur,positionJoueur[0]*nombrePixel,positionJoueur[1]*nombrePixel)
-                    return
+                try:
+                    if bloc["idAssoc"][0] == monde["niveaux"][niveau][indexBloc]["idAssoc"][1]:
+                        get_list_niveau(niveauTest)
+                        cacher_niveau()
+                        get_niveau(id_level) #La fonction get_niveau est appeler
+                        affichage_niveau()
+                        positionJoueur = [bloc["x"],bloc["y"]]
+                        canevas.moveto(joueur,positionJoueur[0]*nombrePixel,positionJoueur[1]*nombrePixel)
+                        return
+                except: return
 
 def fin_niveau():
-    save_time()
-    exit_solo()
+    if etatJeu == "solo":
+        exit_solo()
+        save_time()
+
+def chrono():
+    global temps, boucleTemps
+    temps += 1
+    boucleTemps = fenetre.after(1000, chrono)
 
 def save_time():
-    lienFichier = racine+"assets/data/solo/tempsM"+str(id_monde)+".gac"
-    if os.path.exists(lienFichier):
-        with open(lienFichier, "rb") as fichierTemps:
-            tempsFinalPrecedent = pickle.load(fichierTemps)
-    else: tempsFinalPrecedent = [0,0]
+    global monde, etatJeu
+    monde["time"][id_monde-1] += temps
+    etatJeu = "menuResultat"
+    menu_resultat()
 
-    tempsSecFinal = time.localtime()[5]
-    tempsMinFinal = time.localtime()[4]
-    tempsFinal = [tempsMinFinal - tempsMin + tempsFinalPrecedent[0], tempsSecFinal - tempsSec + tempsFinalPrecedent[1]]
+def stop_timer():
+    fenetre.after_cancel(boucleTemps)
 
-    with open(lienFichier, "wb") as fichierTemps:
-        pickle.dump(tempsFinal, fichierTemps)
-
-    print(tempsFinal)
 
 ################################################################### Fonctions du fonctionnement global du programme ###################################################################
 
@@ -789,11 +804,11 @@ def get_niveau(id): #Permet de tourver le niveau à charger
     global niveau, monde
     id_level_str = [str(i) for i in id_level]
     id_str = ",".join(id_level_str)
-    for niveau in monde:
+    for niveau in monde["niveaux"]:
         if niveau==id_str: break
     else:
         niveau = id_str
-        monde[niveau] = list()
+        monde["niveaux"][niveau] = list()
 
 def get_monde(id): #Permet de tourver le monde à charger
     global monde
@@ -834,23 +849,23 @@ def del_grille_fond(): #Masque la grille de l'éditeur
 def affichage_niveau(): #Affiche le niveau selectionner
     global monde
     indexBloc = 0
-    for bloc in monde[niveau]:
+    for bloc in monde["niveaux"][niveau]:
         couleurBloc = bloc["couleur"]
         demiPixel = 0
         if bloc["type"] == 2:
             demiPixel = nombrePixel/4
         if bloc["collect"] == 0:
-            monde[niveau][indexBloc]["idTk"] = (canevas.create_rectangle(bloc["x"]*nombrePixel+demiPixel, bloc["y"]*nombrePixel+demiPixel, bloc["x"]*nombrePixel+nombrePixel-demiPixel, bloc["y"]*nombrePixel+nombrePixel-demiPixel, fill=couleurBloc))
+            monde["niveaux"][niveau][indexBloc]["idTk"] = (canevas.create_rectangle(bloc["x"]*nombrePixel+demiPixel, bloc["y"]*nombrePixel+demiPixel, bloc["x"]*nombrePixel+nombrePixel-demiPixel, bloc["y"]*nombrePixel+nombrePixel-demiPixel, fill=couleurBloc))
         indexBloc += 1
     couleurBloc = 'black'
 
 def cacher_niveau(): #Masque le niveau
-    for bloc in monde[niveau]:
+    for bloc in monde["niveaux"][niveau]:
         canevas.delete(bloc["idTk"])
 
 def supp_niveau():
     global monde
-    del monde[niveau]
+    del monde["niveaux"][niveau]
 
 def save(id):
     global monde
@@ -875,12 +890,20 @@ def change_level(direction):
     numeroNiveau.config(text=id_level)
 
 def reset_solo():
-    attention = tkinter.messagebox.askyesno("Attention", "Voulez vous reset la progression ?")
+    attention = tkinter.messagebox.askyesno("Attention", "Voulez-vous réinitialisez la progression des 3 mondes ?")
     if attention:
         originalPath = racine+"assets/data/origine"
         copyPath = racine+"assets/data/solo/"
         shutil.rmtree(copyPath)
         shutil.copytree(originalPath, copyPath)
+        for i in range(1,4):
+            lienFichier = racine+"assets/data/origine/tempsM"+str(i)+".gac"
+            if os.path.exists(lienFichier):
+                with open(lienFichier, "rb") as fichierTemps:
+                    tempsPB = pickle.load(fichierTemps)
+                tempsPB[1] = 0
+                with open(lienFichier, "wb") as fichierTemps:
+                    pickle.dump(tempsPB, fichierTemps)
 
 
 ################################################################### Autre ###################################################################
