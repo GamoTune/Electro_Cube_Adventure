@@ -35,16 +35,19 @@ def start(): #La fonction "start" permet de déclaré la plus part des variable 
                                 {"idAssoc" : 0, "idTk":0, "x":1, "y":1, "type":9, "couleur":"red", "collect":0}
                         ]
                     },
-            "time":[
-                ]
+            "lastCoords":[[],[],[]],
 
-            "last"
+            "runTime" : [0,0,0]
+
+            "PB" : [0,0,0]
+
             }"""
 
 
-    monde = {   "niveaux": {"0,0":[]},
+    monde = {   "niveaux":{"0,0":[]},
                 "lastCoords":[[],[],[]],
-                "time":[0,0,0]
+                "runTime":[0,0,0],
+                "PB":[0,0,0]
              }
     etatJeu="init"
     etatEditeur = "pose"
@@ -265,7 +268,9 @@ def menu_resultat():
     menuResultatFrame.place(x=largeurFenetre/2, y=hauteurFenetre/2,anchor=CENTER)
 
     Label(menuResultatFrame, image=bgmenuresultat).place(x=(largeurFenetre/2+largeurFenetre/4)/2, y=(hauteurFenetre/2+hauteurFenetre/4)/2, anchor=CENTER)
-    Label(menuResultatFrame, text=("Temps : "+str(monde["time"][id_monde-1])+" s"), font=("Arial", int(30*ratioFenetre)), bg='black', fg='white').place(x=(largeurFenetre/2+largeurFenetre/4)/2, y=(hauteurFenetre/2+hauteurFenetre/4)/2, anchor=CENTER)
+    Label(menuResultatFrame, text=("Temps de la Run : "+str(monde["runTime"][id_monde-1])+" s"), font=("Arial", int(30*ratioFenetre)), bg='black', fg='white').place(x=(largeurFenetre/2+largeurFenetre/4)/2, y=(hauteurFenetre/2+hauteurFenetre/4)/2, anchor=CENTER)
+    Label(menuResultatFrame, text=("Meilleur temps : "+str(monde["PB"][id_monde-1])+" s"), font=("Arial", int(30*ratioFenetre)), bg='black', fg='white').place(x=(largeurFenetre/2+largeurFenetre/4)/2, y=(hauteurFenetre/2+hauteurFenetre/4)/2+100*ratioFenetre, anchor=CENTER)
+    Label(menuResultatFrame, text=(messageScore), font=("Arial", int(30*ratioFenetre)), bg='black', fg='white').place(x=(largeurFenetre/2+largeurFenetre/4)/2, y=(hauteurFenetre/2+hauteurFenetre/4)/2-100*ratioFenetre, anchor=CENTER)
     Button(menuResultatFrame, image=imageBoutonEditeurExit, relief='groove', bd=0, bg='#ffffff', command=exit_menu).place(x=(largeurFenetre/2+largeurFenetre/4)/2,y=(hauteurFenetre/2+hauteurFenetre/4)-ratioImage, anchor=CENTER) #boutonEditeurExit
 
 def exit_menu():
@@ -419,8 +424,8 @@ def exit_editeur():
 
 def exit_solo():
     global etatJeu, monde
+    calcul_temps()
     monde["lastCoords"][id_monde-1] = positionJoueur
-    monde["time"][id_monde-1] += temps
     save(id_monde)
     cacher_niveau()
     fenetre.after_cancel(boucleTemps)
@@ -782,7 +787,7 @@ def fin_niveau():
         exit_solo()
         etatJeu = "solo"
         menu_resultat()
-        monde["time"][id_monde-1] = 0
+        monde["runTime"][id_monde-1] = 0
         save(id_monde)
         etatJeu = "menuResultat"
 
@@ -791,6 +796,19 @@ def chrono():
     temps += 1
     print(temps)
     boucleTemps = fenetre.after(1000, chrono)
+
+def calcul_temps():
+    global monde, messageScore
+    fenetre.after_cancel(boucleTemps)
+    monde["runTime"][id_monde-1] += temps
+    if monde["PB"][id_monde-1] != 0:
+        if monde["runTime"][id_monde-1] < monde["PB"][id_monde-1]:
+            monde["PB"][id_monde-1] = monde["runTime"][id_monde-1]
+            messageScore = "Nouveau record !"
+        else: messageScore = " "
+    else:
+        monde["PB"][id_monde-1] = monde["runTime"][id_monde-1]
+        messageScore = "Nouveau record !"
 
 
 ################################################################### Fonctions du fonctionnement global du programme ###################################################################
