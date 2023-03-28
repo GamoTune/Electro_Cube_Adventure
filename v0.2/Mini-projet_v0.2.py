@@ -6,7 +6,7 @@ import tkinter as tk, tkinter.messagebox; from tkinter import *; import pickle, 
 ################################################################### Les fonctions de mise en place du programme ###################################################################
 
 def start(): #La fonction "start" permet de déclaré la plus part des variable global
-    global monde, fenetre, etatEditeur, commandMondeSolo, nombrePixel, bgmenuresultat, imageBoutonEditeurFinish, largeurFenetre, hauteurFenetre, canevas, lienIconeFenetre, etatJeu, nombreCaseY, nombreCaseX, editBloc, racine, imageBoutonPlayTest, bgMenu, imageOK, imageInfoBouton, tailleImage, ratioImage, bgmenuSoloFrame, ratioFenetre, bgMenuEdition, nombreCase, imageBoutonEditeurGommeSelect, imageBoutonEditeurGomme, imageBoutonEditeurPoubelleMonde, imageBoutonEditeurBlocPorte, editTest, imageMonde1, imageMonde2, imageMonde3, imageResetSolo, imageBoutonEditeurItemCle, imageBoutonEditeurEditBloc, fenetreeditTest, id_level, imageBoutonSolo, imageBoutonEditeur, ligneX, ligneY, imageBoutonEditeurNiveauHaut, imageBoutonEditeurNiveauBas, imageBoutonEditeurNiveauGauche, imageBoutonEditeurNiveauDroite, imageBoutonEditeurTP, imageBoutonEditeurRetour, imageWIP, imageBoutonEditeurPoubelle, imageBoutonEditeurExit, imageBoutonEditeurBlocSolide, couleurBloc, typeDuBloc, imageBoutonEditeurBlocSpawn, editGomme, id_monde, imageBoutonEditeurInfos
+    global monde, fenetre, etatEditeur, commandMondeSolo, exitCommand, imageNotExit, commandMondeEditeur, nombrePixel, imageMonde1Del, imageMonde2Del, imageMonde3Del, bgmenuresultat, imageBoutonEditeurFinish, largeurFenetre, hauteurFenetre, canevas, lienIconeFenetre, etatJeu, nombreCaseY, nombreCaseX, editBloc, racine, imageBoutonPlayTest, bgMenu, imageOK, imageInfoBouton, tailleImage, ratioImage, bgmenuSoloFrame, ratioFenetre, bgMenuEdition, nombreCase, imageBoutonEditeurGommeSelect, imageBoutonEditeurGomme, imageBoutonEditeurPoubelleMonde, imageBoutonEditeurBlocPorte, editTest, imageMonde1, imageMonde2, imageMonde3, imageResetSolo, imageBoutonEditeurItemCle, imageBoutonEditeurEditBloc, fenetreeditTest, id_level, imageBoutonSolo, imageBoutonEditeur, ligneX, ligneY, imageBoutonEditeurNiveauHaut, imageBoutonEditeurNiveauBas, imageBoutonEditeurNiveauGauche, imageBoutonEditeurNiveauDroite, imageBoutonEditeurTP, imageBoutonEditeurRetour, imageWIP, imageBoutonEditeurPoubelle, imageExit, imageBoutonEditeurBlocSolide, couleurBloc, typeDuBloc, imageBoutonEditeurBlocSpawn, editGomme, id_monde, imageBoutonEditeurInfos
 
     ################################################################### Mise en place de la fenetre et du canevas
 
@@ -71,6 +71,8 @@ def start(): #La fonction "start" permet de déclaré la plus part des variable 
     ligneY = [] #Liste des ID des lignes X crées
 
     commandMondeSolo = lancement_solo
+    exitCommand = exit_menu
+    commandMondeEditeur = lancement_editeur
 
     fenetreeditTest = False #Permet de vérifier si la fenetre d'edition de bloc de l'éditeur est déjà créer
     couleurBloc = 'black' #Défini la couleur d'un bloc
@@ -93,7 +95,8 @@ def start(): #La fonction "start" permet de déclaré la plus part des variable 
     imageBoutonEditeurRetour = ImageTk.PhotoImage(Image.open(racine+"assets/images/retour.png").resize((ratioImage, ratioImage)))
     imageWIP = ImageTk.PhotoImage(Image.open(racine+"assets/images/WIP.png").resize((ratioImage, ratioImage)))
     imageBoutonEditeurPoubelle = ImageTk.PhotoImage(Image.open(racine+"assets/images/poubelle.png").resize((ratioImage, ratioImage)))
-    imageBoutonEditeurExit = ImageTk.PhotoImage(Image.open(racine+"assets/images/exit.png").resize((ratioImage, ratioImage)))
+    imageExit = ImageTk.PhotoImage(Image.open(racine+"assets/images/exit.png").resize((ratioImage, ratioImage)))
+    imageNotExit = ImageTk.PhotoImage(Image.open(racine+"assets/images/not_exit.png").resize((ratioImage, ratioImage)))
     imageBoutonEditeurBlocSolide = ImageTk.PhotoImage(Image.open(racine+"assets/images/bouton_bloc_solide.png").resize((ratioImage, ratioImage)))
     imageBoutonEditeurBlocSpawn = ImageTk.PhotoImage(Image.open(racine+"assets/images/bouton_bloc_spawn.png").resize((ratioImage, ratioImage)))
     imageBoutonEditeurItemCle = ImageTk.PhotoImage(Image.open(racine+"assets/images/bouton_item_cle.png").resize((ratioImage, ratioImage)))
@@ -108,6 +111,9 @@ def start(): #La fonction "start" permet de déclaré la plus part des variable 
     imageMonde1 = ImageTk.PhotoImage(Image.open(racine+"assets/images/M1.png").resize((ratioImage, ratioImage)))
     imageMonde2 = ImageTk.PhotoImage(Image.open(racine+"assets/images/M2.png").resize((ratioImage, ratioImage)))
     imageMonde3 = ImageTk.PhotoImage(Image.open(racine+"assets/images/M3.png").resize((ratioImage, ratioImage)))
+    imageMonde1Del = ImageTk.PhotoImage(Image.open(racine+"assets/images/M1_del.png").resize((ratioImage, ratioImage)))
+    imageMonde2Del = ImageTk.PhotoImage(Image.open(racine+"assets/images/M2_del.png").resize((ratioImage, ratioImage)))
+    imageMonde3Del = ImageTk.PhotoImage(Image.open(racine+"assets/images/M3_del.png").resize((ratioImage, ratioImage)))
     bgMenu = ImageTk.PhotoImage(Image.open(racine+"assets/images/menu_bg.png").resize((int(largeurFenetre/2+largeurFenetre/4),int(hauteurFenetre/2+hauteurFenetre/4))))
     bgmenuSoloFrame = ImageTk.PhotoImage(Image.open(racine+"assets/images/menu_solo.png").resize((int(largeurFenetre/2+largeurFenetre/4),int(hauteurFenetre/2+hauteurFenetre/4))))
     bgMenuEdition = ImageTk.PhotoImage(Image.open(racine+"assets/images/menu_editeur.png").resize((int(largeurFenetre/2+largeurFenetre/4),int(hauteurFenetre/2+hauteurFenetre/4))))
@@ -208,13 +214,13 @@ def menu_principal():
     boutonEditeur = Button(menuPrincipalFrame, image=imageBoutonEditeur, relief='groove', bd=0, bg='black', command=menu_edition)
     boutonEditeur.place(x=(largeurFenetre/2+largeurFenetre/4)/2+((largeurFenetre/2+largeurFenetre/4)/2)/2, y=(hauteurFenetre/2+hauteurFenetre/4)/2, anchor=CENTER)
 
-    boutonExit = Button(menuPrincipalFrame, image=imageBoutonEditeurExit, relief='groove', bd=0, bg='black', command=exit_menu)
+    boutonExit = Button(menuPrincipalFrame, image=imageExit, relief='groove', bd=0, bg='black', command=exit_menu)
     boutonExit.place(x=(largeurFenetre/2+largeurFenetre/4)/2, y=(hauteurFenetre/2+hauteurFenetre/4)/2, anchor=CENTER)
 
     Label(menuPrincipalFrame, text="Beta 0.2", font=("Arial", int(12*ratioFenetre)), bg='black', fg='white').place(x=(largeurFenetre/2+largeurFenetre/4)/2, y=(hauteurFenetre/2+hauteurFenetre/4)-10, anchor=CENTER)
 
 def menu_edition():
-    global menuEditionFrame,etatJeu
+    global menuEditionFrame,etatJeu, boutonEditeurMonde1, boutonEditeurMonde2, boutonEditeurMonde3, boutonExitEdit
     etatJeu="menuEdition"
 
     menuEditionFrame = Frame(fenetre, width=largeurFenetre/2+largeurFenetre/4, height=hauteurFenetre/2+hauteurFenetre/4 ,bg='black')
@@ -223,26 +229,26 @@ def menu_edition():
     fondMenuEdition = Label(menuEditionFrame, image=bgMenuEdition)
     fondMenuEdition.place(x=(largeurFenetre/2+largeurFenetre/4)/2, y=(hauteurFenetre/2+hauteurFenetre/4)/2, anchor=CENTER)
 
-    boutonExitEdit = Button(menuEditionFrame, image=imageBoutonEditeurExit, relief='groove', bd=0, bg='black', command=exit_menu)
+    boutonExitEdit = Button(menuEditionFrame, image=imageExit, relief='groove', bd=0, bg='black', command=exitCommand)
     boutonExitEdit.place(x=(largeurFenetre/2+largeurFenetre/4)/2, y=(hauteurFenetre/2+hauteurFenetre/4)/2, anchor=CENTER)
 
-    boutonEditeurMonde1 = Button(menuEditionFrame, image=imageMonde1, relief='groove', bd=0, bg='black', command=lambda:lancement_editeur(1))
+    boutonEditeurMonde1 = Button(menuEditionFrame, image=imageMonde1, relief='groove', bd=0, bg='black', command=lambda:commandMondeEditeur(1))
     boutonEditeurMonde1.place(x=(largeurFenetre/2+largeurFenetre/4)/2-((largeurFenetre/2+largeurFenetre/4)/2)/4, y=(hauteurFenetre/2+hauteurFenetre/4)/2, anchor=CENTER)
 
-    boutonEditeurMonde2 = Button(menuEditionFrame, image=imageMonde2, relief='groove', bd=0, bg='black', command=lambda:lancement_editeur(2))
+    boutonEditeurMonde2 = Button(menuEditionFrame, image=imageMonde2, relief='groove', bd=0, bg='black', command=lambda:commandMondeEditeur(2))
     boutonEditeurMonde2.place(x=(largeurFenetre/2+largeurFenetre/4)/2, y=(hauteurFenetre/2+hauteurFenetre/4)/1.37, anchor=CENTER)
 
-    boutonEditeurMonde3 = Button(menuEditionFrame, image=imageMonde3, relief='groove', bd=0, bg='black', command=lambda:lancement_editeur(3))
+    boutonEditeurMonde3 = Button(menuEditionFrame, image=imageMonde3, relief='groove', bd=0, bg='black', command=lambda:commandMondeEditeur(3))
     boutonEditeurMonde3.place(x=(largeurFenetre/2+largeurFenetre/4)/2+((largeurFenetre/2+largeurFenetre/4)/2)/4, y=(hauteurFenetre/2+hauteurFenetre/4)/2, anchor=CENTER)
 
-    boutonEditPlayTest = Button(menuEditionFrame, image=imageBoutonPlayTest, relief='groove', bd=0, bg='black', command=lancement_test_edition)
+    boutonEditPlayTest = Button(menuEditionFrame, image=imageBoutonPlayTest, relief='groove', bd=0, bg='black', command=toggle_test_editeur)
     boutonEditPlayTest.place(x=(largeurFenetre/2+largeurFenetre/4)/2, y=(hauteurFenetre/2+hauteurFenetre/4)-(hauteurFenetre/2+hauteurFenetre/4)/1.37, anchor=CENTER)
 
     boutonEditeurInfo = Button(menuEditionFrame, image=imageBoutonEditeurInfos, relief='groove', bd=0, bg='black', command=info_editeur)
     boutonEditeurInfo.place(x=(largeurFenetre/2+largeurFenetre/4)-ratioImage*2,y=ratioImage*2, anchor=CENTER)
 
 def menu_solo():
-    global menuSoloFrame,etatJeu, boutonSoloMonde1, boutonSoloMonde2, boutonSoloMonde3
+    global menuSoloFrame,etatJeu, boutonSoloMonde1, boutonSoloMonde2, boutonSoloMonde3, boutonExitSolo
     etatJeu="menuSolo"
 
     menuSoloFrame = Frame(fenetre, width=largeurFenetre/2+largeurFenetre/4, height=hauteurFenetre/2+hauteurFenetre/4 ,bg='black')
@@ -251,7 +257,7 @@ def menu_solo():
     fondmenuSoloFrame = Label(menuSoloFrame, image=bgmenuSoloFrame)
     fondmenuSoloFrame.place(x=(largeurFenetre/2+largeurFenetre/4)/2, y=(hauteurFenetre/2+hauteurFenetre/4)/2, anchor=CENTER)
 
-    boutonExitSolo = Button(menuSoloFrame, image=imageBoutonEditeurExit, relief='groove', bd=0, bg='black', command=exit_menu)
+    boutonExitSolo = Button(menuSoloFrame, image=imageExit, relief='groove', bd=0, bg='black', command=exitCommand)
     boutonExitSolo.place(x=(largeurFenetre/2+largeurFenetre/4)/2, y=(hauteurFenetre/2+hauteurFenetre/4)/2, anchor=CENTER)
 
     boutonSoloMonde1 = Button(menuSoloFrame, image=imageMonde1, relief='groove', bd=0, bg='black', command=lambda:commandMondeSolo(1))
@@ -276,7 +282,7 @@ def menu_resultat():
     Label(menuResultatFrame, text=("Temps de la Run : "+str(monde["runTime"][id_monde-1])+" s"), font=("Arial", int(30*ratioFenetre)), bg='black', fg='white').place(x=(largeurFenetre/2+largeurFenetre/4)/2, y=(hauteurFenetre/2+hauteurFenetre/4)/2, anchor=CENTER)
     Label(menuResultatFrame, text=("Meilleur temps : "+str(monde["PB"][id_monde-1])+" s"), font=("Arial", int(30*ratioFenetre)), bg='black', fg='white').place(x=(largeurFenetre/2+largeurFenetre/4)/2, y=(hauteurFenetre/2+hauteurFenetre/4)/2+100*ratioFenetre, anchor=CENTER)
     Label(menuResultatFrame, text=(messageScore), font=("Arial", int(30*ratioFenetre)), bg='black', fg='white').place(x=(largeurFenetre/2+largeurFenetre/4)/2, y=(hauteurFenetre/2+hauteurFenetre/4)/2-100*ratioFenetre, anchor=CENTER)
-    Button(menuResultatFrame, image=imageBoutonEditeurExit, relief='groove', bd=0, bg='#ffffff', command=exit_menu).place(x=(largeurFenetre/2+largeurFenetre/4)/2,y=(hauteurFenetre/2+hauteurFenetre/4)-ratioImage, anchor=CENTER) #boutonEditeurExit
+    Button(menuResultatFrame, image=imageExit, relief='groove', bd=0, bg='#ffffff', command=exit_menu).place(x=(largeurFenetre/2+largeurFenetre/4)/2,y=(hauteurFenetre/2+hauteurFenetre/4)-ratioImage, anchor=CENTER) #boutonEditeurExit
 
 def exit_menu():
     global etatJeu
@@ -344,7 +350,7 @@ def lancement_editeur(id):
     Button(fenetre_editeur, image=imageBoutonEditeurNiveauGauche, relief='groove', bd=0, bg='#ffffff', command=lambda:change_level("left")).place(x=ratioImage/2,y=ratioImage*3+ratioImage/2, anchor=CENTER) #bouton_niveau_left
     Button(fenetre_editeur, image=imageBoutonEditeurNiveauDroite, relief='groove', bd=0, bg='#ffffff', command=lambda:change_level("right")).place(x=ratioImage*2+ratioImage/2,y=ratioImage*3+ratioImage/2, anchor=CENTER) #bouton_niveau_right
     Button(fenetre_editeur, image=imageBoutonEditeurPoubelleMonde, relief='groove', bd=0, bg='#ffffff', command=del_all_level).place(x=ratioImage*2+ratioImage/2,y=ratioImage+ratioImage/2, anchor=CENTER) #boutonEditeurDellAll
-    Button(fenetre_editeur, image=imageBoutonEditeurExit, relief='groove', bd=0, bg='#ffffff', command=exit_editeur).place(x=ratioImage+ratioImage/2,y=ratioImage*5+ratioImage/2, anchor=CENTER) #boutonEditeurExit
+    Button(fenetre_editeur, image=imageExit, relief='groove', bd=0, bg='#ffffff', command=exit_editeur).place(x=ratioImage+ratioImage/2,y=ratioImage*5+ratioImage/2, anchor=CENTER) #boutonEditeurExit
     numeroNiveau = Label(fenetre_editeur, text=id_level, font=("Arial", int(30*ratioFenetre)), bg='#ffffff') #Affichage du numéro du niveau actuel
     numeroNiveau.place(x=ratioImage+ratioImage/2,y=ratioImage*3+ratioImage/2, anchor=CENTER) #numeroNiveau
     Button(fenetre_editeur, image=imageBoutonEditeurBlocSolide, relief='groove', bd=0, bg='#ffffff', command=lambda:type_bloc("solide")).place(x=ratioImage/2,y=ratioImage*2+ratioImage/2, anchor=CENTER) #bouton_bloc_solide
@@ -388,14 +394,14 @@ def lancement_solo(id):
         etatJeu = "menuSolo"
         tkinter.messagebox.showerror("Erreur", "Il n'y a pas de bloc d'apparition dans ce monde") #Affichage d'un message d'erreur
 
-def lancement_test_edition():
+def lancement_test_edition(id):
     global id_level, etatJeu, joueur, positionJoueur
     etatJeu = "test_editeur"
-    originalPath = racine+"assets/data/editeur" #"originalPath" contient le lien du dossier éditeur
-    copyPath = racine+"assets/data/test_editeur/" #"copyPath" contient le lien du dossier test_editeur où vont etre copier les fichier de l'éditeur pour ne pas modifier les fichier dans l'éditeur
+    originalPath = racine+"assets/data/editeur/monde"+str(id)+".gac" #"originalPath" contient le lien du dossier éditeur
+    copyPath = racine+"assets/data/test_editeur/monde"+str(id)+".gac" #"copyPath" contient le lien du dossier test_editeur où vont etre copier les fichier de l'éditeur pour ne pas modifier les fichier dans l'éditeur
     if os.path.exists(copyPath): #Si le dossier contient déjà quelque chose, il est détruit puis recréer 
-        shutil.rmtree(copyPath) #Suprétion du dossier
-    shutil.copytree(originalPath, copyPath) #Création de la copie du docier d'origine
+        shutil.copy(originalPath, copyPath)
+    id_monde = id
     get_monde(id_monde)
     id_level = [0,0]
     get_niveau(id_level)
@@ -919,22 +925,48 @@ def change_level(direction):
     numeroNiveau.config(text=id_level)
 
 def toggle_reset():
-    global boutonSoloMonde1, boutonSoloMonde2, boutonSoloMonde3, commandMondeSolo
-    if commandMondeSolo != reset_solo: commandMondeSolo = reset_solo
-    else: commandMondeSolo = lancement_solo
-    #+ changement des images
+    global boutonSoloMonde1, boutonSoloMonde2, boutonSoloMonde3, commandMondeSolo, exitCommand
+    if commandMondeSolo != reset_solo:
+        commandMondeSolo = reset_solo
+        exitCommand = ""
+        boutonSoloMonde1.config(image=imageMonde1Del)
+        boutonSoloMonde2.config(image=imageMonde2Del)
+        boutonSoloMonde3.config(image=imageMonde3Del)
+        boutonExitSolo.config(image=imageNotExit, command=exitCommand)
+    else:
+        commandMondeSolo = lancement_solo
+        exitCommand = exit_menu
+        boutonSoloMonde1.config(image=imageMonde1)
+        boutonSoloMonde2.config(image=imageMonde2)
+        boutonSoloMonde3.config(image=imageMonde3)
+        boutonExitSolo.config(image=imageExit, command=exitCommand)
 
 def reset_solo(n):
     global monde
-    attention = tkinter.messagebox.askyesno("Attention", "Voulez-vous réinitialisez la progression des 3 mondes ?")
+    attention = tkinter.messagebox.askyesno("Attention", "Voulez-vous réinitialisez se monde ?")
     if attention:
         originalPath = racine+"assets/data/origine/monde"+str(n)+".gac"
         copyPath = racine+"assets/data/solo/monde"+str(n)+".gac"
         shutil.copy(originalPath, copyPath)
         monde["reset"][n] = True
-    toggle_reset()
+        toggle_reset()
 
-    
+def toggle_test_editeur():
+    global boutonEditeurMonde1, boutonSoloMonde2, boutonSoloMonde3, commandMondeEditeur, exitCommand
+    if commandMondeEditeur != lancement_test_edition:
+        commandMondeEditeur = lancement_test_edition
+        exitCommand = ""
+        boutonEditeurMonde1.config(image=imageMonde1Del)
+        boutonEditeurMonde2.config(image=imageMonde2Del)
+        boutonEditeurMonde3.config(image=imageMonde3Del)
+        boutonExitEdit.config(image=imageNotExit, command=exitCommand)
+    else:
+        commandMondeEditeur = lancement_editeur
+        exitCommand = exit_menu
+        boutonEditeurMonde1.config(image=imageMonde1)
+        boutonEditeurMonde2.config(image=imageMonde2)
+        boutonEditeurMonde3.config(image=imageMonde3)
+        boutonExitEdit.config(image=imageExit, command=exitCommand)
 
 
 ################################################################### Autre ###################################################################
