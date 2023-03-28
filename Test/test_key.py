@@ -39,7 +39,7 @@ def init_player():
 #___________________________________________________________________________________________________________ 
 def updatePlayer():
     global playerX, playerY, playerVx, playerVy, theKey, instance_rectangle
-    vitesse = 1
+    vitesse = 0.5
      
     if directions.get(theKey) is not None:
         playerVx = directions[theKey][0]*vitesse
