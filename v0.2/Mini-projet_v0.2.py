@@ -39,7 +39,9 @@ def start(): #La fonction "start" permet de déclaré la plus part des variable 
 
             "runTime" : [0,0,0]
 
-            "PB" : [0,0,0]
+            "PB" : [0,0,0],
+            
+            "reset" : [True,True,True]
 
             }"""
 
