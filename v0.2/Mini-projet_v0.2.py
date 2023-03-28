@@ -6,7 +6,7 @@ import tkinter as tk, tkinter.messagebox; from tkinter import *; import pickle, 
 ################################################################### Les fonctions de mise en place du programme ###################################################################
 
 def start(): #La fonction "start" permet de déclaré la plus part des variable global
-    global monde, fenetre, etatEditeur, nombrePixel, bgmenuresultat, imageBoutonEditeurFinish, largeurFenetre, hauteurFenetre, canevas, lienIconeFenetre, etatJeu, nombreCaseY, nombreCaseX, editBloc, racine, imageBoutonPlayTest, bgMenu, imageOK, imageInfoBouton, tailleImage, ratioImage, bgmenuSoloFrame, ratioFenetre, bgMenuEdition, nombreCase, imageBoutonEditeurGommeSelect, imageBoutonEditeurGomme, imageBoutonEditeurPoubelleMonde, imageBoutonEditeurBlocPorte, editTest, imageMonde1, imageMonde2, imageMonde3, imageResetSolo, imageBoutonEditeurItemCle, imageBoutonEditeurEditBloc, fenetreeditTest, id_level, imageBoutonSolo, imageBoutonEditeur, ligneX, ligneY, imageBoutonEditeurNiveauHaut, imageBoutonEditeurNiveauBas, imageBoutonEditeurNiveauGauche, imageBoutonEditeurNiveauDroite, imageBoutonEditeurTP, imageBoutonEditeurRetour, imageWIP, imageBoutonEditeurPoubelle, imageBoutonEditeurExit, imageBoutonEditeurBlocSolide, couleurBloc, typeDuBloc, imageBoutonEditeurBlocSpawn, editGomme, id_monde, imageBoutonEditeurInfos
+    global monde, fenetre, etatEditeur, commandMondeSolo, nombrePixel, bgmenuresultat, imageBoutonEditeurFinish, largeurFenetre, hauteurFenetre, canevas, lienIconeFenetre, etatJeu, nombreCaseY, nombreCaseX, editBloc, racine, imageBoutonPlayTest, bgMenu, imageOK, imageInfoBouton, tailleImage, ratioImage, bgmenuSoloFrame, ratioFenetre, bgMenuEdition, nombreCase, imageBoutonEditeurGommeSelect, imageBoutonEditeurGomme, imageBoutonEditeurPoubelleMonde, imageBoutonEditeurBlocPorte, editTest, imageMonde1, imageMonde2, imageMonde3, imageResetSolo, imageBoutonEditeurItemCle, imageBoutonEditeurEditBloc, fenetreeditTest, id_level, imageBoutonSolo, imageBoutonEditeur, ligneX, ligneY, imageBoutonEditeurNiveauHaut, imageBoutonEditeurNiveauBas, imageBoutonEditeurNiveauGauche, imageBoutonEditeurNiveauDroite, imageBoutonEditeurTP, imageBoutonEditeurRetour, imageWIP, imageBoutonEditeurPoubelle, imageBoutonEditeurExit, imageBoutonEditeurBlocSolide, couleurBloc, typeDuBloc, imageBoutonEditeurBlocSpawn, editGomme, id_monde, imageBoutonEditeurInfos
 
     ################################################################### Mise en place de la fenetre et du canevas
 
@@ -49,7 +49,8 @@ def start(): #La fonction "start" permet de déclaré la plus part des variable 
     monde = {   "niveaux":{"0,0":[]},
                 "lastCoords":[[],[],[]],
                 "runTime":[0,0,0],
-                "PB":[0,0,0]
+                "PB":[0,0,0],
+                "reset" : [True,True,True]  
              }
     etatJeu="init"
     etatEditeur = "pose"
@@ -68,6 +69,8 @@ def start(): #La fonction "start" permet de déclaré la plus part des variable 
     nombreCaseY = round(hauteurFenetre/nombrePixel) #Le nombre de case en Y permet de donner facilement au programme (pour déplacer le joueur d'un coté à un autre par exemple) le nombre de blocs max en Y
     ligneX = [] #Liste des ID des lignes X crées
     ligneY = [] #Liste des ID des lignes X crées
+
+    commandMondeSolo = lancement_solo
 
     fenetreeditTest = False #Permet de vérifier si la fenetre d'edition de bloc de l'éditeur est déjà créer
     couleurBloc = 'black' #Défini la couleur d'un bloc
@@ -239,7 +242,7 @@ def menu_edition():
     boutonEditeurInfo.place(x=(largeurFenetre/2+largeurFenetre/4)-ratioImage*2,y=ratioImage*2, anchor=CENTER)
 
 def menu_solo():
-    global menuSoloFrame,etatJeu
+    global menuSoloFrame,etatJeu, boutonSoloMonde1, boutonSoloMonde2, boutonSoloMonde3
     etatJeu="menuSolo"
 
     menuSoloFrame = Frame(fenetre, width=largeurFenetre/2+largeurFenetre/4, height=hauteurFenetre/2+hauteurFenetre/4 ,bg='black')
@@ -251,16 +254,16 @@ def menu_solo():
     boutonExitSolo = Button(menuSoloFrame, image=imageBoutonEditeurExit, relief='groove', bd=0, bg='black', command=exit_menu)
     boutonExitSolo.place(x=(largeurFenetre/2+largeurFenetre/4)/2, y=(hauteurFenetre/2+hauteurFenetre/4)/2, anchor=CENTER)
 
-    boutonSoloMonde1 = Button(menuSoloFrame, image=imageMonde1, relief='groove', bd=0, bg='black', command=lambda:lancement_solo(1))
+    boutonSoloMonde1 = Button(menuSoloFrame, image=imageMonde1, relief='groove', bd=0, bg='black', command=lambda:commandMondeSolo(1))
     boutonSoloMonde1.place(x=(largeurFenetre/2+largeurFenetre/4)/2-((largeurFenetre/2+largeurFenetre/4)/2)/4, y=(hauteurFenetre/2+hauteurFenetre/4)/2, anchor=CENTER)
 
-    boutonSoloMonde2 = Button(menuSoloFrame, image=imageMonde2, relief='groove', bd=0, bg='black', command=lambda:lancement_solo(2))
+    boutonSoloMonde2 = Button(menuSoloFrame, image=imageMonde2, relief='groove', bd=0, bg='black', command=lambda:commandMondeSolo(2))
     boutonSoloMonde2.place(x=(largeurFenetre/2+largeurFenetre/4)/2, y=(hauteurFenetre/2+hauteurFenetre/4)/1.37, anchor=CENTER)
 
-    boutonSoloMonde3 = Button(menuSoloFrame, image=imageMonde3, relief='groove', bd=0, bg='black', command=lambda:lancement_solo(3))
+    boutonSoloMonde3 = Button(menuSoloFrame, image=imageMonde3, relief='groove', bd=0, bg='black', command=lambda:commandMondeSolo(3))
     boutonSoloMonde3.place(x=(largeurFenetre/2+largeurFenetre/4)/2+((largeurFenetre/2+largeurFenetre/4)/2)/4, y=(hauteurFenetre/2+hauteurFenetre/4)/2, anchor=CENTER)
 
-    boutonSoloReset = Button(menuSoloFrame, image=imageResetSolo, relief='groove', bd=0, bg='black', command=reset_solo)
+    boutonSoloReset = Button(menuSoloFrame, image=imageResetSolo, relief='groove', bd=0, bg='black', command=toggle_reset)
     boutonSoloReset.place(x=(largeurFenetre/2+largeurFenetre/4)/2, y=(hauteurFenetre/2+hauteurFenetre/4)-(hauteurFenetre/2+hauteurFenetre/4)/1.37, anchor=CENTER)
 
 def menu_resultat():
@@ -796,21 +799,23 @@ def fin_niveau():
 def chrono():
     global temps, boucleTemps
     temps += 1
-    print(temps)
     boucleTemps = fenetre.after(1000, chrono)
 
 def calcul_temps():
     global monde, messageScore
     fenetre.after_cancel(boucleTemps)
     monde["runTime"][id_monde-1] += temps
-    if monde["PB"][id_monde-1] != 0:
-        if monde["runTime"][id_monde-1] < monde["PB"][id_monde-1]:
+    if monde["reset"][id_monde-1]:
+        if monde["PB"][id_monde-1] != 0:
+            if monde["runTime"][id_monde-1] < monde["PB"][id_monde-1]:
+                monde["PB"][id_monde-1] = monde["runTime"][id_monde-1]
+                messageScore = "Nouveau record !"
+            else: messageScore = " "
+        else:
             monde["PB"][id_monde-1] = monde["runTime"][id_monde-1]
             messageScore = "Nouveau record !"
-        else: messageScore = " "
-    else:
-        monde["PB"][id_monde-1] = monde["runTime"][id_monde-1]
-        messageScore = "Nouveau record !"
+        monde["reset"][id_monde-1] = False
+    else: messageScore = "Le niveau need to be reset for save score again"
 
 
 ################################################################### Fonctions du fonctionnement global du programme ###################################################################
@@ -913,22 +918,33 @@ def change_level(direction):
     affichage_niveau()
     numeroNiveau.config(text=id_level)
 
-def reset_solo():
+def toggle_reset():
+    global boutonSoloMonde1, boutonSoloMonde2, boutonSoloMonde3, commandMondeSolo
+    if commandMondeSolo != reset_solo: commandMondeSolo = reset_solo
+    else: commandMondeSolo = lancement_solo
+    #+ changement des images
+
+def reset_solo(n):
+    global monde
     attention = tkinter.messagebox.askyesno("Attention", "Voulez-vous réinitialisez la progression des 3 mondes ?")
     if attention:
-        originalPath = racine+"assets/data/origine"
-        copyPath = racine+"assets/data/solo/"
-        shutil.rmtree(copyPath)
-        shutil.copytree(originalPath, copyPath)
-        for i in range(1,4):
-            lienFichier = racine+"assets/data/origine/tempsM"+str(i)+".gac"
-            if os.path.exists(lienFichier):
-                with open(lienFichier, "rb") as fichierTemps:
-                    tempsPB = pickle.load(fichierTemps)
-                tempsPB[1] = 0
-                with open(lienFichier, "wb") as fichierTemps:
-                    pickle.dump(tempsPB, fichierTemps)
+        originalPath = racine+"assets/data/origine/monde"+str(n)+".gac"
+        copyPath = racine+"assets/data/solo/monde"+str(n)+".gac"
+        shutil.copy(originalPath, copyPath)
+        monde["reset"][n] = True
+    toggle_reset()
+
+    
 
 
 ################################################################### Autre ###################################################################
 start()
+
+
+"""
+va faloir save sur internet parce que quand y a un reset, la save de temps est supp puisqu'elle fait partie du 'monde'
+
+
+
+
+"""
