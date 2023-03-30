@@ -709,32 +709,24 @@ def list_ID():
         fenetre_list_id.attributes('-topmost',1)
         fenetre_list_id.protocol("WM_DELETE_WINDOW", disable_event)
 
-        listeFrame = [Frame(fenetre_list_id, width=500*ratioFenetre, height=1000*ratioFenetre).place()]
-        Label(listeFrame[0], text="Liste ID utiliser", font=("Arial", int(32*ratioFenetre))).place()
-        indexFrame = 0
         imageListe = []
         IDListe = []
         for niveauTest in monde["niveaux"]:
             for bloc in monde["niveaux"][niveauTest]:
                 if bloc["type"] != 0 and bloc["type"] != 1 and bloc["type"] != 5:
-                    match bloc["type"]:
-                        case 2: imageListe.append(imageBoutonEditeurItemCle)
-                        case 3: imageListe.append(imageBoutonEditeurBlocPorte)
-                        case 4: imageListe.append(imageBoutonEditeurTP)
+                    imageListe.append(bloc["type"])
                     IDListe.append(bloc["idAssoc"])
 
-        i = 0
-        
-        for index in range(len(IDListe)-1):
-            Label(listeFrame[indexFrame],image = imageListe[index]).place(x=0,y=100*ratioFenetre*i+75*ratioFenetre, anchor=NW)
-            Label(listeFrame[indexFrame], text="ID n° "+str(IDListe[index]), font="Arial, 18").place(x=150,y=100*ratioFenetre*i+75*ratioFenetre, anchor=NW)
-            i += 1
-            index += 1
-            if i > 8:
-                listeFrame[indexFrame].place_forget()
-                indexFrame += 1
-                listeFrame.append(Frame(fenetre_list_id, width=500*ratioFenetre, height=1000*ratioFenetre))
-                i = 0
+        if len(IDListe) > 8:
+            numPage = 
+
+            Label(image = imageListe[index]).place(x=0,y=100*ratioFenetre*i+75*ratioFenetre, anchor=NW)
+            Label(text="ID n° "+str(IDListe[index]), font="Arial, 18").place(x=150,y=100*ratioFenetre*i+75*ratioFenetre, anchor=NW)
+
+
+
+
+
     elif etatEditeur == "listeID":
         etatEditeur = "pose"
         fenetre_list_id.destroy()
