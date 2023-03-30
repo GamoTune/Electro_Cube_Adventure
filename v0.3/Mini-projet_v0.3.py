@@ -705,30 +705,40 @@ def list_ID():
 
         fenetre_list_id = tk.Toplevel()
         fenetre_list_id.resizable(False,False)
-        fenetre_list_id.geometry("%dx%d%+d%+d" % (500*ratioFenetre,300*ratioFenetre,50,50))
+        fenetre_list_id.geometry("%dx%d%+d%+d" % (500*ratioFenetre,1000*ratioFenetre,50,50))
         fenetre_list_id.attributes('-topmost',1)
         fenetre_list_id.protocol("WM_DELETE_WINDOW", disable_event)
 
-        canevas2 = Canvas(fenetre_list_id, width=500*ratioFenetre, height=300*ratioFenetre)#bg='#3b3b3b'
-
-        Label(canevas2, text="Liste ID utiliser", font=("Arial", int(32*ratioFenetre))).place(x=ratioImage*2+ratioImage/2,y=20*ratioFenetre, anchor=CENTER)
-        i = 0
+        listeFrame = [Frame(fenetre_list_id, width=500*ratioFenetre, height=1000*ratioFenetre).place()]
+        Label(listeFrame[0], text="Liste ID utiliser", font=("Arial", int(32*ratioFenetre))).place()
+        indexFrame = 0
+        imageListe = []
+        IDListe = []
         for niveauTest in monde["niveaux"]:
             for bloc in monde["niveaux"][niveauTest]:
-                if bloc["type"] != 0 and bloc["type"] != 1:
+                if bloc["type"] != 0 and bloc["type"] != 1 and bloc["type"] != 5:
                     match bloc["type"]:
-                        case 2: imageListe = imageBoutonEditeurItemCle
-                        case 3: imageListe = imageBoutonEditeurBlocPorte
-                        case 4: imageListe = imageBoutonEditeurTP
-                        case 5: imageListe = imageBoutonEditeurFinish
-                    imageListeID = canevas2.create_image(0,100*i+100,anchor=NW,image=imageListe)
-                    IDListeID = Label(canevas2, text="ID n° "+str(bloc["idAssoc"]), font="Arial, 18").place(x=150,y=100*i+100, anchor=NW)
-                    print(bloc["idAssoc"])
-                    i += 1
-        canevas2.pack()
+                        case 2: imageListe.append(imageBoutonEditeurItemCle)
+                        case 3: imageListe.append(imageBoutonEditeurBlocPorte)
+                        case 4: imageListe.append(imageBoutonEditeurTP)
+                    IDListe.append(bloc["idAssoc"])
+
+        i = 0
+        
+        for index in range(len(IDListe)-1):
+            Label(listeFrame[indexFrame],image = imageListe[index]).place(x=0,y=100*ratioFenetre*i+75*ratioFenetre, anchor=NW)
+            Label(listeFrame[indexFrame], text="ID n° "+str(IDListe[index]), font="Arial, 18").place(x=150,y=100*ratioFenetre*i+75*ratioFenetre, anchor=NW)
+            i += 1
+            index += 1
+            if i > 8:
+                listeFrame[indexFrame].place_forget()
+                indexFrame += 1
+                listeFrame.append(Frame(fenetre_list_id, width=500*ratioFenetre, height=1000*ratioFenetre))
+                i = 0
     elif etatEditeur == "listeID":
         etatEditeur = "pose"
         fenetre_list_id.destroy()
+
 
 ################################################################### Fonctions du Solo ###################################################################
 
@@ -1028,7 +1038,8 @@ start()
 """
 va faloir save sur internet parce que quand y a un reset, la save de temps est supp puisqu'elle fait partie du 'monde'
 
+petit bug avec le solo : pas de bloc d'apparition alors qui si (peutetre un bug avec les ids level)
 
-
+problème frame de la fenetre ID
 
 """
