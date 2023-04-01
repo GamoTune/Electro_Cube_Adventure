@@ -1,5 +1,5 @@
 #Import des bibliothèques
-import tkinter as tk, tkinter.messagebox; from tkinter import *; import pickle, os, shutil, webbrowser; from PIL import Image, ImageTk
+import tkinter as tk, tkinter.messagebox; import tkinter.scrolledtext; from tkinter import *; import pickle, os, shutil, webbrowser; from PIL import Image, ImageTk
 
 
 
@@ -328,7 +328,7 @@ def close_menu():
 ################################################################### Fonctions de lancement des modes ###################################################################
 
 def lancement_editeur(id):
-    global id_monde, id_level, etatJeu, fenetre_editeur, message_editeur, numeroNiveau, boutonGomme
+    global id_monde, id_level, etatJeu, fenetre_editeur, message_editeur, numeroNiveau, boutonGomme, textTypeBlocSelect, scrolledIDListe
     etatJeu = "editeur"
     close_menu()
     set_grille_fond()
@@ -366,10 +366,20 @@ def lancement_editeur(id):
     boutonGomme = Button(fenetre_editeur, image=imageBoutonEditeurGomme, relief='groove', bd=0, bg='#ffffff', command=toggle_gomme)
     boutonGomme.place(x=ratioImage/2,y=ratioImage+ratioImage/2, anchor=CENTER) #bouton_gomme
     Button(fenetre_editeur, image=imageBoutonEditeurBlocPorte, relief='groove', bd=0, bg='#ffffff', command=lambda:type_bloc("porte")).place(x=ratioImage*2+ratioImage/2,y=ratioImage*5+ratioImage/2, anchor=CENTER) #bouton_bloc_port
-    Button(fenetre_editeur, image=imageBoutonEditeurEditBloc, relief='groove', bd=0, bg='#ffffff', command=set_edit_fenetre).place(x=ratioImage+ratioImage/2,y=ratioImage+ratioImage/2, anchor=CENTER) #bouton_edit
-    Button(fenetre_editeur, image=imageInfoBouton, relief='groove', bd=0, bg='#ffffff', command=list_ID).place(x=ratioImage/2,y=ratioImage/2, anchor=CENTER) #bouton_edit
+    Button(fenetre_editeur, image=imageBoutonEditeurEditBloc, relief='groove', bd=0, bg='#ffffff', command=set_edit).place(x=ratioImage+ratioImage/2,y=ratioImage+ratioImage/2, anchor=CENTER) #bouton_edit
+    Button(fenetre_editeur, image=imageInfoBouton, relief='groove', bd=0, bg='#ffffff').place(x=ratioImage/2,y=ratioImage/2, anchor=CENTER) #bouton_edit
     message_editeur = Label(fenetre_editeur, text="", font=("Arial", int(25*ratioFenetre)), bg='#ffffff' ) #Affiche du type de bloc / erreur / info général
     message_editeur.place(x=ratioImage+ratioImage/2,y=ratioImage*6+ratioImage/2, anchor=CENTER) #message_editeur
+
+    Label(fenetre_editeur, text="Edit Object", font=("Arial", int(32*ratioFenetre)), bg="white").place(x=ratioImage*2+ratioImage/2+300*ratioFenetre,y=20*ratioFenetre, anchor=CENTER)
+    Label(fenetre_editeur, text="Type Bloc : ", font=("Arial", int(24*ratioFenetre)), bg="white").place(x=325*ratioFenetre, y=65*ratioFenetre)
+    textTypeBlocSelect = Label(fenetre_editeur, text="None", font=("Arial", int(24*ratioFenetre)), bg="white")
+    textTypeBlocSelect.place(x=575*ratioFenetre, y=65*ratioFenetre)
+
+    Label(fenetre_editeur, text="Liste ID", font=("Arial", int(28*ratioFenetre)), bg="white").place(x=ratioImage*2+ratioImage/2+300*ratioFenetre,y=325*ratioFenetre, anchor=CENTER)
+
+    scrolledIDListe = tkinter.scrolledtext.ScrolledText(master = fenetre_editeur,wrap = tk.WORD,width = int(60*ratioFenetre),height = int(20*ratioFenetre), font=(int(14*ratioFenetre)))
+    scrolledIDListe.place(x=300*ratioFenetre,y=350*ratioFenetre)
 
 def lancement_solo(id):
     global id_monde, id_level, etatJeu, positionJoueur, joueur, temps
@@ -437,10 +447,6 @@ def exit_editeur():
     cacher_niveau()
     fenetre_editeur.destroy()
     if etatEditeur == "edit":
-        fenetre_edit_bloc.destroy()
-        etatEditeur = "pose"
-    if etatEditeur == "listeID":
-        fenetre_list_id.destroy()
         etatEditeur = "pose"
     etatJeu="menuEdition"
     menuPrincipalFrame.place(x=largeurFenetre/2, y=hauteurFenetre/2,anchor=CENTER)
@@ -563,10 +569,10 @@ def del_all_level():
 
 def toggle_gomme():
     global etatEditeur, boutonGomme
-    if etatEditeur != "gomme":
+    if etatEditeur != "gomme" and etatEditeur != "edit":
         etatEditeur = "gomme"
         boutonGomme.configure(image = imageBoutonEditeurGommeSelect)
-    else:
+    elif etatEditeur == "gomme":
         etatEditeur = "pose"
         boutonGomme.configure(image = imageBoutonEditeurGomme)
 
@@ -580,24 +586,15 @@ def gomme(x,y):
                 break
             indexBloc += 1
 
-def set_edit_fenetre():
-    global etatEditeur, textTypeBlocSelect, fenetre_edit_bloc
+def set_edit():
+    global etatEditeur
     if etatEditeur == "pose":
         etatEditeur = "edit"
+        fenetre_editeur.geometry("%dx%d" % (800*ratioFenetre,700*ratioFenetre))
 
-        fenetre_edit_bloc = tk.Toplevel()
-        fenetre_edit_bloc.resizable(False,False)
-        fenetre_edit_bloc.geometry("%dx%d%+d%+d" % (500*ratioFenetre,300*ratioFenetre,50,50))
-        fenetre_edit_bloc.attributes('-topmost',1)
-        fenetre_edit_bloc.protocol("WM_DELETE_WINDOW", disable_event)
-
-        Label(fenetre_edit_bloc, text="Edit Object", font=("Arial", int(32*ratioFenetre))).place(x=ratioImage*2+ratioImage/2,y=20*ratioFenetre, anchor=CENTER)
-        Label(fenetre_edit_bloc, text="Type Bloc : ", font=("Arial", int(24*ratioFenetre))).place(x=25*ratioFenetre, y=65*ratioFenetre)
-        textTypeBlocSelect = Label(fenetre_edit_bloc, text="None", font=("Arial", int(24*ratioFenetre)))
-        textTypeBlocSelect.place(x=275*ratioFenetre, y=65*ratioFenetre)
     elif etatEditeur == "edit":
         etatEditeur = "pose"
-        fenetre_edit_bloc.destroy()
+        fenetre_editeur.geometry("%dx%d" % (300*ratioFenetre,700*ratioFenetre))
 
 def edit_bloc(x,y):
     global selectBloc, selectNiveau
@@ -606,25 +603,28 @@ def edit_bloc(x,y):
             selectNiveau = niveau
             selectBloc = bloc
             match bloc["type"]:
-                case 0: textTypeBlocSelect.config(text="Bloc Solide")
-                case 1: textTypeBlocSelect.config(text="Bloc Spawn")
+                case 0:
+                    textTypeBlocSelect.config(text="Bloc Solide")
+                    config_edit(0)
+                case 1:
+                    textTypeBlocSelect.config(text="Bloc Spawn")
+                    config_edit(1)
                 case 2:
                     textTypeBlocSelect.config(text="Item Clé")
-                    config_edit_fenetre(2)
+                    config_edit(2)
                 case 3:
                     textTypeBlocSelect.config(text="Bloc Porte")
-                    config_edit_fenetre(3)
+                    config_edit(3)
                 case 4:
                     textTypeBlocSelect.config(text="Bloc TP")
-                    config_edit_fenetre(4)
+                    config_edit(4)
                 case 5: textTypeBlocSelect.config(text="Bloc de fin")
             break
 
-def config_edit_fenetre(typeB):
-    global entryIDcle,boutonIDCleValidation,couleurSet,textIDKey,textIDTP1,textIDTP2,entryID1,entryID2,boutonIDTPValidation
+def config_edit(typeB):
+    global entryIDcle,boutonIDCleValidation,couleurSet,textIDKey,textIDTP1,textIDTP2,entryID1,entryID2,boutonIDTPValidation, textTypeBlocSelect, scrolledIDListe, listeIDUsed
     try:
         entryIDcle.destroy()
-        #infoBouton.destroy()
         boutonIDCleValidation.destroy()
         couleurSet.destroy()
         textIDKey.destroy()
@@ -640,27 +640,33 @@ def config_edit_fenetre(typeB):
         pass
 
     if typeB == 2 or typeB == 3:
-        entryIDcle = Entry(fenetre_edit_bloc, bg="lightgrey", width=int(10*ratioFenetre), font=("Arial", int(24*ratioFenetre)))
-        entryIDcle.place(x=275*ratioFenetre, y=110*ratioFenetre)
-        boutonIDCleValidation = Button(fenetre_edit_bloc, image=imageOK, relief='groove', bd=0, bg='black', command=lambda:get_key(str(entryIDcle.get())))
-        boutonIDCleValidation.place(x=25*ratioFenetre,y=175*ratioFenetre)
-        """infoBouton = Button(fenetre_edit_bloc, image=imageInfoBouton, relief='groove', bd=0, bg='black', command=id_exist)
-        infoBouton.place(x=130*ratioFenetre,y=175*ratioFenetre)"""
-        textIDKey = Label(fenetre_edit_bloc, text="ID :", font=("Arial", int(24*ratioFenetre)))
-        textIDKey.place(x=130*ratioFenetre,y=110*ratioFenetre) 
-        couleurSet = Scale(fenetre_edit_bloc, orient='horizontal', from_=1, to=7, resolution=1, tickinterval=2, length=180*ratioFenetre, label='Couleur', font=("Arial", int(10*ratioFenetre)), command=change_color)
-        couleurSet.place(x=275*ratioFenetre,y=150*ratioFenetre)
+        entryIDcle = Entry(fenetre_editeur, bg="lightgrey", width=int(10*ratioFenetre), font=("Arial", int(24*ratioFenetre)))
+        entryIDcle.place(x=575*ratioFenetre, y=110*ratioFenetre)
+        boutonIDCleValidation = Button(fenetre_editeur, image=imageOK, relief='groove', bd=0, bg='black', command=lambda:get_key(str(entryIDcle.get())))
+        boutonIDCleValidation.place(x=325*ratioFenetre,y=175*ratioFenetre)
+        textIDKey = Label(fenetre_editeur, text="ID :", font=("Arial", int(24*ratioFenetre)), bg="white")
+        textIDKey.place(x=430*ratioFenetre,y=110*ratioFenetre) 
+        couleurSet = Scale(fenetre_editeur, orient='horizontal', from_=1, to=7, resolution=1, tickinterval=2, length=180*ratioFenetre, label='Couleur', font=("Arial", int(10*ratioFenetre)), bg="white", command=change_color)
+        couleurSet.place(x=575*ratioFenetre,y=150*ratioFenetre)
     elif typeB == 4:
-        textIDTP1 = Label(fenetre_edit_bloc, text="ID départ", font=("Arial", int(24*ratioFenetre)))
-        textIDTP1.place(x=100*ratioFenetre,y=130*ratioFenetre,anchor=CENTER)
-        textIDTP2 = Label(fenetre_edit_bloc, text="ID arrivée", font=("Arial", int(24*ratioFenetre)))
-        textIDTP2.place(x=400*ratioFenetre,y=130*ratioFenetre,anchor=CENTER)
-        entryID1 = Entry(fenetre_edit_bloc, bg="lightgrey", width=int(10*ratioFenetre), font=("Arial", int(24*ratioFenetre)))
-        entryID1.place(x=100*ratioFenetre, y=210*ratioFenetre,anchor=CENTER)
-        entryID2 = Entry(fenetre_edit_bloc, bg="lightgrey", width=int(10*ratioFenetre), font=("Arial", int(24*ratioFenetre)))
-        entryID2.place(x=400*ratioFenetre, y=210*ratioFenetre,anchor=CENTER)
-        boutonIDTPValidation = Button(fenetre_edit_bloc, image=imageOK, relief='groove', bd=0, bg='black', command=lambda:get_tp([int(entryID1.get()),int(entryID2.get())]))
-        boutonIDTPValidation.place(x=250*ratioFenetre,y=240*ratioFenetre,anchor=CENTER)
+        textIDTP1 = Label(fenetre_editeur, text="ID départ", font=("Arial", int(24*ratioFenetre)), bg="white")
+        textIDTP1.place(x=400*ratioFenetre,y=130*ratioFenetre,anchor=CENTER)
+        textIDTP2 = Label(fenetre_editeur, text="ID arrivée", font=("Arial", int(24*ratioFenetre)), bg="white")
+        textIDTP2.place(x=700*ratioFenetre,y=130*ratioFenetre,anchor=CENTER)
+        entryID1 = Entry(fenetre_editeur, bg="lightgrey", width=int(10*ratioFenetre), font=("Arial", int(24*ratioFenetre)))
+        entryID1.place(x=400*ratioFenetre, y=210*ratioFenetre,anchor=CENTER)
+        entryID2 = Entry(fenetre_editeur, bg="lightgrey", width=int(10*ratioFenetre), font=("Arial", int(24*ratioFenetre)))
+        entryID2.place(x=700*ratioFenetre, y=210*ratioFenetre,anchor=CENTER)
+        boutonIDTPValidation = Button(fenetre_editeur, image=imageOK, relief='groove', bd=0, bg='black', command=lambda:get_tp([int(entryID1.get()),int(entryID2.get())]))
+        boutonIDTPValidation.place(x=550*ratioFenetre,y=240*ratioFenetre,anchor=CENTER)
+    calcul_id_utilise()
+    scrolledIDListe.delete("1.0","end")
+    for i in range(len(listeIDUsed)):
+        scrolledIDListe.insert(tk.INSERT,"ID bloc : "+str(listeIDUsed[i]["idAssoc"])+", Type : "+str(listeIDUsed[i]["type"])+", Couleur : "+str(listeIDUsed[i]["couleur"])+", ID niveau : "+str(listeLevelIDUsed[i])+"\n", listeIDUsed[i]["couleur"])
+        colorTextID = listeIDUsed[i]["couleur"]
+        if colorTextID == "white":
+            colorTextID = "black"
+        scrolledIDListe.tag_config(listeIDUsed[i]["couleur"], foreground=colorTextID)
 
 def get_key(id):
     global monde
@@ -698,38 +704,15 @@ def change_color(c): #Change la couleur du bloc selectionner
             break
         indexBloc += 1
 
-def list_ID():
-    global etatEditeur, textTypeBlocSelect, fenetre_list_id
-    if etatEditeur == "pose":
-        etatEditeur = "listeID"
-
-        fenetre_list_id = tk.Toplevel()
-        fenetre_list_id.resizable(False,False)
-        fenetre_list_id.geometry("%dx%d%+d%+d" % (500*ratioFenetre,1000*ratioFenetre,50,50))
-        fenetre_list_id.attributes('-topmost',1)
-        fenetre_list_id.protocol("WM_DELETE_WINDOW", disable_event)
-
-        imageListe = []
-        IDListe = []
-        for niveauTest in monde["niveaux"]:
-            for bloc in monde["niveaux"][niveauTest]:
-                if bloc["type"] != 0 and bloc["type"] != 1 and bloc["type"] != 5:
-                    imageListe.append(bloc["type"])
-                    IDListe.append(bloc["idAssoc"])
-
-        if len(IDListe) > 8:
-            numPage = 
-
-            Label(image = imageListe[index]).place(x=0,y=100*ratioFenetre*i+75*ratioFenetre, anchor=NW)
-            Label(text="ID n° "+str(IDListe[index]), font="Arial, 18").place(x=150,y=100*ratioFenetre*i+75*ratioFenetre, anchor=NW)
-
-
-
-
-
-    elif etatEditeur == "listeID":
-        etatEditeur = "pose"
-        fenetre_list_id.destroy()
+def calcul_id_utilise():
+    global listeIDUsed, listeLevelIDUsed
+    listeIDUsed = []
+    listeLevelIDUsed = []
+    for niveauTest in monde["niveaux"]:
+        for bloc in monde["niveaux"][niveauTest]:
+            if bloc["type"] == 2 or bloc["type"] == 3 or bloc["type"] == 4:
+                listeIDUsed.append(bloc)
+                listeLevelIDUsed.append(niveauTest)
 
 
 ################################################################### Fonctions du Solo ###################################################################
