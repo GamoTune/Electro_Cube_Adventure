@@ -6,7 +6,7 @@ import tkinter as tk, tkinter.messagebox; import tkinter.scrolledtext; from tkin
 ################################################################### Les fonctions de mise en place du programme ###################################################################
 
 def start(): #La fonction "start" permet de déclaré la plus part des variable global
-    global monde, fenetre, etatEditeur, commandMondeSolo, exitCommand, imageResetSoloToggle, imageBoutonPlayTestToggle, imageNotExitTest, imageMonde1Test, imageMonde2Test, imageMonde3Test, imageNotExit, commandMondeEditeur, nombrePixel, imageMonde1Del, imageMonde2Del, imageMonde3Del, bgmenuresultat, imageBoutonEditeurFinish, largeurFenetre, hauteurFenetre, canevas, lienIconeFenetre, etatJeu, nombreCaseY, nombreCaseX, editBloc, racine, imageBoutonPlayTest, bgMenu, imageOK, imageInfoBouton, tailleImage, ratioImage, bgmenuSoloFrame, ratioFenetre, bgMenuEdition, nombreCase, imageBoutonEditeurGommeSelect, imageBoutonEditeurGomme, imageBoutonEditeurPoubelleMonde, imageBoutonEditeurBlocPorte, editTest, imageMonde1, imageMonde2, imageMonde3, imageResetSolo, imageBoutonEditeurItemCle, imageBoutonEditeurEditBloc, fenetreeditTest, id_level, imageBoutonSolo, imageBoutonEditeur, ligneX, ligneY, imageBoutonEditeurNiveauHaut, imageBoutonEditeurNiveauBas, imageBoutonEditeurNiveauGauche, imageBoutonEditeurNiveauDroite, imageBoutonEditeurTP, imageBoutonEditeurRetour, imageWIP, imageBoutonEditeurPoubelle, imageExit, imageBoutonEditeurBlocSolide, couleurBloc, typeDuBloc, imageBoutonEditeurBlocSpawn, editGomme, id_monde, imageBoutonEditeurInfos
+    global monde, fenetre, etatEditeur, toggleMouvement, creditTexte, pbPlayer, bgMenuCredit, patchNotesTexte, bgMenuMAJ, directionsBinds, theKey, commandMondeSolo, exitCommand, imageResetSoloToggle, imageBoutonPlayTestToggle, imageNotExitTest, imageMonde1Test, imageMonde2Test, imageMonde3Test, imageNotExit, commandMondeEditeur, nombrePixel, imageMonde1Del, imageMonde2Del, imageMonde3Del, bgmenuresultat, imageBoutonEditeurFinish, largeurFenetre, hauteurFenetre, canevas, lienIconeFenetre, etatJeu, nombreCaseY, nombreCaseX, editBloc, racine, imageBoutonPlayTest, bgMenu, imageOK, imageInfoBouton, tailleImage, ratioImage, bgmenuSoloFrame, ratioFenetre, bgMenuEdition, nombreCase, imageBoutonEditeurGommeSelect, imageBoutonEditeurGomme, imageBoutonEditeurPoubelleMonde, imageBoutonEditeurBlocPorte, editTest, imageMonde1, imageMonde2, imageMonde3, imageResetSolo, imageBoutonEditeurItemCle, imageBoutonEditeurEditBloc, id_level, imageBoutonSolo, imageBoutonEditeur, ligneX, ligneY, imageBoutonEditeurNiveauHaut, imageBoutonEditeurNiveauBas, imageBoutonEditeurNiveauGauche, imageBoutonEditeurNiveauDroite, imageBoutonEditeurTP, imageBoutonEditeurRetour, imageWIP, imageBoutonEditeurPoubelle, imageExit, imageBoutonEditeurBlocSolide, couleurBloc, typeDuBloc, imageBoutonEditeurBlocSpawn, editGomme, id_monde, imageBoutonEditeurInfos
 
     ################################################################### Mise en place de la fenetre et du canevas
 
@@ -39,8 +39,6 @@ def start(): #La fonction "start" permet de déclaré la plus part des variable 
 
             "runTime" : [0,0,0]
 
-            "PB" : [0,0,0],
-            
             "reset" : [True,True,True]
 
             }"""
@@ -49,9 +47,11 @@ def start(): #La fonction "start" permet de déclaré la plus part des variable 
     monde = {   "niveaux":{"0,0":[]},
                 "lastCoords":[[],[],[]],
                 "runTime":[0,0,0],
-                "PB":[0,0,0],
-                "reset" : [True,True,True]  
+                "reset" : [True,True,True]
              }
+
+    pbPlayer = [0,0,0]
+
     etatJeu="init"
     etatEditeur = "pose"
     racine = os.getcwd()
@@ -62,6 +62,9 @@ def start(): #La fonction "start" permet de déclaré la plus part des variable 
     #Les coordonnées virtuel sont des coordonnées d'une matrice créée en fonction du nombre de cases à l'écran (défini avec "nombreCase")
     id_level = [0,0] #Numéro du niveau dans le quel on est (quand on change de niveau on ajoute ou retire 1 ) [default : [0,0]]
     id_monde = 1 #Numéro du monde dans le quel on est
+
+    directionsBinds = {'z':"up",'q':"left",'d':"right",'s':"down"}
+    theKey = ""
 
     nombreCase = 48 #En largeurFenetre (default = 48)
     nombrePixel = largeurFenetre/nombreCase #nombrePixel = nombre de pixels par case sur l'écran (en fonction de la résolution de l'écran, le nombre de pixel change pour toujours avoir le même nombre de case à l'écran)
@@ -74,9 +77,9 @@ def start(): #La fonction "start" permet de déclaré la plus part des variable 
     exitCommand = exit_menu
     commandMondeEditeur = lancement_editeur
 
-    fenetreeditTest = False #Permet de vérifier si la fenetre d'edition de bloc de l'éditeur est déjà créer
     couleurBloc = 'black' #Défini la couleur d'un bloc
     typeDuBloc = 0 #Défini quel est le type de bloc (0 = solide, 1 = spawn, 2 = clé, 3 = porte)
+    toggleMouvement = False
     editGomme = False #Permet de vérifier si la gomme de l'éditeur est déjà créer
     editBloc = False #Permet de vérifier si la fenetre de l'édition de bloc de l'éditeur est déjà créer
     editTest = False #Permet de vérifier si la l'édition de bloc de l'éditeur est activer
@@ -127,6 +130,8 @@ def start(): #La fonction "start" permet de déclaré la plus part des variable 
     imageInfoBouton = ImageTk.PhotoImage(Image.open(racine+"assets/images/info_bouton.png").resize((ratioImage, ratioImage)))
     imageBoutonEditeurFinish = ImageTk.PhotoImage(Image.open(racine+"assets/images/bouton_bloc_finish.png").resize((ratioImage, ratioImage)))
     bgmenuresultat = ImageTk.PhotoImage(Image.open(racine+"assets/images/menu_result.png").resize((int(largeurFenetre/2+largeurFenetre/4),int(hauteurFenetre/2+hauteurFenetre/4))))
+    bgMenuMAJ = ImageTk.PhotoImage(Image.open(racine+"assets/images/menu_patch_notes.png").resize((int(largeurFenetre/2+largeurFenetre/4),int(hauteurFenetre/2+hauteurFenetre/4))))
+    bgMenuCredit = ImageTk.PhotoImage(Image.open(racine+"assets/images/menu_credit.png").resize((int(largeurFenetre/2+largeurFenetre/4),int(hauteurFenetre/2+hauteurFenetre/4))))
     lienIconeFenetre = racine+"assets/images/icone.ico"
 
     nombrePixel = largeurFenetre/nombreCase #nombrePixel = nombre de pixels par case sur l'écran (en fonction de la résolution de l'écran, le nombre de pixel change pour toujours avoir le même nombre de case à l'écran)
@@ -135,6 +140,12 @@ def start(): #La fonction "start" permet de déclaré la plus part des variable 
 
     init_keys(fenetre) #Appel la fonction des binds
     menu_principal() #Appe la fonction menu (affichage du main menu)
+
+    with open(racine+"assets/patch_notes.txt", "r") as patchnote:
+        patchNotesTexte = patchnote.read()
+    with open(racine+"assets/credit.txt", "r") as credit:
+        creditTexte = credit.read()
+
 
     fenetre.iconbitmap(lienIconeFenetre)
     canevas.pack()
@@ -176,7 +187,7 @@ def testEtCreeFichier(chemin):
 
 def init_keys(f): #Les Binds
     #Binds direction
-    f.bind("<Key-z>", lambda event : mouvement_joueur ("up"))
+    """f.bind("<Key-z>", lambda event : mouvement_joueur ("up"))
     f.bind("<Key-s>", lambda event : mouvement_joueur ("down"))
     f.bind("<Key-q>", lambda event : mouvement_joueur ("left"))
     f.bind("<Key-d>", lambda event : mouvement_joueur ("right"))
@@ -189,7 +200,10 @@ def init_keys(f): #Les Binds
     f.bind("<Key-Up>", lambda event : mouvement_joueur ("up"))
     f.bind("<Key-Down>", lambda event : mouvement_joueur ("down"))
     f.bind("<Key-Left>", lambda event : mouvement_joueur ("left"))
-    f.bind("<Key-Right>", lambda event : mouvement_joueur ("right"))
+    f.bind("<Key-Right>", lambda event : mouvement_joueur ("right"))"""
+
+    f.bind('<Key>', lambda k: on_key_pressed(k))
+    f.bind('<KeyRelease>', lambda k: on_key_released(k))
 
     #Bind retour
     f.bind("<Escape>", lambda event : exit_key())
@@ -220,10 +234,16 @@ def menu_principal():
     boutonEditeur = Button(menuPrincipalFrame, image=imageBoutonEditeur, relief='groove', bd=0, bg='black', command=menu_edition)
     boutonEditeur.place(x=(largeurFenetre/2+largeurFenetre/4)/2+((largeurFenetre/2+largeurFenetre/4)/2)/2, y=(hauteurFenetre/2+hauteurFenetre/4)/2, anchor=CENTER)
 
+    boutonMAJ = Button(menuPrincipalFrame, image=imageInfoBouton, relief='groove', bd=0, bg='black', command=menu_note_maj)
+    boutonMAJ.place(x=(largeurFenetre/2+largeurFenetre/4)-ratioImage*2, y=(hauteurFenetre/2+hauteurFenetre/4)-ratioImage*2, anchor=CENTER)
+
     boutonExit = Button(menuPrincipalFrame, image=imageExit, relief='groove', bd=0, bg='black', command=exit_menu)
     boutonExit.place(x=(largeurFenetre/2+largeurFenetre/4)/2, y=(hauteurFenetre/2+hauteurFenetre/4)/2, anchor=CENTER)
 
-    Label(menuPrincipalFrame, text="Beta 0.2", font=("Arial", int(12*ratioFenetre)), bg='black', fg='white').place(x=(largeurFenetre/2+largeurFenetre/4)/2, y=(hauteurFenetre/2+hauteurFenetre/4)-10, anchor=CENTER)
+    boutonCredit = Button(menuPrincipalFrame, image=imageInfoBouton, relief='groove', bd=0, bg='black', command=menu_credit)
+    boutonCredit.place(x=ratioImage*2, y=(hauteurFenetre/2+hauteurFenetre/4)-ratioImage*2, anchor=CENTER)
+
+    Label(menuPrincipalFrame, text="Version 0.3", font=("Noto Mono", int(12*ratioFenetre)), bg='black', fg='white').place(x=(largeurFenetre/2+largeurFenetre/4)/2, y=(hauteurFenetre/2+hauteurFenetre/4)-10, anchor=CENTER)
 
 def menu_edition():
     global menuEditionFrame,etatJeu, boutonEditeurMonde1, boutonEditeurMonde2, boutonEditeurMonde3, boutonExitEdit, boutonEditPlayTest
@@ -251,7 +271,7 @@ def menu_edition():
     boutonEditPlayTest.place(x=(largeurFenetre/2+largeurFenetre/4)/2, y=(hauteurFenetre/2+hauteurFenetre/4)-(hauteurFenetre/2+hauteurFenetre/4)/1.37, anchor=CENTER)
 
     boutonEditeurInfo = Button(menuEditionFrame, image=imageBoutonEditeurInfos, relief='groove', bd=0, bg='black', command=info_editeur)
-    boutonEditeurInfo.place(x=(largeurFenetre/2+largeurFenetre/4)-ratioImage*2,y=ratioImage*2, anchor=CENTER)
+    boutonEditeurInfo.place(x=(largeurFenetre/2+largeurFenetre/4)-ratioImage*2, y=ratioImage*2, anchor=CENTER)
 
 def menu_solo():
     global menuSoloFrame,etatJeu, boutonSoloMonde1, boutonSoloMonde2, boutonSoloMonde3, boutonExitSolo, boutonSoloReset
@@ -279,16 +299,38 @@ def menu_solo():
     boutonSoloReset.place(x=(largeurFenetre/2+largeurFenetre/4)/2, y=(hauteurFenetre/2+hauteurFenetre/4)-(hauteurFenetre/2+hauteurFenetre/4)/1.37, anchor=CENTER)
 
 def menu_resultat():
-    global menuResultatFrame, etatJeu
-    
+    global menuResultatFrame
+
     menuResultatFrame = Frame(fenetre, width=largeurFenetre/2+largeurFenetre/4, height=hauteurFenetre/2+hauteurFenetre/4 ,bg='black')
     menuResultatFrame.place(x=largeurFenetre/2, y=hauteurFenetre/2,anchor=CENTER)
 
     Label(menuResultatFrame, image=bgmenuresultat).place(x=(largeurFenetre/2+largeurFenetre/4)/2, y=(hauteurFenetre/2+hauteurFenetre/4)/2, anchor=CENTER)
-    Label(menuResultatFrame, text=("Temps de la Run : "+str(monde["runTime"][id_monde-1])+" s"), font=("Arial", int(30*ratioFenetre)), bg='black', fg='white').place(x=(largeurFenetre/2+largeurFenetre/4)/2, y=(hauteurFenetre/2+hauteurFenetre/4)/2, anchor=CENTER)
-    Label(menuResultatFrame, text=("Meilleur temps : "+str(monde["PB"][id_monde-1])+" s"), font=("Arial", int(30*ratioFenetre)), bg='black', fg='white').place(x=(largeurFenetre/2+largeurFenetre/4)/2, y=(hauteurFenetre/2+hauteurFenetre/4)/2+100*ratioFenetre, anchor=CENTER)
-    Label(menuResultatFrame, text=(messageScore), font=("Arial", int(30*ratioFenetre)), bg='black', fg='white').place(x=(largeurFenetre/2+largeurFenetre/4)/2, y=(hauteurFenetre/2+hauteurFenetre/4)/2-100*ratioFenetre, anchor=CENTER)
-    Button(menuResultatFrame, image=imageExit, relief='groove', bd=0, bg='#ffffff', command=exit_menu).place(x=(largeurFenetre/2+largeurFenetre/4)/2,y=(hauteurFenetre/2+hauteurFenetre/4)-ratioImage, anchor=CENTER) #boutonEditeurExit
+    Label(menuResultatFrame, text=("Temps de la Run : "+str(monde["runTime"][id_monde-1])+" s"), font=("Noto Mono", int(30*ratioFenetre)), bg='black', fg='white').place(x=(largeurFenetre/2+largeurFenetre/4)/2, y=(hauteurFenetre/2+hauteurFenetre/4)/2, anchor=CENTER)
+    Label(menuResultatFrame, text=("Meilleur temps : "+str(pbPlayer[id_monde-1])+" s"), font=("Noto Mono", int(30*ratioFenetre)), bg='black', fg='white').place(x=(largeurFenetre/2+largeurFenetre/4)/2, y=(hauteurFenetre/2+hauteurFenetre/4)/2+100*ratioFenetre, anchor=CENTER)
+    Label(menuResultatFrame, text=(messageScore), font=("Noto Mono", int(30*ratioFenetre)), bg='black', fg='white').place(x=(largeurFenetre/2+largeurFenetre/4)/2, y=(hauteurFenetre/2+hauteurFenetre/4)/2-100*ratioFenetre, anchor=CENTER)
+    Button(menuResultatFrame, image=imageExit, relief='groove', bd=0, bg='black', command=exit_menu).place(x=(largeurFenetre/2+largeurFenetre/4)/2,y=(hauteurFenetre/2+hauteurFenetre/4)-ratioImage, anchor=CENTER) #boutonEditeurExit
+
+def menu_note_maj():
+    global menuNoteMAJFrame, etatJeu
+    etatJeu = "menuNoteMAJ"
+
+    menuNoteMAJFrame = Frame(fenetre, width=largeurFenetre/2+largeurFenetre/4, height=hauteurFenetre/2+hauteurFenetre/4 ,bg='black')
+    menuNoteMAJFrame.place(x=largeurFenetre/2, y=hauteurFenetre/2,anchor=CENTER)
+
+    Label(menuNoteMAJFrame, image=bgMenuMAJ).place(x=(largeurFenetre/2+largeurFenetre/4)/2, y=(hauteurFenetre/2+hauteurFenetre/4)/2, anchor=CENTER)
+    Button(menuNoteMAJFrame, image=imageExit, relief='groove', bd=0, bg='black', command=exit_menu).place(x=(largeurFenetre/2+largeurFenetre/4)/2,y=(hauteurFenetre/2+hauteurFenetre/4)-ratioImage, anchor=CENTER) #boutonEditeurExit
+    Label(menuNoteMAJFrame, text=patchNotesTexte, font=("Noto Mono", int(24*ratioFenetre)), bg="black", fg="white").place(x=(largeurFenetre/2+largeurFenetre/4)/2, y=(hauteurFenetre/2+hauteurFenetre/4)/2, anchor=CENTER)
+
+def menu_credit():
+    global menuNoteCreditFrame, etatJeu
+    etatJeu = "menuCredit"
+
+    menuNoteCreditFrame = Frame(fenetre, width=largeurFenetre/2+largeurFenetre/4, height=hauteurFenetre/2+hauteurFenetre/4 ,bg='black')
+    menuNoteCreditFrame.place(x=largeurFenetre/2, y=hauteurFenetre/2,anchor=CENTER)
+
+    Label(menuNoteCreditFrame, image=bgMenuCredit).place(x=(largeurFenetre/2+largeurFenetre/4)/2, y=(hauteurFenetre/2+hauteurFenetre/4)/2, anchor=CENTER)
+    Button(menuNoteCreditFrame, image=imageExit, relief='groove', bd=0, bg='black', command=exit_menu).place(x=(largeurFenetre/2+largeurFenetre/4)/2,y=(hauteurFenetre/2+hauteurFenetre/4)-ratioImage, anchor=CENTER) #boutonEditeurExit
+    Label(menuNoteCreditFrame, text=creditTexte, font=("Noto Mono", int(24*ratioFenetre)), bg="black", fg="white").place(x=(largeurFenetre/2+largeurFenetre/4)/2, y=(hauteurFenetre/2+hauteurFenetre/4)/2, anchor=CENTER)
 
 def exit_menu():
     global etatJeu
@@ -307,8 +349,15 @@ def exit_menu():
             menuResultatFrame.destroy()
             etatJeu="menuSolo"
 
-        case _:
-            exit_mode()
+        case "menuNoteMAJ":
+            menuNoteMAJFrame.destroy()
+            etatJeu="menuPrincipal"
+        
+        case "menuCredit":
+            menuNoteCreditFrame.destroy()
+            etatJeu="menuPrincipal"
+
+        case _: exit_mode()
 
 def exit_mode():
     global etatJeu
@@ -357,7 +406,7 @@ def lancement_editeur(id):
     Button(fenetre_editeur, image=imageBoutonEditeurNiveauDroite, relief='groove', bd=0, bg='#ffffff', command=lambda:change_level("right")).place(x=ratioImage*2+ratioImage/2,y=ratioImage*3+ratioImage/2, anchor=CENTER) #bouton_niveau_right
     Button(fenetre_editeur, image=imageBoutonEditeurPoubelleMonde, relief='groove', bd=0, bg='#ffffff', command=del_all_level).place(x=ratioImage*2+ratioImage/2,y=ratioImage+ratioImage/2, anchor=CENTER) #boutonEditeurDellAll
     Button(fenetre_editeur, image=imageExit, relief='groove', bd=0, bg='#ffffff', command=exit_editeur).place(x=ratioImage+ratioImage/2,y=ratioImage*5+ratioImage/2, anchor=CENTER) #boutonEditeurExit
-    numeroNiveau = Label(fenetre_editeur, text=id_level, font=("Arial", int(30*ratioFenetre)), bg='#ffffff') #Affichage du numéro du niveau actuel
+    numeroNiveau = Label(fenetre_editeur, text=id_level, font=("Noto Mono", int(24*ratioFenetre)), bg='#ffffff') #Affichage du numéro du niveau actuel
     numeroNiveau.place(x=ratioImage+ratioImage/2,y=ratioImage*3+ratioImage/2, anchor=CENTER) #numeroNiveau
     Button(fenetre_editeur, image=imageBoutonEditeurBlocSolide, relief='groove', bd=0, bg='#ffffff', command=lambda:type_bloc("solide")).place(x=ratioImage/2,y=ratioImage*2+ratioImage/2, anchor=CENTER) #bouton_bloc_solide
     Button(fenetre_editeur, image=imageBoutonEditeurBlocSpawn, relief='groove', bd=0, bg='#ffffff', command=lambda:type_bloc("spawn")).place(x=ratioImage*2+ratioImage/2,y=ratioImage*2+ratioImage/2, anchor=CENTER) #bouton_bloc_spawn
@@ -368,15 +417,15 @@ def lancement_editeur(id):
     Button(fenetre_editeur, image=imageBoutonEditeurBlocPorte, relief='groove', bd=0, bg='#ffffff', command=lambda:type_bloc("porte")).place(x=ratioImage*2+ratioImage/2,y=ratioImage*5+ratioImage/2, anchor=CENTER) #bouton_bloc_port
     Button(fenetre_editeur, image=imageBoutonEditeurEditBloc, relief='groove', bd=0, bg='#ffffff', command=set_edit).place(x=ratioImage+ratioImage/2,y=ratioImage+ratioImage/2, anchor=CENTER) #bouton_edit
     Button(fenetre_editeur, image=imageInfoBouton, relief='groove', bd=0, bg='#ffffff').place(x=ratioImage/2,y=ratioImage/2, anchor=CENTER) #bouton_edit
-    message_editeur = Label(fenetre_editeur, text="", font=("Arial", int(25*ratioFenetre)), bg='#ffffff' ) #Affiche du type de bloc / erreur / info général
+    message_editeur = Label(fenetre_editeur, text="", font=("Noto Mono", int(25*ratioFenetre)), bg='#ffffff' ) #Affiche du type de bloc / erreur / info général
     message_editeur.place(x=ratioImage+ratioImage/2,y=ratioImage*6+ratioImage/2, anchor=CENTER) #message_editeur
 
-    Label(fenetre_editeur, text="Edit Object", font=("Arial", int(32*ratioFenetre)), bg="white").place(x=ratioImage*2+ratioImage/2+300*ratioFenetre,y=20*ratioFenetre, anchor=CENTER)
-    Label(fenetre_editeur, text="Type Bloc : ", font=("Arial", int(24*ratioFenetre)), bg="white").place(x=325*ratioFenetre, y=65*ratioFenetre)
-    textTypeBlocSelect = Label(fenetre_editeur, text="None", font=("Arial", int(24*ratioFenetre)), bg="white")
+    Label(fenetre_editeur, text="Edit Object", font=("Noto Mono", int(32*ratioFenetre)), bg="white").place(x=ratioImage*2+ratioImage/2+300*ratioFenetre,y=20*ratioFenetre, anchor=CENTER)
+    Label(fenetre_editeur, text="Type Bloc : ", font=("Noto Mono", int(24*ratioFenetre)), bg="white").place(x=325*ratioFenetre, y=65*ratioFenetre)
+    textTypeBlocSelect = Label(fenetre_editeur, text="None", font=("Noto Mono", int(24*ratioFenetre)), bg="white")
     textTypeBlocSelect.place(x=575*ratioFenetre, y=65*ratioFenetre)
 
-    Label(fenetre_editeur, text="Liste ID", font=("Arial", int(28*ratioFenetre)), bg="white").place(x=ratioImage*2+ratioImage/2+300*ratioFenetre,y=325*ratioFenetre, anchor=CENTER)
+    Label(fenetre_editeur, text="Liste ID", font=("Noto Mono", int(28*ratioFenetre)), bg="white").place(x=ratioImage*2+ratioImage/2+300*ratioFenetre,y=325*ratioFenetre, anchor=CENTER)
 
     scrolledIDListe = tkinter.scrolledtext.ScrolledText(master = fenetre_editeur,wrap = tk.WORD,width = int(60*ratioFenetre),height = int(20*ratioFenetre), font=(int(14*ratioFenetre)))
     scrolledIDListe.place(x=300*ratioFenetre,y=350*ratioFenetre)
@@ -406,8 +455,9 @@ def lancement_solo(id):
         affichage_niveau()
         temps = 0
         chrono()
+        set_direction()
         joueur = canevas.create_rectangle(0, 0, nombrePixel, nombrePixel, fill='blue', width=0) #Création du joueur
-        canevas.move(joueur,posjxstart*nombrePixel, posjystart*nombrePixel) #Déplacement du joueur au coordonnées d'apparition
+        canevas.moveto(joueur,posjxstart*nombrePixel, posjystart*nombrePixel) #Déplacement du joueur au coordonnées d'apparition
         positionJoueur = [posjxstart, posjystart] #0 = x & 1 = y #Actualisation des position du joueur sur la grille
     except:
         etatJeu = "menuSolo"
@@ -453,17 +503,21 @@ def exit_editeur():
     menuEditionFrame.place(x=largeurFenetre/2, y=hauteurFenetre/2,anchor=CENTER)
 
 def exit_solo():
-    global etatJeu, monde
+    global etatJeu, monde, toggleMouvement
     calcul_temps()
-    monde["lastCoords"][id_monde-1] = positionJoueur, id_level
-    print(monde["lastCoords"][id_monde-1])
+    #monde["lastCoords"][id_monde-1] = [[int(str(positionJoueur[0])),int(str(positionJoueur[1]))], id_level]
+    monde["lastCoords"][id_monde-1] = [[int(str(positionJoueur[0])), int(str(positionJoueur[1]))], [id_level[0], id_level[1]]]
     save(id_monde)
     cacher_niveau()
     fenetre.after_cancel(boucleTemps)
+    fenetre.after_cancel(boucleDirection)
     menuPrincipalFrame.place(x=largeurFenetre/2, y=hauteurFenetre/2,anchor=CENTER)
     menuSoloFrame.place(x=largeurFenetre/2, y=hauteurFenetre/2,anchor=CENTER)
     canevas.delete(joueur)
     etatJeu = "menuSolo"
+    if toggleMouvement:
+        toggleMouvement = False
+        fenetre.after_cancel(boubleMouvement)
     positionJoueur.clear()
 
 def exit_test_editeur():
@@ -640,22 +694,22 @@ def config_edit(typeB):
         pass
 
     if typeB == 2 or typeB == 3:
-        entryIDcle = Entry(fenetre_editeur, bg="lightgrey", width=int(10*ratioFenetre), font=("Arial", int(24*ratioFenetre)))
+        entryIDcle = Entry(fenetre_editeur, bg="lightgrey", width=int(10*ratioFenetre), font=("Noto Mono", int(24*ratioFenetre)))
         entryIDcle.place(x=575*ratioFenetre, y=110*ratioFenetre)
         boutonIDCleValidation = Button(fenetre_editeur, image=imageOK, relief='groove', bd=0, bg='black', command=lambda:get_key(str(entryIDcle.get())))
         boutonIDCleValidation.place(x=325*ratioFenetre,y=175*ratioFenetre)
-        textIDKey = Label(fenetre_editeur, text="ID :", font=("Arial", int(24*ratioFenetre)), bg="white")
+        textIDKey = Label(fenetre_editeur, text="ID :", font=("Noto Mono", int(24*ratioFenetre)), bg="white")
         textIDKey.place(x=430*ratioFenetre,y=110*ratioFenetre) 
-        couleurSet = Scale(fenetre_editeur, orient='horizontal', from_=1, to=7, resolution=1, tickinterval=2, length=180*ratioFenetre, label='Couleur', font=("Arial", int(10*ratioFenetre)), bg="white", command=change_color)
+        couleurSet = Scale(fenetre_editeur, orient='horizontal', from_=1, to=7, resolution=1, tickinterval=2, length=180*ratioFenetre, label='Couleur', font=("Noto Mono", int(10*ratioFenetre)), bg="white", command=change_color)
         couleurSet.place(x=575*ratioFenetre,y=150*ratioFenetre)
     elif typeB == 4:
-        textIDTP1 = Label(fenetre_editeur, text="ID départ", font=("Arial", int(24*ratioFenetre)), bg="white")
+        textIDTP1 = Label(fenetre_editeur, text="ID départ", font=("Noto Mono", int(24*ratioFenetre)), bg="white")
         textIDTP1.place(x=400*ratioFenetre,y=130*ratioFenetre,anchor=CENTER)
-        textIDTP2 = Label(fenetre_editeur, text="ID arrivée", font=("Arial", int(24*ratioFenetre)), bg="white")
+        textIDTP2 = Label(fenetre_editeur, text="ID arrivée", font=("Noto Mono", int(24*ratioFenetre)), bg="white")
         textIDTP2.place(x=700*ratioFenetre,y=130*ratioFenetre,anchor=CENTER)
-        entryID1 = Entry(fenetre_editeur, bg="lightgrey", width=int(10*ratioFenetre), font=("Arial", int(24*ratioFenetre)))
+        entryID1 = Entry(fenetre_editeur, bg="lightgrey", width=int(10*ratioFenetre), font=("Noto Mono", int(24*ratioFenetre)))
         entryID1.place(x=400*ratioFenetre, y=210*ratioFenetre,anchor=CENTER)
-        entryID2 = Entry(fenetre_editeur, bg="lightgrey", width=int(10*ratioFenetre), font=("Arial", int(24*ratioFenetre)))
+        entryID2 = Entry(fenetre_editeur, bg="lightgrey", width=int(10*ratioFenetre), font=("Noto Mono", int(24*ratioFenetre)))
         entryID2.place(x=700*ratioFenetre, y=210*ratioFenetre,anchor=CENTER)
         boutonIDTPValidation = Button(fenetre_editeur, image=imageOK, relief='groove', bd=0, bg='black', command=lambda:get_tp([int(entryID1.get()),int(entryID2.get())]))
         boutonIDTPValidation.place(x=550*ratioFenetre,y=240*ratioFenetre,anchor=CENTER)
@@ -717,78 +771,100 @@ def calcul_id_utilise():
 
 ################################################################### Fonctions du Solo ###################################################################
 
-def mouvement_joueur(direction):
-    global positionJoueur, joueur, id_level
+def on_key_pressed(k):
+    global theKey
+    theKey = k.char
 
+def on_key_released(k):
+    global toggleMouvement, theKey
     if etatJeu == "solo" or etatJeu == "test_editeur":
-        if direction == "up": #Si la direction est egale à "up"
-            posJTestX = positionJoueur[0] #Test de la prochaine position du joueur dans la grille pour x
-            posJTestY = positionJoueur[1]-1 #Test de la prochaine position du joueur dans la grille pour y
-            xyJ = 1 #Indique quel est l'axe qui est demander (0=x et 1=y)
-            posJF = -1 #Donne de combien doit être changer les coordonnées du joueur en fonction de l'axe
-            posMax = 0 #Donne la position max du joueur sur la grille 
-            deplacement = [0, -nombrePixel] #Donne de combien le joueur doit ce déplacer sur la grille
-            tp = [positionJoueur[0],nombreCaseY-1]
+        if k.char == theKey:
+            theKey = ""
+            toggleMouvement = False
+            fenetre.after_cancel(boubleMouvement)
 
-        elif direction == "down":
-            posJTestX = positionJoueur[0]
-            posJTestY = positionJoueur[1]+1
-            xyJ = 1
-            posJF = +1
-            posMax = nombreCaseY-1
-            deplacement = [0, +nombrePixel]
-            tp = [positionJoueur[0],0]
+def set_direction():
+    global direction_mouvement, toggleMouvement, boucleDirection
+    if etatJeu == "solo" or etatJeu == "test_editeur":
+        direction_mouvement = directionsBinds.get(theKey)
+        if not toggleMouvement:
+            if directionsBinds.get(theKey) is not None:
+                toggleMouvement = True
+                mouvement_joueur()
+        boucleDirection = fenetre.after(1, set_direction)
 
-        elif direction == "left":
-            posJTestX = positionJoueur[0]-1
-            posJTestY = positionJoueur[1]
-            xyJ = 0
-            posJF = -1
-            posMax = 0
-            deplacement = [-nombrePixel, 0]
-            tp = [nombreCaseX-1,positionJoueur[1]]
+def mouvement_joueur():
+    global positionJoueur, joueur, id_level, boubleMouvement
+    if direction_mouvement == "up": #Si la direction est egale à "up"
+        posJTestX = positionJoueur[0] #Test de la prochaine position du joueur dans la grille pour x
+        posJTestY = positionJoueur[1]-1 #Test de la prochaine position du joueur dans la grille pour y
+        xyJ = 1 #Indique quel est l'axe qui est demander (0=x et 1=y)
+        posJF = -1 #Donne de combien doit être changer les coordonnées du joueur en fonction de l'axe
+        posMax = 0 #Donne la position max du joueur sur la grille 
+        deplacement = [0, -nombrePixel] #Donne de combien le joueur doit ce déplacer sur la grille
+        tp = [positionJoueur[0],nombreCaseY-1]
 
-        elif direction == "right":
-            posJTestX = positionJoueur[0]+1
-            posJTestY = positionJoueur[1]
-            xyJ = 0
-            posJF = +1
-            posMax = nombreCaseX-1
-            deplacement = [+nombrePixel, 0]
-            tp = [0,positionJoueur[1]]
+    elif direction_mouvement == "down":
+        posJTestX = positionJoueur[0]
+        posJTestY = positionJoueur[1]+1
+        xyJ = 1
+        posJF = +1
+        posMax = nombreCaseY-1
+        deplacement = [0, +nombrePixel]
+        tp = [positionJoueur[0],0]
 
-        indexBloc = 0
-        ok = True
-        for bloc in monde["niveaux"][niveau]:
-            if bloc["x"] == posJTestX and bloc["y"] == posJTestY:
-                if bloc["type"] == 0:
-                    ok = False
+    elif direction_mouvement == "left":
+        posJTestX = positionJoueur[0]-1
+        posJTestY = positionJoueur[1]
+        xyJ = 0
+        posJF = -1
+        posMax = 0
+        deplacement = [-nombrePixel, 0]
+        tp = [nombreCaseX-1,positionJoueur[1]]
 
-                elif bloc["type"] == 2 and bloc["collect"] == 0:
-                    ramasse_cle(indexBloc)
+    elif direction_mouvement == "right":
+        posJTestX = positionJoueur[0]+1
+        posJTestY = positionJoueur[1]
+        xyJ = 0
+        posJF = +1
+        posMax = nombreCaseX-1
+        deplacement = [+nombrePixel, 0]
+        tp = [0,positionJoueur[1]]
+    else: return
 
-                elif bloc["type"] == 3:
-                    ok = ouvre_porte(indexBloc)
+    indexBloc = 0
+    ok = True
+    for bloc in monde["niveaux"][niveau]:
+        if bloc["x"] == posJTestX and bloc["y"] == posJTestY:
+            if bloc["type"] == 0:
+                ok = False
 
-                elif bloc["type"] == 4:
-                    tp_joueur(indexBloc)
-                
-                elif bloc["type"] == 5:
-                    fin_niveau()
-                    return
-            indexBloc += 1
+            elif bloc["type"] == 2 and bloc["collect"] == 0:
+                ramasse_cle(indexBloc)
 
-        if ok == True:
-            if positionJoueur[xyJ] == posMax: #Si la position du joueur est egale à la limite de l'écran (ou de la map)
-                id_level[xyJ] = id_level[xyJ]+int(posJF)
-                cacher_niveau()
-                get_niveau(id_level) #La fonction level_search est appeler
-                affichage_niveau()
-                positionJoueur = tp
-                canevas.moveto(joueur,tp[0]*nombrePixel,tp[1]*nombrePixel)
-            else:
-                canevas.move(joueur, deplacement[0], deplacement[1]) #Le joueur est déplacer sur la case demander
-                positionJoueur[xyJ] = positionJoueur[xyJ]+posJF #Les coordonnées du joueur sont actualiser
+            elif bloc["type"] == 3:
+                ok = ouvre_porte(indexBloc)
+
+            elif bloc["type"] == 4:
+                tp_joueur(indexBloc)
+            
+            elif bloc["type"] == 5:
+                fin_niveau()
+                return
+        indexBloc += 1
+
+    if ok == True:
+        if positionJoueur[xyJ] == posMax: #Si la position du joueur est egale à la limite de l'écran (ou de la map)
+            id_level[xyJ] = id_level[xyJ]+int(posJF)
+            cacher_niveau()
+            get_niveau(id_level) #La fonction level_search est appeler
+            affichage_niveau()
+            positionJoueur = tp
+            canevas.moveto(joueur,tp[0]*nombrePixel,tp[1]*nombrePixel)
+        else:
+            canevas.move(joueur, deplacement[0], deplacement[1]) #Le joueur est déplacer sur la case demander
+            positionJoueur[xyJ] = positionJoueur[xyJ]+posJF #Les coordonnées du joueur sont actualiser
+    boubleMouvement = fenetre.after(45, mouvement_joueur)
 
 def ramasse_cle(indexBloc):
     global monde
@@ -823,14 +899,24 @@ def tp_joueur(indexBloc):
                 except: return
 
 def fin_niveau():
-    global monde, etatJeu
+    global monde, etatJeu, messageScore
     if etatJeu == "solo":
         exit_solo()
         etatJeu = "solo"
+        if monde["reset"][id_monde-1]: #Si le reset du niveau à été effectuer
+            if pbPlayer[id_monde-1] == 0 or monde["runTime"][id_monde-1] < pbPlayer[id_monde-1]:
+                pbPlayer[id_monde-1] = monde["runTime"][id_monde-1]
+                messageScore = "Nouveau Score"
+            else: messageScore = ""
+        else: messageScore = "Ce niveau doit être réinitialisé pour sauvegarder un nouveau score"
         menu_resultat()
         monde["runTime"][id_monde-1] = 0
+        monde["reset"][id_monde-1] = False
         save(id_monde)
         etatJeu = "menuResultat"
+        with open(racine+"assets/data/origine/pb_Joueur.gac", "wb") as fichierMonde:
+            pickle.dump(pbPlayer, fichierMonde)
+        print(monde["lastCoords"])
 
 def chrono():
     global temps, boucleTemps
@@ -838,20 +924,9 @@ def chrono():
     boucleTemps = fenetre.after(1000, chrono)
 
 def calcul_temps():
-    global monde, messageScore
+    global monde
     fenetre.after_cancel(boucleTemps)
     monde["runTime"][id_monde-1] += temps
-    if monde["reset"][id_monde-1]:
-        if monde["PB"][id_monde-1] != 0:
-            if monde["runTime"][id_monde-1] < monde["PB"][id_monde-1]:
-                monde["PB"][id_monde-1] = monde["runTime"][id_monde-1]
-                messageScore = "Nouveau record !"
-            else: messageScore = " "
-        else:
-            monde["PB"][id_monde-1] = monde["runTime"][id_monde-1]
-            messageScore = "Nouveau record !"
-        monde["reset"][id_monde-1] = False
-    else: messageScore = "Ce niveau doit être réinitialisé pour sauvegarder un nouveau score"
 
 
 ################################################################### Fonctions du fonctionnement global du programme ###################################################################
@@ -874,8 +949,9 @@ def get_niveau(id): #Permet de tourver le niveau à charger
     else:
         niveau = id_str
         monde["niveaux"][niveau] = list()
+    print(monde["lastCoords"])
 
-def get_monde(id): #Permet de tourver le monde à charger
+def get_monde(id): #Permet de tourver le monde à chargerf
     global monde
     dossier_data = racine + "assets/data/"
     match etatJeu:
@@ -1011,10 +1087,5 @@ start()
 
 
 """
-va faloir save sur internet parce que quand y a un reset, la save de temps est supp puisqu'elle fait partie du 'monde'
-
-petit bug avec le solo : pas de bloc d'apparition alors qui si (peutetre un bug avec les ids level)
-
-problème frame de la fenetre ID
 
 """

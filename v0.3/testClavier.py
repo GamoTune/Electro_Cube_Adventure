@@ -9,9 +9,8 @@ def init_Tk():
 
 #___________________________________________________________________________________________________________ 
 def init_keys():
-    global theKey,upKeyCount
+    global theKey
     theKey = "up"
-    upKeyCount = 20
     tk_root.bind('<Key>', lambda k: on_key_pressed(k))
     tk_root.bind('<KeyRelease>', lambda k: on_key_released(k))
 
@@ -53,7 +52,7 @@ def updatePlayer():
     if playerY<-playerTailleY: playerY=tk_root.winfo_height()-1
 
     tk_canvas.moveto(joueur,playerX,playerY)
-    tk_root.after(10, updatePlayer)
+    tk_root.after(35, updatePlayer)
 #___________________________________________________________________________________________________________ 
 init_Tk()
 init_keys()
