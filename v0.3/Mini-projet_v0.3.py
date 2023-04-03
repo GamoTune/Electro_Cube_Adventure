@@ -6,7 +6,7 @@ import tkinter as tk, tkinter.messagebox; import tkinter.scrolledtext; from tkin
 ################################################################### Les fonctions de mise en place du programme ###################################################################
 
 def start(): #La fonction "start" permet de déclaré la plus part des variable global
-    global monde, fenetre, etatEditeur, toggleMouvement, creditTexte, pbPlayer, bgMenuCredit, patchNotesTexte, bgMenuMAJ, directionsBinds, theKey, commandMondeSolo, exitCommand, imageResetSoloToggle, imageBoutonPlayTestToggle, imageNotExitTest, imageMonde1Test, imageMonde2Test, imageMonde3Test, imageNotExit, commandMondeEditeur, nombrePixel, imageMonde1Del, imageMonde2Del, imageMonde3Del, bgmenuresultat, imageBoutonEditeurFinish, largeurFenetre, hauteurFenetre, canevas, lienIconeFenetre, etatJeu, nombreCaseY, nombreCaseX, editBloc, racine, imageBoutonPlayTest, bgMenu, imageOK, imageInfoBouton, tailleImage, ratioImage, bgmenuSoloFrame, ratioFenetre, bgMenuEdition, nombreCase, imageBoutonEditeurGommeSelect, imageBoutonEditeurGomme, imageBoutonEditeurPoubelleMonde, imageBoutonEditeurBlocPorte, editTest, imageMonde1, imageMonde2, imageMonde3, imageResetSolo, imageBoutonEditeurItemCle, imageBoutonEditeurEditBloc, id_level, imageBoutonSolo, imageBoutonEditeur, ligneX, ligneY, imageBoutonEditeurNiveauHaut, imageBoutonEditeurNiveauBas, imageBoutonEditeurNiveauGauche, imageBoutonEditeurNiveauDroite, imageBoutonEditeurTP, imageBoutonEditeurRetour, imageWIP, imageBoutonEditeurPoubelle, imageExit, imageBoutonEditeurBlocSolide, couleurBloc, typeDuBloc, imageBoutonEditeurBlocSpawn, editGomme, id_monde, imageBoutonEditeurInfos
+    global monde, fenetre, etatEditeur, toggleMouvement, freezeEscape, creditTexte, pbPlayer, bgMenuCredit, patchNotesTexte, bgMenuMAJ, directionsBinds, theKey, commandMondeSolo, exitCommand, imageResetSoloToggle, imageBoutonPlayTestToggle, imageNotExitTest, imageMonde1Test, imageMonde2Test, imageMonde3Test, imageNotExit, commandMondeEditeur, nombrePixel, imageMonde1Del, imageMonde2Del, imageMonde3Del, bgmenuresultat, imageBoutonEditeurFinish, largeurFenetre, hauteurFenetre, canevas, lienIconeFenetre, etatJeu, nombreCaseY, nombreCaseX, racine, imageBoutonPlayTest, bgMenu, imageOK, imageInfoBouton, tailleImage, ratioImage, bgmenuSoloFrame, ratioFenetre, bgMenuEdition, nombreCase, imageBoutonEditeurGommeSelect, imageBoutonEditeurGomme, imageBoutonEditeurPoubelleMonde, imageBoutonEditeurBlocPorte, imageMonde1, imageMonde2, imageMonde3, imageResetSolo, imageBoutonEditeurItemCle, imageBoutonEditeurEditBloc, id_level, imageBoutonSolo, imageBoutonEditeur, ligneX, ligneY, imageBoutonEditeurNiveauHaut, imageBoutonEditeurNiveauBas, imageBoutonEditeurNiveauGauche, imageBoutonEditeurNiveauDroite, imageBoutonEditeurTP, imageBoutonEditeurRetour, imageWIP, imageBoutonEditeurPoubelle, imageExit, imageBoutonEditeurBlocSolide, couleurBloc, typeDuBloc, imageBoutonEditeurBlocSpawn, id_monde, imageBoutonEditeurInfos
 
     ################################################################### Mise en place de la fenetre et du canevas
 
@@ -35,7 +35,7 @@ def start(): #La fonction "start" permet de déclaré la plus part des variable 
                                 {"idAssoc" : 0, "idTk":0, "x":1, "y":1, "type":9, "couleur":"red", "collect":0}
                         ]
                     },
-            "lastCoords":[[],[],[]],
+            "lastCoords":[[],[]],
 
             "runTime" : [0,0,0]
 
@@ -45,12 +45,12 @@ def start(): #La fonction "start" permet de déclaré la plus part des variable 
 
 
     monde = {   "niveaux":{"0,0":[]},
-                "lastCoords":[[],[],[]],
+                "lastCoords":[[],[]],
                 "runTime":[0,0,0],
                 "reset" : [True,True,True]
              }
 
-    pbPlayer = [0,0,0]
+    
 
     etatJeu="init"
     etatEditeur = "pose"
@@ -58,6 +58,16 @@ def start(): #La fonction "start" permet de déclaré la plus part des variable 
     racine = racine.replace("\\", "/" )
     racine = racine+str("/")
     init_dossiers_et_fichiers(racine)
+
+
+    if os.path.exists(racine+"assets/origine/pb_Joueur.gac"):
+        with open(racine+"assets/origine/pb_Joueur.gac", "rb") as fichierPB:
+            pbPlayer = pickle.load(fichierPB)
+    else: 
+        """with open(racine+"assets/data/origine/pb_Joueur.gac", "wb") as fichierMonde:
+            pickle.dump(pbPlayer, fichierMonde)"""
+        pbPlayer = [0,0,0]
+
 
     #Les coordonnées virtuel sont des coordonnées d'une matrice créée en fonction du nombre de cases à l'écran (défini avec "nombreCase")
     id_level = [0,0] #Numéro du niveau dans le quel on est (quand on change de niveau on ajoute ou retire 1 ) [default : [0,0]]
@@ -80,9 +90,7 @@ def start(): #La fonction "start" permet de déclaré la plus part des variable 
     couleurBloc = 'black' #Défini la couleur d'un bloc
     typeDuBloc = 0 #Défini quel est le type de bloc (0 = solide, 1 = spawn, 2 = clé, 3 = porte)
     toggleMouvement = False
-    editGomme = False #Permet de vérifier si la gomme de l'éditeur est déjà créer
-    editBloc = False #Permet de vérifier si la fenetre de l'édition de bloc de l'éditeur est déjà créer
-    editTest = False #Permet de vérifier si la l'édition de bloc de l'éditeur est activer
+    freezeEscape = False
     #Import des images
     ratioFenetre = largeurFenetre/2560 #Calcule d'un ratio entre la résolution utilisé par l'utilisateur et la résolution utilisé pour mettre en place toutes les position d'image
     tailleImage = 100
@@ -334,30 +342,31 @@ def menu_credit():
 
 def exit_menu():
     global etatJeu
-    match etatJeu:
-        case "menuPrincipal": fenetre.destroy()
+    if not freezeEscape:
+        match etatJeu:
+            case "menuPrincipal": fenetre.destroy()
 
-        case "menuEdition":
-            menuEditionFrame.place_forget()
-            etatJeu="menuPrincipal"
+            case "menuEdition":
+                menuEditionFrame.destroy()
+                etatJeu="menuPrincipal"
 
-        case "menuSolo":
-            menuSoloFrame.place_forget()
-            etatJeu="menuPrincipal"
+            case "menuSolo":
+                menuSoloFrame.destroy()
+                etatJeu="menuPrincipal"
 
-        case "menuResultat":
-            menuResultatFrame.destroy()
-            etatJeu="menuSolo"
+            case "menuResultat":
+                menuResultatFrame.destroy()
+                etatJeu="menuSolo"
 
-        case "menuNoteMAJ":
-            menuNoteMAJFrame.destroy()
-            etatJeu="menuPrincipal"
-        
-        case "menuCredit":
-            menuNoteCreditFrame.destroy()
-            etatJeu="menuPrincipal"
+            case "menuNoteMAJ":
+                menuNoteMAJFrame.destroy()
+                etatJeu="menuPrincipal"
 
-        case _: exit_mode()
+            case "menuCredit":
+                menuNoteCreditFrame.destroy()
+                etatJeu="menuPrincipal"
+
+            case _: exit_mode()
 
 def exit_mode():
     global etatJeu
@@ -431,13 +440,13 @@ def lancement_editeur(id):
     scrolledIDListe.place(x=300*ratioFenetre,y=350*ratioFenetre)
 
 def lancement_solo(id):
-    global id_monde, id_level, etatJeu, positionJoueur, joueur, temps
+    global id_monde, id_level, etatJeu, positionJoueur, joueur, temps, theKey
     etatJeu = "solo"
     id_monde = id
+    theKey = ""
     get_monde(id_monde)
-    try: id_level = [monde["lastCoords"][id_monde-1][1][0], monde["lastCoords"][id_monde-1][1][1]]
-    except:
-        id_level = [0,0]
+    try: id_level = [monde["lastCoords"][1][0], monde["lastCoords"][1][1]]
+    except: id_level = [0,0]
     get_niveau(id_level)
     for bloc in monde["niveaux"][niveau]: #Cherche si un bloc d'apparition du joueur existe dans le niveau [0,0] pour faire aparaitre 
         if bloc["type"] == 1: #Si il existe, les coordonées d'apparition sont mis à jour
@@ -445,8 +454,8 @@ def lancement_solo(id):
             posjystart = bloc["y"]
             break #Quand les coordonnées sont trouver, la boucle s'arrete pour ne pas chercher des coordonnées pour rien
     try:
-        posjxstart = monde["lastCoords"][id_monde-1][0][0]
-        posjystart = monde["lastCoords"][id_monde-1][0][1]
+        posjxstart = monde["lastCoords"][0][0]
+        posjystart = monde["lastCoords"][0][1]
     except:
         pass
     try:
@@ -462,6 +471,7 @@ def lancement_solo(id):
     except:
         etatJeu = "menuSolo"
         tkinter.messagebox.showerror("Erreur", "Il n'y a pas de bloc d'apparition dans ce monde") #Affichage d'un message d'erreur
+    print(pbPlayer)
 
 def lancement_test_edition(id):
     global id_level, etatJeu, joueur, positionJoueur
@@ -506,18 +516,17 @@ def exit_solo():
     global etatJeu, monde, toggleMouvement
     calcul_temps()
     #monde["lastCoords"][id_monde-1] = [[int(str(positionJoueur[0])),int(str(positionJoueur[1]))], id_level]
-    monde["lastCoords"][id_monde-1] = [[int(str(positionJoueur[0])), int(str(positionJoueur[1]))], [id_level[0], id_level[1]]]
+    monde["lastCoords"] = [[int(str(positionJoueur[0])), int(str(positionJoueur[1]))], [id_level[0], id_level[1]]]
     save(id_monde)
     cacher_niveau()
-    fenetre.after_cancel(boucleTemps)
-    fenetre.after_cancel(boucleDirection)
-    menuPrincipalFrame.place(x=largeurFenetre/2, y=hauteurFenetre/2,anchor=CENTER)
-    menuSoloFrame.place(x=largeurFenetre/2, y=hauteurFenetre/2,anchor=CENTER)
-    canevas.delete(joueur)
+    fenetre.after_cancel(boucleTemps) #Arrête la boucle tu chrono
+    fenetre.after_cancel(boucleDirection) #Arrête la boucle qui change la direction
+    menuPrincipalFrame.place(x=largeurFenetre/2, y=hauteurFenetre/2,anchor=CENTER) #Place le menu principal
+    menuSoloFrame.place(x=largeurFenetre/2, y=hauteurFenetre/2,anchor=CENTER) #Place le menu du Solo
+    canevas.delete(joueur) #Supprime le joueur
     etatJeu = "menuSolo"
     if toggleMouvement:
         toggleMouvement = False
-        fenetre.after_cancel(boubleMouvement)
     positionJoueur.clear()
 
 def exit_test_editeur():
@@ -899,7 +908,7 @@ def tp_joueur(indexBloc):
                 except: return
 
 def fin_niveau():
-    global monde, etatJeu, messageScore
+    global monde, etatJeu, messageScore, pbPlayer
     if etatJeu == "solo":
         exit_solo()
         etatJeu = "solo"
@@ -916,7 +925,6 @@ def fin_niveau():
         etatJeu = "menuResultat"
         with open(racine+"assets/data/origine/pb_Joueur.gac", "wb") as fichierMonde:
             pickle.dump(pbPlayer, fichierMonde)
-        print(monde["lastCoords"])
 
 def chrono():
     global temps, boucleTemps
@@ -1031,7 +1039,7 @@ def change_level(direction):
     numeroNiveau.config(text=id_level)
 
 def toggle_reset():
-    global boutonSoloMonde1, boutonSoloMonde2, boutonSoloMonde3, commandMondeSolo, exitCommand, boutonExitSolo
+    global boutonSoloMonde1, boutonSoloMonde2, boutonSoloMonde3, commandMondeSolo, exitCommand, boutonExitSolo, freezeEscape
     if commandMondeSolo != reset_solo:
         commandMondeSolo = reset_solo
         exitCommand = ""
@@ -1040,6 +1048,7 @@ def toggle_reset():
         boutonSoloMonde3.config(image=imageMonde3Del)
         boutonSoloReset.config(image=imageResetSoloToggle)
         boutonExitSolo.config(image=imageNotExit, command=exitCommand)
+        freezeEscape = True
     else:
         commandMondeSolo = lancement_solo
         exitCommand = exit_menu
@@ -1048,6 +1057,7 @@ def toggle_reset():
         boutonSoloMonde3.config(image=imageMonde3)
         boutonSoloReset.config(image=imageResetSolo)
         boutonExitSolo.config(image=imageExit, command=exitCommand)
+        freezeEscape = False
 
 def reset_solo(n):
     global monde
@@ -1060,7 +1070,7 @@ def reset_solo(n):
         toggle_reset()
 
 def toggle_test_editeur():
-    global boutonEditeurMonde1, boutonSoloMonde2, boutonSoloMonde3, commandMondeEditeur, exitCommand, boutonExitEdit
+    global boutonEditeurMonde1, boutonSoloMonde2, boutonSoloMonde3, commandMondeEditeur, exitCommand, boutonExitEdit, freezeEscape
     if commandMondeEditeur != lancement_test_edition:
         commandMondeEditeur = lancement_test_edition
         exitCommand = ""
@@ -1069,6 +1079,7 @@ def toggle_test_editeur():
         boutonEditeurMonde3.config(image=imageMonde3Test)
         boutonEditPlayTest.config(image=imageBoutonPlayTestToggle)
         boutonExitEdit.config(image=imageNotExitTest, command=exitCommand)
+        freezeEscape = True
     else:
         commandMondeEditeur = lancement_editeur
         exitCommand = exit_menu
@@ -1077,6 +1088,7 @@ def toggle_test_editeur():
         boutonEditeurMonde3.config(image=imageMonde3)
         boutonEditPlayTest.config(image=imageBoutonPlayTest)
         boutonExitEdit.config(image=imageExit, command=exitCommand)
+        freezeEscape = False
 
 def wip():
     tkinter.messagebox.showinfo("WIP", "Work In Progress")
