@@ -59,15 +59,14 @@ def start(): #La fonction "start" permet de déclaré la plus part des variable 
     racine = racine+str("/")
     init_dossiers_et_fichiers(racine)
 
-
-    if os.path.exists(racine+"assets/origine/pb_Joueur.gac"):
-        with open(racine+"assets/origine/pb_Joueur.gac", "rb") as fichierPB:
+    pbPlayer = [0,0,0]
+    if os.path.exists(racine+"assets/data/origine/pb_Joueur.gac"):
+        with open(racine+"assets/data/origine/pb_Joueur.gac", "rb") as fichierPB:
             pbPlayer = pickle.load(fichierPB)
     else: 
-        """with open(racine+"assets/data/origine/pb_Joueur.gac", "wb") as fichierMonde:
-            pickle.dump(pbPlayer, fichierMonde)"""
-        pbPlayer = [0,0,0]
-
+        with open(racine+"assets/data/origine/pb_Joueur.gac", "wb") as fichierMonde:
+            pickle.dump(pbPlayer, fichierMonde)
+    print(pbPlayer)
 
     #Les coordonnées virtuel sont des coordonnées d'une matrice créée en fonction du nombre de cases à l'écran (défini avec "nombreCase")
     id_level = [0,0] #Numéro du niveau dans le quel on est (quand on change de niveau on ajoute ou retire 1 ) [default : [0,0]]
@@ -471,7 +470,6 @@ def lancement_solo(id):
     except:
         etatJeu = "menuSolo"
         tkinter.messagebox.showerror("Erreur", "Il n'y a pas de bloc d'apparition dans ce monde") #Affichage d'un message d'erreur
-    print(pbPlayer)
 
 def lancement_test_edition(id):
     global id_level, etatJeu, joueur, positionJoueur
@@ -925,6 +923,7 @@ def fin_niveau():
         etatJeu = "menuResultat"
         with open(racine+"assets/data/origine/pb_Joueur.gac", "wb") as fichierMonde:
             pickle.dump(pbPlayer, fichierMonde)
+        print(pbPlayer)
 
 def chrono():
     global temps, boucleTemps
@@ -957,7 +956,6 @@ def get_niveau(id): #Permet de tourver le niveau à charger
     else:
         niveau = id_str
         monde["niveaux"][niveau] = list()
-    print(monde["lastCoords"])
 
 def get_monde(id): #Permet de tourver le monde à chargerf
     global monde
