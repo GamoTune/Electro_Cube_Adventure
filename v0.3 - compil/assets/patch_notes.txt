@@ -1,0 +1,15 @@
+Patch Notes v0.3
+
+Nouveautes :
+
+- Ajout de la liste des identifients deja utiliser dans l'editeur
+- Ajout du menu 'Patch Notes'
+- Ajout du menu 'Credit'
+
+
+Amelioration / Bug fix :
+
+- Modification de la fenetre d'edition
+- Amelioration des mouvements
+- Fix du compteur de temps
+- Fix d'un bug au chargement d'un niveau deja termine
