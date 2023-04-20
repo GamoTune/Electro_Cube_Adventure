@@ -1,24 +1,28 @@
 #Import des bibliothèques
-import tkinter as tk, tkinter.messagebox; import tkinter.scrolledtext; from tkinter import *; import pickle, os, shutil, webbrowser; from PIL import Image, ImageTk
-
+import tkinter as tk, tkinter.messagebox; import tkinter.scrolledtext; from tkinter import *; import pickle, os, shutil, webbrowser
+try: #Comme PIL n'est pas une bibliothèque installer par défaut, il faut l'ajouter pour que le programme fonctionne.
+    from PIL import Image, ImageTk
+except:
+    os.system('pip install Pillow')
+from PIL import Image, ImageTk
 
 
 ################################################################### Les fonctions de mise en place du programme ###################################################################
 
-def start(): #La fonction "start" permet de déclaré la plus part des variable global
+def start(): #La fonction "start" permet de déclaré la plus part des variable global.
     global monde, fenetre, etatEditeur, toggleMouvement, freezeEscape, creditTexte, pbPlayer, bgMenuCredit, patchNotesTexte, bgMenuMAJ, directionsBinds, theKey, commandMondeSolo, exitCommand, imageResetSoloToggle, imageBoutonPlayTestToggle, imageNotExitTest, imageMonde1Test, imageMonde2Test, imageMonde3Test, imageNotExit, commandMondeEditeur, nombrePixel, imageMonde1Del, imageMonde2Del, imageMonde3Del, bgmenuresultat, imageBoutonEditeurFinish, largeurFenetre, hauteurFenetre, canevas, lienIconeFenetre, etatJeu, nombreCaseY, nombreCaseX, racine, imageBoutonPlayTest, bgMenu, imageOK, imageInfoBouton, tailleImage, ratioImage, bgmenuSoloFrame, ratioFenetre, bgMenuEdition, nombreCase, imageBoutonEditeurGommeSelect, imageBoutonEditeurGomme, imageBoutonEditeurPoubelleMonde, imageBoutonEditeurBlocPorte, imageMonde1, imageMonde2, imageMonde3, imageResetSolo, imageBoutonEditeurItemCle, imageBoutonEditeurEditBloc, id_level, imageBoutonSolo, imageBoutonEditeur, ligneX, ligneY, imageBoutonEditeurNiveauHaut, imageBoutonEditeurNiveauBas, imageBoutonEditeurNiveauGauche, imageBoutonEditeurNiveauDroite, imageBoutonEditeurTP, imageBoutonEditeurRetour, imageWIP, imageBoutonEditeurPoubelle, imageExit, imageBoutonEditeurBlocSolide, couleurBloc, typeDuBloc, imageBoutonEditeurBlocSpawn, id_monde, imageBoutonEditeurInfos
 
-    ################################################################### Mise en place de la fenetre et du canevas
+    ################################################################### Mise en place de la fenetre et du canevas.
 
-    fenetre = Tk()
+    fenetre = Tk() #Instance de la fenetre principal.
 
-    largeurFenetre = fenetre.winfo_screenwidth()
-    hauteurFenetre = fenetre.winfo_screenheight()
+    largeurFenetre = fenetre.winfo_screenwidth() #largeurFenetre contient le nombre de pixel en largeur de l'écran actuel.
+    hauteurFenetre = fenetre.winfo_screenheight() #hauteurFenetre contient le nombre de pixel en hauteur de l'écran actuel.
 
-    fenetre.title("D/ /K")
+    fenetre.title("D/ /K") #Nom de l'application.
     
-    fenetre.attributes('-fullscreen', True)
-    canevas = Canvas(fenetre, width=largeurFenetre, height=hauteurFenetre,bg='#3b3b3b')
+    fenetre.attributes('-fullscreen', True) #La fenetre est en plein écran.
+    canevas = Canvas(fenetre, width=largeurFenetre, height=hauteurFenetre,bg='#3b3b3b') #Instance du Canvas (avec comme paramètre la largeur, la hauteur, et la couleur (ici du gris)).
 
 
     """monde={
@@ -44,56 +48,63 @@ def start(): #La fonction "start" permet de déclaré la plus part des variable 
             }"""
 
 
-    monde = {   "niveaux":{"0,0":[]},
+    monde = {   "niveaux":{"0,0":[]}, 
                 "lastCoords":[[],[]],
                 "runTime":[0,0,0],
                 "reset" : [True,True,True]
-             }
+             } #monde est un dictionnaire qui va contenir toutes les information sur un monde : les blocs dans un niveau, le record de temps du joueur sur le monde...
 
 
-    etatJeu="init"
-    etatEditeur = "pose"
-    racine = os.getcwd()
+    etatJeu="init" #etatJeu est une variable str qui permet au programme de savoir où il en est dans son exécution.
+    etatEditeur = "pose" #etatEditeur est une variable str qui permet à l'éditeur de savoir dans quel mode il est.
+
+    #racine contient le chemain complet du docier dans le quel est le .py du programme.
+    racine = os.getcwd() 
     racine = racine.replace("\\", "/" )
     racine = racine+str("/")
-    init_dossiers_et_fichiers(racine)
+    init_dossiers_et_fichiers(racine) #Appel de la fonction qui permet de recréer les docier qui aurait pu être détruit.
 
-    pbPlayer = [0,0,0]
+    pbPlayer = [0,0,0] #pbPlayer est une liste de 3 entier qui contient le méilleur temps du joueur sur chaque monde.
     if os.path.exists(racine+"assets/data/origine/pb_Joueur.gac"):
         with open(racine+"assets/data/origine/pb_Joueur.gac", "rb") as fichierPB:
             pbPlayer = pickle.load(fichierPB)
     else: 
         with open(racine+"assets/data/origine/pb_Joueur.gac", "wb") as fichierMonde:
             pickle.dump(pbPlayer, fichierMonde)
-    print(pbPlayer)
+    #Si le fichier pb_Joueur existe déjà alors il est charger pour récupérer les temps.
 
-    #Les coordonnées virtuel sont des coordonnées d'une matrice créée en fonction du nombre de cases à l'écran (défini avec "nombreCase")
-    id_level = [0,0] #Numéro du niveau dans le quel on est (quand on change de niveau on ajoute ou retire 1 ) [default : [0,0]]
-    id_monde = 1 #Numéro du monde dans le quel on est
+    #Les coordonnées virtuel sont des coordonnées d'une matrice créée en fonction du nombre de cases à l'écran (défini avec "nombreCase").
+    id_level = [0,0] #Numéro du niveau dans le quel on est (quand on change de niveau on ajoute ou retire 1 ) [default : [0,0]].
+    id_monde = 1 #Numéro du monde dans le quel on est.
 
-    directionsBinds = {'z':"up",'q':"left",'d':"right",'s':"down"}
-    theKey = ""
+    directionsBinds = {'z':"up",'q':"left",'d':"right",'s':"down"} #directionBinds est un dictionnaire qui contient les touches de direction (ex : quand "z" sera appuier, la direction sera "up").
+    theKey = "" #theKey prend la valeur de la dernière touche enfoncer.
 
-    nombreCase = 48 #En largeurFenetre (default = 48)
-    nombrePixel = largeurFenetre/nombreCase #nombrePixel = nombre de pixels par case sur l'écran (en fonction de la résolution de l'écran, le nombre de pixel change pour toujours avoir le même nombre de case à l'écran)
-    nombreCaseX = round(largeurFenetre/nombrePixel) #Le nombre de case en X permet de donner facilement au programme (pour déplacer le joueur d'un coté à un autre par exemple) le nombre de blocs max en X
-    nombreCaseY = round(hauteurFenetre/nombrePixel) #Le nombre de case en Y permet de donner facilement au programme (pour déplacer le joueur d'un coté à un autre par exemple) le nombre de blocs max en Y
-    ligneX = [] #Liste des ID des lignes X crées
-    ligneY = [] #Liste des ID des lignes X crées
+    nombreCase = 48 #nombreCase permet de définir le nombre de case de la grille en largeur (default = 48).
+    nombrePixel = largeurFenetre/nombreCase #nombrePixel = nombre de pixels par case sur l'écran (en fonction de la résolution de l'écran, le nombre de pixel change pour toujours avoir le même nombre de case à l'écran).
+    nombreCaseX = round(largeurFenetre/nombrePixel) #Le nombre de case en X permet de donner facilement au programme le nombre de blocs max en X.
+    nombreCaseY = round(hauteurFenetre/nombrePixel) #Le nombre de case en Y permet de donner facilement au programme le nombre de blocs max en Y.
+    ligneX = [] #Liste des ID des lignes X crées.
+    ligneY = [] #Liste des ID des lignes Y crées.
 
+    #Ces trois variables contiennent l'appel de 3 fonctions. Ces variables seront modifier plus tard dans le programme.
     commandMondeSolo = lancement_solo
     exitCommand = exit_menu
     commandMondeEditeur = lancement_editeur
 
-    couleurBloc = 'black' #Défini la couleur d'un bloc
-    typeDuBloc = 0 #Défini quel est le type de bloc (0 = solide, 1 = spawn, 2 = clé, 3 = porte)
-    toggleMouvement = False
-    freezeEscape = False
+    couleurBloc = 'black' #Défini la couleur d'un bloc.
+    typeDuBloc = 0 #Défini quel est le type de bloc (0 = solide, 1 = spawn, 2 = clé, 3 = porte, 4 = finish, 5 = TP).
+    toggleMouvement = False #Variable qui permet d'utiliser ou non la fonction de déplacement.
+    freezeEscape = False #Variable qui permet ou non de revenir en arrière avec la touche "echap".
+
     #Import des images
-    ratioFenetre = largeurFenetre/2560 #Calcule d'un ratio entre la résolution utilisé par l'utilisateur et la résolution utilisé pour mettre en place toutes les position d'image
-    tailleImage = 100
-    ratioImage = int(tailleImage*ratioFenetre)
-    #Redimentionnement des images pour correspondre à la résolution voulue
+    ratioFenetre = largeurFenetre/2560 #Calcule d'un ratio entre la résolution utilisé par l'utilisateur et la résolution utilisé pour mettre en place toutes les position d'image.
+    tailleImage = 100 #La taille des images carré.
+    ratioImage = int(tailleImage*ratioFenetre) #Calcule d'un ratio pour les image grace au ratioFenetre.
+    #Redimentionnement des images pour correspondre à la résolution voulue.
+    #Pour les images carré, le .resize utilise comme valeur ratioImage.
+    #Pour les images des menu, le .resize utilise comme valeur la largeur de la fenetre et la hauteur.
+    #Ici il est obligatoir d'utiliser en premier ImageTk.PhotoImage car sinon, les image importer avec PIL ne sont pas reconue par tkinter.
     imageBoutonSolo = ImageTk.PhotoImage(Image.open(racine+"assets/images/bouton_solo.png").resize((ratioImage, ratioImage))) 
     imageBoutonEditeur = ImageTk.PhotoImage(Image.open(racine+"assets/images/bouton_editeur.png").resize((ratioImage, ratioImage)))
     imageBoutonEditeurNiveauHaut = ImageTk.PhotoImage(Image.open(racine+"assets/images/fleche_haut.png").resize((ratioImage, ratioImage)))
@@ -140,74 +151,65 @@ def start(): #La fonction "start" permet de déclaré la plus part des variable 
     bgMenuCredit = ImageTk.PhotoImage(Image.open(racine+"assets/images/menu_credit.png").resize((int(largeurFenetre/2+largeurFenetre/4),int(hauteurFenetre/2+hauteurFenetre/4))))
     lienIconeFenetre = racine+"assets/images/icone.ico"
 
-    nombrePixel = largeurFenetre/nombreCase #nombrePixel = nombre de pixels par case sur l'écran (en fonction de la résolution de l'écran, le nombre de pixel change pour toujours avoir le même nombre de case à l'écran)
-    nombreCaseX = round(largeurFenetre/nombrePixel) #Le nombre de case en X permet de donner facilement au programme (pour déplacer le joueur d'un coté à un autre par exemple) le nombre de blocs max en X
-    nombreCaseY = round(hauteurFenetre/nombrePixel) #Le nombre de case en Y permet de donner facilement au programme (pour déplacer le joueur d'un coté à un autre par exemple) le nombre de blocs max en Y
+    nombrePixel = largeurFenetre/nombreCase #nombrePixel = nombre de pixels par case sur l'écran (en fonction de la résolution de l'écran, le nombre de pixel change pour toujours avoir le même nombre de case à l'écran).
+    nombreCaseX = round(largeurFenetre/nombrePixel) #Le nombre de case en X permet de donner facilement au programme (pour déplacer le joueur d'un coté à un autre par exemple) le nombre de blocs max en X.
+    nombreCaseY = round(hauteurFenetre/nombrePixel) #Le nombre de case en Y permet de donner facilement au programme (pour déplacer le joueur d'un coté à un autre par exemple) le nombre de blocs max en Y.
 
-    init_keys(fenetre) #Appel la fonction des binds
-    menu_principal() #Appe la fonction menu (affichage du main menu)
+    init_keys(fenetre) #Appel la fonction des binds.
+    menu_principal() #Appe la fonction menu (affichage du main menu).
 
+    #patchNoteTexte et creditTexte sont 2 variables str qui contiennent le dernier patch note et les crédits du jeu.
     with open(racine+"assets/patch_notes.txt", "r") as patchnote:
         patchNotesTexte = patchnote.read()
     with open(racine+"assets/credit.txt", "r") as credit:
         creditTexte = credit.read()
 
 
-    fenetre.iconbitmap(lienIconeFenetre)
+    fenetre.iconbitmap(lienIconeFenetre) #Change l'icone de la fenetre par l'icone du jeu.
     canevas.pack()
     fenetre.mainloop()
 
-def init_dossiers_et_fichiers(racine):
+def init_dossiers_et_fichiers(racine): #Fonction qui permet d'appeller ea fonction pour recréer les fichier manquan.
+    #Attribution des chemains.
     dossier_data = racine + "assets/data/"
     dossier_editeur = dossier_data + "editeur/"
     dossier_test_editeur = dossier_data + "test_editeur/"
     dossier_solo = dossier_data + "solo/"
     dossier_origine = dossier_data + "origine/"
+
+    fichier_editeur_monde1 = dossier_editeur + "monde1.gac"
+    fichier_editeur_monde2 = dossier_editeur + "monde2.gac"
+    fichier_editeur_monde3 = dossier_editeur + "monde3.gac"
+
+    fichier_origine_monde1 = dossier_origine + "monde1.gac"
+    fichier_origine_monde2 = dossier_origine + "monde2.gac"
+    fichier_origine_monde3 = dossier_origine + "monde3.gac"
+
+    #Appel de la fonction de recréation.
     testEtCreeDossier(dossier_data)
     testEtCreeDossier(dossier_editeur)
     testEtCreeDossier(dossier_test_editeur)
     testEtCreeDossier(dossier_solo)
     testEtCreeDossier(dossier_origine)
 
-    fichier_editeur_monde1 = dossier_editeur + "monde1.gac"
-    fichier_editeur_monde2 = dossier_editeur + "monde2.gac"
-    fichier_editeur_monde3 = dossier_editeur + "monde3.gac"
     testEtCreeFichier(fichier_editeur_monde1)
     testEtCreeFichier(fichier_editeur_monde2)
     testEtCreeFichier(fichier_editeur_monde3)
 
-    fichier_origine_monde1 = dossier_origine + "monde1.gac"
-    fichier_origine_monde2 = dossier_origine + "monde2.gac"
-    fichier_origine_monde3 = dossier_origine + "monde3.gac"
     testEtCreeFichier(fichier_origine_monde1)
     testEtCreeFichier(fichier_origine_monde2)
     testEtCreeFichier(fichier_origine_monde3)
 
-def testEtCreeDossier(chemin):
+def testEtCreeDossier(chemin): #Fonction de recréation des dossier
     if not os.path.exists(chemin):os.mkdir(chemin)
 
-def testEtCreeFichier(chemin):
+def testEtCreeFichier(chemin): #Fonction de recréation des fichiers
     if not os.path.exists(chemin):
         with open(chemin, "wb") as fichierMonde:
             pickle.dump(monde, fichierMonde)
 
 def init_keys(f): #Les Binds
-    #Binds direction
-    """f.bind("<Key-z>", lambda event : mouvement_joueur ("up"))
-    f.bind("<Key-s>", lambda event : mouvement_joueur ("down"))
-    f.bind("<Key-q>", lambda event : mouvement_joueur ("left"))
-    f.bind("<Key-d>", lambda event : mouvement_joueur ("right"))
-
-    f.bind("<Key-Z>", lambda event : mouvement_joueur ("up"))
-    f.bind("<Key-S>", lambda event : mouvement_joueur ("down"))
-    f.bind("<Key-Q>", lambda event : mouvement_joueur ("left"))
-    f.bind("<Key-D>", lambda event : mouvement_joueur ("right"))
-
-    f.bind("<Key-Up>", lambda event : mouvement_joueur ("up"))
-    f.bind("<Key-Down>", lambda event : mouvement_joueur ("down"))
-    f.bind("<Key-Left>", lambda event : mouvement_joueur ("left"))
-    f.bind("<Key-Right>", lambda event : mouvement_joueur ("right"))"""
-
+    #Bind pour les directions
     f.bind('<Key>', lambda k: on_key_pressed(k))
     f.bind('<KeyRelease>', lambda k: on_key_released(k))
 
@@ -225,123 +227,125 @@ def init_keys(f): #Les Binds
 
 ################################################################### Foncitons des menus ###################################################################
 
-def menu_principal():
+def menu_principal(): #Fonction pour mettre en place le menu pricipale.
     global menuPrincipalFrame, etatJeu
-    etatJeu="menuPrincipal"
-    menuPrincipalFrame = Frame(fenetre, width=largeurFenetre/2+largeurFenetre/4, height=hauteurFenetre/2+hauteurFenetre/4 ,bg='black')
+    etatJeu="menuPrincipal" #Modification de l'état du jeu.
+
+    menuPrincipalFrame = Frame(fenetre, width=largeurFenetre/2+largeurFenetre/4, height=hauteurFenetre/2+hauteurFenetre/4 ,bg='black') #La frame du menu pricipal permet de mettre des information dessus et de tout faire disparètre en meme temps.
     menuPrincipalFrame.place(x=largeurFenetre/2, y=hauteurFenetre/2,anchor=CENTER)
 
-    fondMenu = Label(menuPrincipalFrame, image=bgMenu)
+    fondMenu = Label(menuPrincipalFrame, image=bgMenu) #fondMenu affiche l'image de fond du menu.
     fondMenu.place(x=(largeurFenetre/2+largeurFenetre/4)/2, y=(hauteurFenetre/2+hauteurFenetre/4)/2, anchor=CENTER)
 
-    boutonSolo = Button(menuPrincipalFrame, image=imageBoutonSolo, relief='groove', bd=0, bg='black', command=menu_solo)
+    boutonSolo = Button(menuPrincipalFrame, image=imageBoutonSolo, relief='groove', bd=0, bg='black', command=menu_solo) #bouton solo est le bouton pour avoir accés au menu solo.
     boutonSolo.place(x=(largeurFenetre/2+largeurFenetre/4)/2-((largeurFenetre/2+largeurFenetre/4)/2)/2, y=(hauteurFenetre/2+hauteurFenetre/4)/2, anchor=CENTER)
 
-    boutonEditeur = Button(menuPrincipalFrame, image=imageBoutonEditeur, relief='groove', bd=0, bg='black', command=menu_edition)
+    boutonEditeur = Button(menuPrincipalFrame, image=imageBoutonEditeur, relief='groove', bd=0, bg='black', command=menu_edition)#bouton editeur est le bouton pour avoir accés au menu editeur.
     boutonEditeur.place(x=(largeurFenetre/2+largeurFenetre/4)/2+((largeurFenetre/2+largeurFenetre/4)/2)/2, y=(hauteurFenetre/2+hauteurFenetre/4)/2, anchor=CENTER)
 
-    boutonMAJ = Button(menuPrincipalFrame, image=imageInfoBouton, relief='groove', bd=0, bg='black', command=menu_note_maj)
+    boutonMAJ = Button(menuPrincipalFrame, image=imageInfoBouton, relief='groove', bd=0, bg='black', command=menu_note_maj) #boutonMAJ permet de d'avoir le patch notes.
     boutonMAJ.place(x=(largeurFenetre/2+largeurFenetre/4)-ratioImage*2, y=(hauteurFenetre/2+hauteurFenetre/4)-ratioImage*2, anchor=CENTER)
 
-    boutonExit = Button(menuPrincipalFrame, image=imageExit, relief='groove', bd=0, bg='black', command=exit_menu)
+    boutonExit = Button(menuPrincipalFrame, image=imageExit, relief='groove', bd=0, bg='black', command=exit_menu) #boutonExit permet de quitter le jeu
     boutonExit.place(x=(largeurFenetre/2+largeurFenetre/4)/2, y=(hauteurFenetre/2+hauteurFenetre/4)/2, anchor=CENTER)
 
-    boutonCredit = Button(menuPrincipalFrame, image=imageInfoBouton, relief='groove', bd=0, bg='black', command=menu_credit)
+    boutonCredit = Button(menuPrincipalFrame, image=imageInfoBouton, relief='groove', bd=0, bg='black', command=menu_credit) #boutonCredit permet d'avoir les crédit
     boutonCredit.place(x=ratioImage*2, y=(hauteurFenetre/2+hauteurFenetre/4)-ratioImage*2, anchor=CENTER)
 
-    Label(menuPrincipalFrame, text="Version 0.3", font=("Noto Mono", int(12*ratioFenetre)), bg='black', fg='white').place(x=(largeurFenetre/2+largeurFenetre/4)/2, y=(hauteurFenetre/2+hauteurFenetre/4)-10, anchor=CENTER)
+    Label(menuPrincipalFrame, text="Version 1.0", font=("Noto Mono", int(12*ratioFenetre)), bg='black', fg='white').place(x=(largeurFenetre/2+largeurFenetre/4)/2, y=(hauteurFenetre/2+hauteurFenetre/4)-10, anchor=CENTER)#Affichage de la version du jeu
 
-def menu_edition():
+def menu_edition(): #Fonction pour mettre en place le menu de l'éditeur.
     global menuEditionFrame,etatJeu, boutonEditeurMonde1, boutonEditeurMonde2, boutonEditeurMonde3, boutonExitEdit, boutonEditPlayTest
-    etatJeu="menuEdition"
+    etatJeu="menuEdition" #changement de l'état du jeu
 
-    menuEditionFrame = Frame(fenetre, width=largeurFenetre/2+largeurFenetre/4, height=hauteurFenetre/2+hauteurFenetre/4 ,bg='black')
+    menuEditionFrame = Frame(fenetre, width=largeurFenetre/2+largeurFenetre/4, height=hauteurFenetre/2+hauteurFenetre/4 ,bg='black') #Frame du menu éditeur, pareil que pour le menu principal
     menuEditionFrame.place(x=largeurFenetre/2, y=hauteurFenetre/2,anchor=CENTER)
 
-    fondMenuEdition = Label(menuEditionFrame, image=bgMenuEdition)
+    fondMenuEdition = Label(menuEditionFrame, image=bgMenuEdition) #Affiche l'image au fond du menu
     fondMenuEdition.place(x=(largeurFenetre/2+largeurFenetre/4)/2, y=(hauteurFenetre/2+hauteurFenetre/4)/2, anchor=CENTER)
 
-    boutonExitEdit = Button(menuEditionFrame, image=imageExit, relief='groove', bd=0, bg='black', command=exitCommand)
+    boutonExitEdit = Button(menuEditionFrame, image=imageExit, relief='groove', bd=0, bg='black', command=exitCommand) #Permet de revenir au menu pricipal
     boutonExitEdit.place(x=(largeurFenetre/2+largeurFenetre/4)/2, y=(hauteurFenetre/2+hauteurFenetre/4)/2, anchor=CENTER)
 
-    boutonEditeurMonde1 = Button(menuEditionFrame, image=imageMonde1, relief='groove', bd=0, bg='black', command=lambda:commandMondeEditeur(1))
+    boutonEditeurMonde1 = Button(menuEditionFrame, image=imageMonde1, relief='groove', bd=0, bg='black', command=lambda:commandMondeEditeur(1)) #Permet de soit lancer l'éditeur soit de lancer le mode de test le monde 1.
     boutonEditeurMonde1.place(x=(largeurFenetre/2+largeurFenetre/4)/2-((largeurFenetre/2+largeurFenetre/4)/2)/4, y=(hauteurFenetre/2+hauteurFenetre/4)/2, anchor=CENTER)
 
-    boutonEditeurMonde2 = Button(menuEditionFrame, image=imageMonde2, relief='groove', bd=0, bg='black', command=lambda:commandMondeEditeur(2))
+    boutonEditeurMonde2 = Button(menuEditionFrame, image=imageMonde2, relief='groove', bd=0, bg='black', command=lambda:commandMondeEditeur(2)) #Permet de soit lancer l'éditeur soit de lancer le mode de test le monde 2.
     boutonEditeurMonde2.place(x=(largeurFenetre/2+largeurFenetre/4)/2, y=(hauteurFenetre/2+hauteurFenetre/4)/1.37, anchor=CENTER)
 
-    boutonEditeurMonde3 = Button(menuEditionFrame, image=imageMonde3, relief='groove', bd=0, bg='black', command=lambda:commandMondeEditeur(3))
+    boutonEditeurMonde3 = Button(menuEditionFrame, image=imageMonde3, relief='groove', bd=0, bg='black', command=lambda:commandMondeEditeur(3)) #Permet de soit lancer l'éditeur soit de lancer le mode de test le monde 3.
     boutonEditeurMonde3.place(x=(largeurFenetre/2+largeurFenetre/4)/2+((largeurFenetre/2+largeurFenetre/4)/2)/4, y=(hauteurFenetre/2+hauteurFenetre/4)/2, anchor=CENTER)
 
-    boutonEditPlayTest = Button(menuEditionFrame, image=imageBoutonPlayTest, relief='groove', bd=0, bg='black', command=toggle_test_editeur)
+    boutonEditPlayTest = Button(menuEditionFrame, image=imageBoutonPlayTest, relief='groove', bd=0, bg='black', command=toggle_test_editeur) #Permet de changer les 3 bouton de monde pour lancer le mode de test ou l'éditeur.
     boutonEditPlayTest.place(x=(largeurFenetre/2+largeurFenetre/4)/2, y=(hauteurFenetre/2+hauteurFenetre/4)-(hauteurFenetre/2+hauteurFenetre/4)/1.37, anchor=CENTER)
 
-    boutonEditeurInfo = Button(menuEditionFrame, image=imageBoutonEditeurInfos, relief='groove', bd=0, bg='black', command=info_editeur)
+    boutonEditeurInfo = Button(menuEditionFrame, image=imageBoutonEditeurInfos, relief='groove', bd=0, bg='black', command=info_editeur) #Permet d'ouvir la doc de l'éditeur.
     boutonEditeurInfo.place(x=(largeurFenetre/2+largeurFenetre/4)-ratioImage*2, y=ratioImage*2, anchor=CENTER)
 
-def menu_solo():
+def menu_solo(): #Fonction pour mettre en place le menu du solo.
     global menuSoloFrame,etatJeu, boutonSoloMonde1, boutonSoloMonde2, boutonSoloMonde3, boutonExitSolo, boutonSoloReset
-    etatJeu="menuSolo"
+    etatJeu="menuSolo" #Changement de l'état du jeu
 
-    menuSoloFrame = Frame(fenetre, width=largeurFenetre/2+largeurFenetre/4, height=hauteurFenetre/2+hauteurFenetre/4 ,bg='black')
+    menuSoloFrame = Frame(fenetre, width=largeurFenetre/2+largeurFenetre/4, height=hauteurFenetre/2+hauteurFenetre/4 ,bg='black') #Frame du menu solo, pareil que le menu principal.
     menuSoloFrame.place(x=largeurFenetre/2, y=hauteurFenetre/2,anchor=CENTER)
 
-    fondmenuSoloFrame = Label(menuSoloFrame, image=bgmenuSoloFrame)
+    fondmenuSoloFrame = Label(menuSoloFrame, image=bgmenuSoloFrame) #Affiche l'image au fond du menu.
     fondmenuSoloFrame.place(x=(largeurFenetre/2+largeurFenetre/4)/2, y=(hauteurFenetre/2+hauteurFenetre/4)/2, anchor=CENTER)
 
-    boutonExitSolo = Button(menuSoloFrame, image=imageExit, relief='groove', bd=0, bg='black', command=exitCommand)
+    boutonExitSolo = Button(menuSoloFrame, image=imageExit, relief='groove', bd=0, bg='black', command=exitCommand) #Permet de revenir au menu principal.
     boutonExitSolo.place(x=(largeurFenetre/2+largeurFenetre/4)/2, y=(hauteurFenetre/2+hauteurFenetre/4)/2, anchor=CENTER)
 
-    boutonSoloMonde1 = Button(menuSoloFrame, image=imageMonde1, relief='groove', bd=0, bg='black', command=lambda:commandMondeSolo(1))
+    boutonSoloMonde1 = Button(menuSoloFrame, image=imageMonde1, relief='groove', bd=0, bg='black', command=lambda:commandMondeSolo(1)) #Permet de soit lancer le solo soit de réinisialiser le monde 1.
     boutonSoloMonde1.place(x=(largeurFenetre/2+largeurFenetre/4)/2-((largeurFenetre/2+largeurFenetre/4)/2)/4, y=(hauteurFenetre/2+hauteurFenetre/4)/2, anchor=CENTER)
 
-    boutonSoloMonde2 = Button(menuSoloFrame, image=imageMonde2, relief='groove', bd=0, bg='black', command=lambda:commandMondeSolo(2))
+    boutonSoloMonde2 = Button(menuSoloFrame, image=imageMonde2, relief='groove', bd=0, bg='black', command=lambda:commandMondeSolo(2)) #Permet de soit lancer le solo soit de réinisialiser le monde 2.
     boutonSoloMonde2.place(x=(largeurFenetre/2+largeurFenetre/4)/2, y=(hauteurFenetre/2+hauteurFenetre/4)/1.37, anchor=CENTER)
 
-    boutonSoloMonde3 = Button(menuSoloFrame, image=imageMonde3, relief='groove', bd=0, bg='black', command=lambda:commandMondeSolo(3))
+    boutonSoloMonde3 = Button(menuSoloFrame, image=imageMonde3, relief='groove', bd=0, bg='black', command=lambda:commandMondeSolo(3)) #Permet de soit lancer le solo soit de réinisialiser le monde 3.
     boutonSoloMonde3.place(x=(largeurFenetre/2+largeurFenetre/4)/2+((largeurFenetre/2+largeurFenetre/4)/2)/4, y=(hauteurFenetre/2+hauteurFenetre/4)/2, anchor=CENTER)
 
-    boutonSoloReset = Button(menuSoloFrame, image=imageResetSolo, relief='groove', bd=0, bg='black', command=toggle_reset)
+    boutonSoloReset = Button(menuSoloFrame, image=imageResetSolo, relief='groove', bd=0, bg='black', command=toggle_reset) #Permet de changer les 3 bouton de lancement.
     boutonSoloReset.place(x=(largeurFenetre/2+largeurFenetre/4)/2, y=(hauteurFenetre/2+hauteurFenetre/4)-(hauteurFenetre/2+hauteurFenetre/4)/1.37, anchor=CENTER)
 
-def menu_resultat():
+def menu_resultat(): #Fonction pour mettre en place le menu des résultats.
     global menuResultatFrame
 
-    menuResultatFrame = Frame(fenetre, width=largeurFenetre/2+largeurFenetre/4, height=hauteurFenetre/2+hauteurFenetre/4 ,bg='black')
+    menuResultatFrame = Frame(fenetre, width=largeurFenetre/2+largeurFenetre/4, height=hauteurFenetre/2+hauteurFenetre/4 ,bg='black') #Frame comme sur le menu pricipal
     menuResultatFrame.place(x=largeurFenetre/2, y=hauteurFenetre/2,anchor=CENTER)
 
-    Label(menuResultatFrame, image=bgmenuresultat).place(x=(largeurFenetre/2+largeurFenetre/4)/2, y=(hauteurFenetre/2+hauteurFenetre/4)/2, anchor=CENTER)
+    Label(menuResultatFrame, image=bgmenuresultat).place(x=(largeurFenetre/2+largeurFenetre/4)/2, y=(hauteurFenetre/2+hauteurFenetre/4)/2, anchor=CENTER) #Affiche l'image de fond du menu.
+    #Affichage des résulats.
     Label(menuResultatFrame, text=("Temps de la Run : "+str(monde["runTime"][id_monde-1])+" s"), font=("Noto Mono", int(30*ratioFenetre)), bg='black', fg='white').place(x=(largeurFenetre/2+largeurFenetre/4)/2, y=(hauteurFenetre/2+hauteurFenetre/4)/2, anchor=CENTER)
     Label(menuResultatFrame, text=("Meilleur temps : "+str(pbPlayer[id_monde-1])+" s"), font=("Noto Mono", int(30*ratioFenetre)), bg='black', fg='white').place(x=(largeurFenetre/2+largeurFenetre/4)/2, y=(hauteurFenetre/2+hauteurFenetre/4)/2+100*ratioFenetre, anchor=CENTER)
     Label(menuResultatFrame, text=(messageScore), font=("Noto Mono", int(30*ratioFenetre)), bg='black', fg='white').place(x=(largeurFenetre/2+largeurFenetre/4)/2, y=(hauteurFenetre/2+hauteurFenetre/4)/2-100*ratioFenetre, anchor=CENTER)
     Button(menuResultatFrame, image=imageExit, relief='groove', bd=0, bg='black', command=exit_menu).place(x=(largeurFenetre/2+largeurFenetre/4)/2,y=(hauteurFenetre/2+hauteurFenetre/4)-ratioImage, anchor=CENTER) #boutonEditeurExit
 
-def menu_note_maj():
+def menu_note_maj(): #Fonction pour mettre en place le menu du patch notes.
     global menuNoteMAJFrame, etatJeu
-    etatJeu = "menuNoteMAJ"
+    etatJeu = "menuNoteMAJ" #Changement de l'état du jeu.
 
-    menuNoteMAJFrame = Frame(fenetre, width=largeurFenetre/2+largeurFenetre/4, height=hauteurFenetre/2+hauteurFenetre/4 ,bg='black')
+    menuNoteMAJFrame = Frame(fenetre, width=largeurFenetre/2+largeurFenetre/4, height=hauteurFenetre/2+hauteurFenetre/4 ,bg='black') #Frame comme au menu pricipal.
     menuNoteMAJFrame.place(x=largeurFenetre/2, y=hauteurFenetre/2,anchor=CENTER)
 
-    Label(menuNoteMAJFrame, image=bgMenuMAJ).place(x=(largeurFenetre/2+largeurFenetre/4)/2, y=(hauteurFenetre/2+hauteurFenetre/4)/2, anchor=CENTER)
-    Button(menuNoteMAJFrame, image=imageExit, relief='groove', bd=0, bg='black', command=exit_menu).place(x=(largeurFenetre/2+largeurFenetre/4)/2,y=(hauteurFenetre/2+hauteurFenetre/4)-ratioImage, anchor=CENTER) #boutonEditeurExit
-    Label(menuNoteMAJFrame, text=patchNotesTexte, font=("Noto Mono", int(24*ratioFenetre)), bg="black", fg="white").place(x=(largeurFenetre/2+largeurFenetre/4)/2, y=(hauteurFenetre/2+hauteurFenetre/4)/2, anchor=CENTER)
+    Label(menuNoteMAJFrame, image=bgMenuMAJ).place(x=(largeurFenetre/2+largeurFenetre/4)/2, y=(hauteurFenetre/2+hauteurFenetre/4)/2, anchor=CENTER) #Image de fond.
+    Button(menuNoteMAJFrame, image=imageExit, relief='groove', bd=0, bg='black', command=exit_menu).place(x=(largeurFenetre/2+largeurFenetre/4)/2,y=(hauteurFenetre/2+hauteurFenetre/4)-ratioImage, anchor=CENTER) #bouton pour revenir au menu pricipal.
+    Label(menuNoteMAJFrame, text=patchNotesTexte, font=("Noto Mono", int(24*ratioFenetre)), bg="black", fg="white").place(x=(largeurFenetre/2+largeurFenetre/4)/2, y=(hauteurFenetre/2+hauteurFenetre/4)/2, anchor=CENTER) #Texte du patch notes.
 
-def menu_credit():
+def menu_credit(): #Fonction pour mettre en place le menu des crédits.
     global menuNoteCreditFrame, etatJeu
-    etatJeu = "menuCredit"
+    etatJeu = "menuCredit" #Changement de l'état du jeu.
 
-    menuNoteCreditFrame = Frame(fenetre, width=largeurFenetre/2+largeurFenetre/4, height=hauteurFenetre/2+hauteurFenetre/4 ,bg='black')
+    menuNoteCreditFrame = Frame(fenetre, width=largeurFenetre/2+largeurFenetre/4, height=hauteurFenetre/2+hauteurFenetre/4 ,bg='black') #Frame comme au menu pricipal.
     menuNoteCreditFrame.place(x=largeurFenetre/2, y=hauteurFenetre/2,anchor=CENTER)
 
-    Label(menuNoteCreditFrame, image=bgMenuCredit).place(x=(largeurFenetre/2+largeurFenetre/4)/2, y=(hauteurFenetre/2+hauteurFenetre/4)/2, anchor=CENTER)
-    Button(menuNoteCreditFrame, image=imageExit, relief='groove', bd=0, bg='black', command=exit_menu).place(x=(largeurFenetre/2+largeurFenetre/4)/2,y=(hauteurFenetre/2+hauteurFenetre/4)-ratioImage, anchor=CENTER) #boutonEditeurExit
-    Label(menuNoteCreditFrame, text=creditTexte, font=("Noto Mono", int(24*ratioFenetre)), bg="black", fg="white").place(x=(largeurFenetre/2+largeurFenetre/4)/2, y=(hauteurFenetre/2+hauteurFenetre/4)/2, anchor=CENTER)
+    Label(menuNoteCreditFrame, image=bgMenuCredit).place(x=(largeurFenetre/2+largeurFenetre/4)/2, y=(hauteurFenetre/2+hauteurFenetre/4)/2, anchor=CENTER) #Affichage de l'image de fond.
+    Button(menuNoteCreditFrame, image=imageExit, relief='groove', bd=0, bg='black', command=exit_menu).place(x=(largeurFenetre/2+largeurFenetre/4)/2,y=(hauteurFenetre/2+hauteurFenetre/4)-ratioImage, anchor=CENTER) #bouton pour revenir au menu principal.
+    Label(menuNoteCreditFrame, text=creditTexte, font=("Noto Mono", int(24*ratioFenetre)), bg="black", fg="white").place(x=(largeurFenetre/2+largeurFenetre/4)/2, y=(hauteurFenetre/2+hauteurFenetre/4)/2, anchor=CENTER) #Texte pour afficher les crédits.
 
-def exit_menu():
+def exit_menu(): #Fonction pour changer de menu.
     global etatJeu
-    if not freezeEscape:
-        match etatJeu:
+    if not freezeEscape: #Si un retour au menu precedent est possible.
+        match etatJeu: #Alors en fonction de etat jeu, il suffit de quitter le menu dans le quel on se trouve.
             case "menuPrincipal": fenetre.destroy()
 
             case "menuEdition":
@@ -364,16 +368,16 @@ def exit_menu():
                 menuNoteCreditFrame.destroy()
                 etatJeu="menuPrincipal"
 
-            case _: exit_mode()
+            case _: exit_mode() #Si nous ne somme dans aucun menu alors nous somme dans un mode de jeu.
 
-def exit_mode():
+def exit_mode(): #Fonction pour s'avoir dans quel mode de jeu nous somme.
     global etatJeu
     match etatJeu:
         case "editeur": exit_editeur()
         case "solo": exit_solo()
         case "test_editeur": exit_test_editeur()
 
-def close_menu():
+def close_menu(): #Fonction pour cacher les menu à l'entrée d'un mode de jeu.
     menuPrincipalFrame.place_forget()
     match etatJeu:
         case "editeur": menuEditionFrame.place_forget()
@@ -383,16 +387,16 @@ def close_menu():
 
 ################################################################### Fonctions de lancement des modes ###################################################################
 
-def lancement_editeur(id):
+def lancement_editeur(id): #Fonction du lancement de l'éditeur.
     global id_monde, id_level, etatJeu, fenetre_editeur, message_editeur, numeroNiveau, boutonGomme, textTypeBlocSelect, scrolledIDListe
-    etatJeu = "editeur"
-    close_menu()
-    set_grille_fond()
-    id_monde = id
-    get_monde(id_monde)
-    id_level = [0,0]
-    get_niveau(id_level)
-    affichage_niveau()
+    etatJeu = "editeur" #Changement de l'état du jeu a "editeur". Cela permet d'activer les autres fonctions destiner a l'éditeur
+    close_menu() #Appel de la fonction close_menu
+    set_grille_fond() #Appel de la fonction set_grille_fond
+    id_monde = id #id_monde = id du monde souhaiter dans le menu de l'éditeur
+    get_monde(id_monde) #Appel de la fonction get_monde
+    id_level = [0,0] #id_level est mis à [0,0] ce qui correspond au niveau de base
+    get_niveau(id_level) #Appel de la fonction get_niveau
+    affichage_niveau() #Appel de la fonction affichage_niveau
 
     #Fenetre des infos / boutons
     fenetre_editeur = tk.Toplevel() #Création de la fenetre des fonction/boutons de l'éditeur
@@ -400,8 +404,8 @@ def lancement_editeur(id):
     fenetre_editeur.resizable(False,False) #Fenetre non redimentionable
     fenetre_editeur.attributes('-topmost',1) #Fenetre toujours au premier plan
     fenetre_editeur.protocol("WM_DELETE_WINDOW", disable_event) #Fenetre non detruisable manuelement
-    fenetre_editeur.config(background='#ffffff')
-    fenetre_editeur.iconbitmap(lienIconeFenetre)
+    fenetre_editeur.config(background='#ffffff') #Couleur du fond de la fenetre = noir
+    fenetre_editeur.iconbitmap(lienIconeFenetre) #Set de l'icone du jeu sur la fenetre de l'éditeur
 
     #Création des boutons / texte sur la fenetre de l'éditeur
     Button(fenetre_editeur, image=imageBoutonEditeurTP, relief='groove', bd=0, bg='#ffffff', command=lambda:type_bloc("tp")).place(x=ratioImage/2,y=ratioImage*4+ratioImage/2, anchor=CENTER) #bouton_save
@@ -437,40 +441,39 @@ def lancement_editeur(id):
     scrolledIDListe = tkinter.scrolledtext.ScrolledText(master = fenetre_editeur,wrap = tk.WORD,width = int(60*ratioFenetre),height = int(20*ratioFenetre), font=(int(14*ratioFenetre)))
     scrolledIDListe.place(x=300*ratioFenetre,y=350*ratioFenetre)
 
-def lancement_solo(id):
+def lancement_solo(id): #Fonction du lancement du solo.
     global id_monde, id_level, etatJeu, positionJoueur, joueur, temps, theKey
-    etatJeu = "solo"
-    id_monde = id
-    theKey = ""
-    get_monde(id_monde)
-    try: id_level = [monde["lastCoords"][1][0], monde["lastCoords"][1][1]]
-    except: id_level = [0,0]
-    get_niveau(id_level)
+    etatJeu = "solo" #Changment de l'état jeu à "solo". Les fonctions du solo (comme les mouvement) vont pouvoir etre exécuter.
+    id_monde = id #id_monde = id du monde souhaiter dans le menu du solo
+    theKey = "" #reset de theKey pour ne pas casser les déplacement
+    get_monde(id_monde) #Appel de la fonction get_monde
+    try: id_level = [monde["lastCoords"][1][0], monde["lastCoords"][1][1]] #Si le monde à déjà été commancer, le dernier niveau est charger
+    except: id_level = [0,0] #Sinon on commancer sur le premier
+    get_niveau(id_level) #Appel de la fonction get_niveau
     for bloc in monde["niveaux"][niveau]: #Cherche si un bloc d'apparition du joueur existe dans le niveau [0,0] pour faire aparaitre 
         if bloc["type"] == 1: #Si il existe, les coordonées d'apparition sont mis à jour
             posjxstart = bloc["x"]
             posjystart = bloc["y"]
             break #Quand les coordonnées sont trouver, la boucle s'arrete pour ne pas chercher des coordonnées pour rien
-    try:
+    try: #Si le monde à déjà été commancer, les dernière coordonnées sont charger.
         posjxstart = monde["lastCoords"][0][0]
         posjystart = monde["lastCoords"][0][1]
-    except:
-        pass
-    try:
+    except: pass
+    try: #Si tout est bon, le monde ce lance.
         posjxstart
-        close_menu()
-        affichage_niveau()
-        temps = 0
-        chrono()
-        set_direction()
+        close_menu() #Appel de la fonction close_menu.
+        affichage_niveau() #Appel de la fonction affichage_niveau.
+        temps = 0 #Set du temps à 0.
+        chrono() #Appel de la fonction chrono.
+        set_direction() #Appel de la fonction set_direction.
         joueur = canevas.create_rectangle(0, 0, nombrePixel, nombrePixel, fill='blue', width=0) #Création du joueur
         canevas.moveto(joueur,posjxstart*nombrePixel, posjystart*nombrePixel) #Déplacement du joueur au coordonnées d'apparition
         positionJoueur = [posjxstart, posjystart] #0 = x & 1 = y #Actualisation des position du joueur sur la grille
-    except:
+    except: #Sinon, le monde ne se lance pas.
         etatJeu = "menuSolo"
         tkinter.messagebox.showerror("Erreur", "Il n'y a pas de bloc d'apparition dans ce monde") #Affichage d'un message d'erreur
 
-def lancement_test_edition(id):
+def lancement_test_edition(id): #Fonction du lancement du mode de teste de l'éditeur
     global id_level, etatJeu, joueur, positionJoueur, temps, theKey, freezeEscape
     etatJeu = "test_editeur"
     originalPath = racine+"assets/data/editeur/monde"+str(id)+".gac" #"originalPath" contient le lien du dossier éditeur
