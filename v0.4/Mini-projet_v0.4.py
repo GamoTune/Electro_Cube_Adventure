@@ -19,7 +19,7 @@ def start(): #La fonction "start" permet de déclaré la plus part des variable 
     largeurFenetre = fenetre.winfo_screenwidth() #largeurFenetre contient le nombre de pixel en largeur de l'écran actuel.
     hauteurFenetre = fenetre.winfo_screenheight() #hauteurFenetre contient le nombre de pixel en hauteur de l'écran actuel.
 
-    fenetre.title("D/ /K") #Nom de l'application.
+    fenetre.title("Electro Cube Adventure") #Nom de l'application.
     
     fenetre.attributes('-fullscreen', True) #La fenetre est en plein écran.
     canevas = Canvas(fenetre, width=largeurFenetre, height=hauteurFenetre,bg='#3b3b3b') #Instance du Canvas (avec comme paramètre la largeur, la hauteur, et la couleur (ici du gris)).
@@ -82,8 +82,8 @@ def start(): #La fonction "start" permet de déclaré la plus part des variable 
 
     nombreCase = 48 #nombreCase permet de définir le nombre de case de la grille en largeur (default = 48).
     nombrePixel = largeurFenetre/nombreCase #nombrePixel = nombre de pixels par case sur l'écran (en fonction de la résolution de l'écran, le nombre de pixel change pour toujours avoir le même nombre de case à l'écran).
-    nombreCaseX = round(largeurFenetre/nombrePixel) #Le nombre de case en X permet de donner facilement au programme le nombre de blocs max en X.
-    nombreCaseY = round(hauteurFenetre/nombrePixel) #Le nombre de case en Y permet de donner facilement au programme le nombre de blocs max en Y.
+    nombreCaseX = 48 #Le nombre de case en X permet de donner facilement au programme le nombre de blocs max en X.
+    nombreCaseY = 27 #Le nombre de case en Y permet de donner facilement au programme le nombre de blocs max en Y.
     ligneX = [] #Liste des ID des lignes X crées.
     ligneY = [] #Liste des ID des lignes Y crées.
 
@@ -480,9 +480,9 @@ def lancement_test_edition(id): #Fonction du lancement du mode de teste de l'éd
     copyPath = racine+"assets/data/test_editeur/monde"+str(id)+".gac" #"copyPath" contient le lien du dossier test_editeur où vont etre copier les fichier de l'éditeur pour ne pas modifier les fichier dans l'éditeur
     if os.path.exists(originalPath): #Si le dossier contient déjà quelque chose, il est détruit puis recréer 
         shutil.copy(originalPath, copyPath)
-    id_monde = id
-    theKey = ""
-    get_monde(id_monde)
+    id_monde = id #id_monde = id du monde souhaiter dans le menu du solo
+    theKey = "" #reset de theKey pour ne pas casser les déplacement
+    get_monde(id_monde) #Appel la fonction get_monde
     try: id_level = [monde["lastCoords"][1][0], monde["lastCoords"][1][1]]
     except: id_level = [0,0]
     get_niveau(id_level)
@@ -492,28 +492,23 @@ def lancement_test_edition(id): #Fonction du lancement du mode de teste de l'éd
             posjystart = bloc["y"]
             break #Quand les coordonnées sont trouver, la boucle s'arrete pour ne pas chercher des coordonnées pour rien
     try:
-        posjxstart = monde["lastCoords"][0][0]
-        posjystart = monde["lastCoords"][0][1]
-    except:
-        pass
-    try:
         posjxstart
-        close_menu()
-        affichage_niveau()
-        temps = 0
-        chrono()
-        set_direction()
+        close_menu() #Appel de la fonction close_menu.
+        affichage_niveau() #Appel de la fonction affichage_niveau
+        temps = 0 #Set du temps à 0
+        chrono() #Appel de la fonction chrono
+        set_direction() #Set_direction
         joueur = canevas.create_rectangle(0, 0, nombrePixel, nombrePixel, fill='blue', width=0) #Création du joueur
         canevas.moveto(joueur,posjxstart*nombrePixel, posjystart*nombrePixel) #Déplacement du joueur au coordonnées d'apparition
         positionJoueur = [posjxstart, posjystart] #0 = x & 1 = y #Actualisation des position du joueur sur la grille
-        freezeEscape = False
-    except:
+        freezeEscape = False #Réactivation du retour via "échap"
+    except: #Sinon le lancement est anuler
         etatJeu = "menuEdition"
         tkinter.messagebox.showerror("Erreur", "Il n'y a pas de bloc d'apparition dans ce monde") #Affichage d'un message d'erreur
 
-def exit_editeur():
+def exit_editeur(): #Fonction pour sortir de l'édtieur
     global etatJeu, etatEditeur
-    del_grille_fond()
+    del_grille_fond() #Appel de la fonction del_grille_fond
     save(id_monde)
     cacher_niveau()
     fenetre_editeur.destroy()
