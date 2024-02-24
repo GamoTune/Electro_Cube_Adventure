@@ -4,11 +4,6 @@ from tkinter import *
 import tkinter as tk
 import pickle
 import os
-try:
-    import vlc
-except ImportError:
-    os.system('pip install python-vlc')
-import vlc
 
 
 ################################################################### Les fonctions de mise en place des modes ###################################################################
@@ -66,10 +61,8 @@ def first_launch (): #La fonction "first_launch" permet de déclaré la plus par
     imageBoutonEditeurItemCle = PhotoImage(file= str(cwd)+"assets/images/bouton_item_cle.png")
     imageBoutonEditeurInfos = PhotoImage(file= str(cwd)+"assets/images/help.png")
     imageBoutonEditeurEditBloc = PhotoImage(file= str(cwd)+"assets/images/edit_bloc.png")
-    musicDeFond = vlc.MediaPlayer(str(cwd)+"assets/musica/Gymnopédie No°1.wav")
     init_keys(fenetre)
     menu()
-    #bg_music()
 
 def lancement_edition (): #La fonction "lancement_edition" permet de mettre en place tout le système de la création de niveau
     global edit, lienfichier, ligneX, fenetre_bouton, id_level, numeroNiveau
