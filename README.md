@@ -7,9 +7,9 @@
 
 ## What it is ?
 
-I made this game for a school project (Mini projet NSI 1ere). It was my first program and I speed +200h on it.
+I made this game for a school project (Mini projet NSI 1ere). It was my first program and I spend +200h on it.
 
-In this game you control a cube and you can explore maze. It's also an Adventure (on Atari 2600) like game.
+In this game you control a cube and you can explore maze. It's also an Adventure like game (on Atari 2600).
 ## General info
 
 Interact with item like keys (small colored block) and doors (normal colored block). Pickup key to unlock doors by passing through.
@@ -26,7 +26,7 @@ In game, you have 2 gamemode :
 
 You can control your cube with zqsd, or with arrow key.
 
-Toutch the red block to and the game.
+Toutch the red block to end the game.
 
 ### Create
 
