@@ -2,7 +2,7 @@
 # Electro Cube Adventure
 
 
-![App Screenshot](https://via.placeholder.com/468x300?text=App+Screenshot+Here)
+![App Screenshot](https://gamo.one/assets/images/Images_Projets/ECA.png)
 
 
 ## What it is ?
@@ -46,12 +46,6 @@ If Python is correctly installed, let's conitnue.
 - Download the 'v0.4' folder.
 - Open the 'Mini-projet_v0.4.py'.
 - If you prefert, you can open the folder in your ide and execute the python file.
-
-
-### Program Method
-
-- Download the 'compil_v0.4' folder.
-- Execute the .exe file.
 
 
 ## Have fun :)
